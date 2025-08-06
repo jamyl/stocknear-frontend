@@ -15,11 +15,18 @@
     const submitNewPassword = () => {
         isUpdating = true;
         return async ({ result, update }) => {
-            console.log(result);
             if (result.type === "success" && result.data?.success) {
                 toast.success("New Password updated!", {
                     style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
                 });
+
+                setTimeout(() => {
+                    const anchor = document.createElement("a");
+                    anchor.href = "/login";
+                    anchor.dataset.sveltekitReload = true;
+                    document.body.appendChild(anchor);
+                    anchor.dispatchEvent(new MouseEvent("click"));
+                }, 500);
             } else {
                 toast.error("Something went wrong. Please try again...", {
                     style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,

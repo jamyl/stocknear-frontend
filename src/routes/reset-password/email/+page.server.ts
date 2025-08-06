@@ -29,13 +29,16 @@ export const actions = {
 try {
 
 
- await pb.collection('users').confirmPasswordReset(
-      formData
+await pb.collection('users').confirmPasswordReset(
+        formData.token,
+        formData.password,
+        formData.passwordConfirm
       );
 
-        
 
-    throw redirect(303, "/login");
+        
+       return { success: true };
+
         } catch (error) {
           console.error("Error resetting password:", error);
           return fail(400, {
