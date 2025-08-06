@@ -9,7 +9,7 @@
     export let data;
     export let form;
 
-    let token = $page.url.searchParams.get("token");
+    let token = $page.url.searchParams.get("token") ?? "";
     let isUpdating = false;
 
     const submitNewPassword = () => {

@@ -1,4 +1,4 @@
-import type { RequestHandler } from "./$types";
+ import type { RequestHandler } from "./$types";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
     const {  pb } = locals;
@@ -6,13 +6,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     let output;
 
+  
      try {
-        await pb.collection("chat").delete(data?.threadId)
-        output = 'success';
+       await pb.collection('users').confirmVerification(data?.token);
+        output = 'Done 🎉!';
     }
     catch(e) {
         console.log(e)
-        output = 'failure';
+        output = 'No Valid Token!';
     }
 
   return new Response(JSON.stringify(output));
