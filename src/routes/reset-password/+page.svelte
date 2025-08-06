@@ -50,13 +50,21 @@
   description="Reset your password to sign in to your Stocknear account."
 />
 
-<div
-  class="flex flex-col items-center min-h-screen w-full max-w-3xl m-auto mt-20"
->
-  <h2 class="text-center text-3xl font-bold tracking-tight">
+<div class="flex flex-col items-center min-h-screen w-full max-w-3xl m-auto">
+  <div class="relative">
+    <a href="/">
+      <img
+        class="m-auto w-16 sm:w-20 rounded-full pt-4"
+        src="/pwa-192x192.png"
+        alt="Stocknear Logo"
+        loading="lazy"
+      />
+    </a>
+  </div>
+  <h2 class="text-center text-3xl font-bold tracking-tight mt-5 mb-2">
     Reset Your Password
   </h2>
-  <p class="text-center mt-1">
+  <p class="text-center mt-1 mb-4">
     We'll send you an email with a link to reset your password.
   </p>
   <form
@@ -78,13 +86,13 @@
         {#if !loading && !isClicked}
           <button
             type="submit"
-            class="cursor-pointer py-2.5 bg-[#3B82F6] dark:bg-[#fff] border-none sm:hover:bg-blue-600 dark:sm:hover:bg-gray-300 transition duration-100 btn-md w-full rounded m-auto text-white dark:text-black font-semibold text-[1rem]"
+            class="cursor-pointer py-2.5 bg-black dark:bg-[#fff] border-none sm:hover:bg-default dark:sm:hover:bg-gray-300 transition duration-100 btn-md w-full rounded m-auto text-white dark:text-black font-semibold text-[1rem]"
           >
             <span> Request Password Reset</span>
           </button>
         {:else}
           <label
-            class="cursor-not-allowed btn bg-[#3B82F6] dark:bg-[#fff] opacity-[0.5] border border-gray-600 sm:hover:bg-blue-600 dark:sm:hover:bg-gray-300 transition duration-100 btn-md w-full rounded m-auto text-white dark:text-black font-semibold text-[1rem]"
+            class="cursor-not-allowed btn bg-black dark:bg-[#fff] opacity-[0.5] border border-gray-600 sm:hover:bg-default dark:sm:hover:bg-gray-300 transition duration-100 btn-md w-full rounded m-auto text-white dark:text-black font-semibold text-[1rem]"
           >
             <div class="flex flex-row m-auto items-center">
               <span class="loading loading-infinity"></span>

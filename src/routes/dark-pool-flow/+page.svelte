@@ -564,7 +564,8 @@
       }
     } else {
       toast.error("Only for Pro Members", {
-        style: "border-radius: 200px; background: #2A2E39; color: #fff;",
+                style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+
       });
     }
   };

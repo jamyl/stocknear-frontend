@@ -221,6 +221,44 @@ export const updatePasswordSchema = z
     }
   });
 
+
+  export const newPasswordSchema = z
+  .object({
+    token: z.string({ required_error: "Valid Token is required" }),
+    password: z
+      .string({ required_error: "Password is required" })
+      .regex(
+        /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&+\-,.\[\]{};':"\\|/=\(\)\^_*]{8,}$/,
+        {
+          message:
+            "Password must be a minimum of 8 characters & contain at least one letter, one number, and one special character.",
+        },
+      ),
+    passwordConfirm: z
+      .string({ required_error: "Confirm Password is required" })
+      .regex(
+        /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&+\-,.\[\]{};':"\\|/=\(\)\^_*]{8,}$/,
+        {
+          message:
+            "Password must be a minimum of 8 characters & contain at least one letter, one number, and one special character.",
+        },
+      ),
+  })
+  .superRefine(({ passwordConfirm, password }, ctx) => {
+    if (passwordConfirm !== password) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Password & Confirm password must match",
+        path: ["password"],
+      });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Password & Confirm password must match",
+        path: ["passwordConfirm"],
+      });
+    }
+  });
+
 export const updateProfileSchema = z.object({
   name: z
     .string({ required_error: "Name is required" })
