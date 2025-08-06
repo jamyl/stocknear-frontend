@@ -30,9 +30,7 @@ try {
 
 
  await pb.collection('users').confirmPasswordReset(
-        formData.token?.toString(),
-        formData.password,
-        formData.passwordConfirm
+      formData
       );
 
         
