@@ -281,7 +281,7 @@
                                 >
                                   <a
                                     href={`/politicians/${item?.id}`}
-                                    class="text-blue-700 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400"
+                                    class="text-blue-800 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400"
                                     >{getAbbreviatedName(
                                       item?.representative?.replace("_", " "),
                                     )}</a

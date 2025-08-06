@@ -238,7 +238,7 @@
                           href={sectorNavigation?.find(
                             (listItem) => listItem?.title === item,
                           )?.link}
-                          class="inline-block badge border-gray-300 dark:border-gray-800 rounded-[3px] bg-blue-100 dark:bg-primary duration-0 rounded-sm ml-1 px-3 m-auto text-blue-700 dark:text-blue-400 dark:sm:hover:text-white sm:hover:text-muted text-[1rem]"
+                          class="inline-block badge border-gray-300 dark:border-gray-800 rounded-[3px] bg-blue-100 dark:bg-primary duration-0 rounded-sm ml-1 px-3 m-auto text-blue-800 dark:text-blue-400 dark:sm:hover:text-white sm:hover:text-muted text-[1rem]"
                         >
                           {item}
                         </a>
@@ -254,7 +254,7 @@
                       {#each data?.getHedgeFundsData?.mainIndustries as item}
                         <a
                           href={`/list/industry/${item?.replace(/ /g, "-")?.replace(/&/g, "and")?.replace(/-{2,}/g, "-")?.toLowerCase()}`}
-                          class="inline-block badge border-gray-300 dark:border-gray-800 rounded-[3px] bg-blue-100 dark:bg-primary duration-0 rounded-sm ml-1 px-3 m-auto text-blue-700 dark:text-blue-400 dark:sm:hover:text-white sm:hover:text-muted text-[1rem]"
+                          class="inline-block badge border-gray-300 dark:border-gray-800 rounded-[3px] bg-blue-100 dark:bg-primary duration-0 rounded-sm ml-1 px-3 m-auto text-blue-800 dark:text-blue-400 dark:sm:hover:text-white sm:hover:text-muted text-[1rem]"
                         >
                           {item}
                         </a>

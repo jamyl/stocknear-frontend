@@ -190,7 +190,7 @@
                         <div class="flex flex-col items-start">
                           <a
                             href={"/analysts/" + item?.analystId}
-                            class="font-semibold dark:font-normal text-blue-700 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400"
+                            class="font-semibold dark:font-normal text-blue-800 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400"
                             >{item?.analystName}
                           </a>
                           <!--<span class="">{item?.companyName} </span>-->

@@ -863,7 +863,7 @@
                             class="flex flex-col sm:flex-row items-start sm:items-center"
                           >
                             <span
-                              class="text-sm text-blue-700 dark:text-blue-400"
+                              class="text-sm text-blue-800 dark:text-blue-400"
                               >{searchItem?.symbol}</span
                             >
                             <span

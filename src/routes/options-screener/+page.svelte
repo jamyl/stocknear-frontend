@@ -1966,7 +1966,7 @@
                         `/options/contract-lookup?query=${item?.optionSymbol}`}
                       rel="noopener noreferrer"
                       target="_blank"
-                      class="text-blue-700 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
+                      class="text-blue-800 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
                       >{item?.symbol}</a
                     >
                   </td>
@@ -2078,7 +2078,7 @@
                         `/options/contract-lookup?query=${item?.optionSymbol}`}
                       rel="noopener noreferrer"
                       target="_blank"
-                      class="text-blue-700 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
+                      class="text-blue-800 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
                       >{item?.symbol}</a
                     >
                   </td>
@@ -2159,7 +2159,7 @@
                         `/options/contract-lookup?query=${item?.optionSymbol}`}
                       rel="noopener noreferrer"
                       target="_blank"
-                      class="text-blue-700 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
+                      class="text-blue-800 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
                       >{item?.symbol}</a
                     >
                   </td>

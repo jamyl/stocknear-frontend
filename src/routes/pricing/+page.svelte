@@ -115,7 +115,7 @@
           rel="noopener noreferrer"
           target="_blank"
           href="https://www.trustpilot.com/review/stocknear.com"
-          class="sm:hover:text-blue-700 dark:sm:hover:text-blue-400 underline underline-offset-4"
+          class="sm:hover:text-blue-800 dark:sm:hover:text-blue-400 underline underline-offset-4"
         >
           Trustpilot</a
         ></span
@@ -1430,7 +1430,7 @@
                     it for you.
                     <a
                       href={`mailto:${emailAddress}`}
-                      class="text-blue-700 dark:text-blue-400 underline"
+                      class="text-blue-800 dark:text-blue-400 underline"
                     >
                       {emailAddress}
                     </a>
@@ -1471,7 +1471,7 @@
                     We offer a 30 day money back guarantee, no questions asked.
                     Just send an email to <a
                       href={`mailto:${emailAddress}`}
-                      class="text-blue-700 dark:text-blue-400 underline"
+                      class="text-blue-800 dark:text-blue-400 underline"
                       >{emailAddress}</a
                     > and you will get a full refund.
                   </p>

@@ -109,7 +109,7 @@ ${paragraphs.join("\n")}
                         href={rawData?.industry
                           ? getIndustryHref(rawData?.industry)
                           : "#"}
-                        class="sm:hover:text-blue-700 dark:sm:hover:text-blue-400 underline underline-offset-4"
+                        class="sm:hover:text-blue-800 dark:sm:hover:text-blue-400 underline underline-offset-4"
                         >{rawData?.industry ?? "n/a"}</a
                       ></td
                     ></tr
@@ -122,7 +122,7 @@ ${paragraphs.join("\n")}
                         href={sectorNavigation?.find(
                           (item) => item?.title === rawData?.sector,
                         )?.link}
-                        class="sm:hover:text-blue-700 dark:sm:hover:text-blue-400 underline underline-offset-4"
+                        class="sm:hover:text-blue-800 dark:sm:hover:text-blue-400 underline underline-offset-4"
                         >{rawData?.sector ? rawData?.sector : "n/a"}</a
                       ></td
                     ></tr
@@ -133,7 +133,7 @@ ${paragraphs.join("\n")}
                     >
                     <td class="px-1 py-1.5 text-right lg:py-2"
                       ><a
-                        class="sm:hover:text-blue-700 dark:sm:hover:text-blue-400 underline underline-offset-4"
+                        class="sm:hover:text-blue-800 dark:sm:hover:text-blue-400 underline underline-offset-4"
                         href={`/stocks/${$stockTicker}/profile/employees`}
                         >{rawData?.fullTimeEmployees
                           ? new Intl.NumberFormat("en")?.format(
@@ -184,7 +184,7 @@ ${paragraphs.join("\n")}
                     <td class="px-0.5 py-2 text-right">
                       <a
                         href={rawData?.website}
-                        class="sm:hover:text-muted dark:sm:hover:text-white truncate text-blue-700 dark:text-blue-400"
+                        class="sm:hover:text-muted dark:sm:hover:text-white truncate text-blue-800 dark:text-blue-400"
                         target="_blank">{rawData?.website ?? "n/a"}</a
                       ></td
                     ></tr
@@ -351,7 +351,7 @@ ${paragraphs.join("\n")}
                       <td
                         class="px-2 py-2.5 align-top font-semibold xs:px-3 xs:py-3 sm:px-4"
                         ><a
-                          class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline sm:hover:underline-offset-4"
+                          class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline sm:hover:underline-offset-4"
                           href={item?.link}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -371,7 +371,7 @@ ${paragraphs.join("\n")}
               class="border-b border-gray-300 dark:border-gray-600 py-3 text-lg sm:text-xl font-semibold"
             >
               <a
-                class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline sm:hover:underline-offset-4"
+                class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline sm:hover:underline-offset-4"
                 href={`https://www.sec.gov/cgi-bin/browse-edgar?CIK=${rawData?.cik}&amp;count=100`}
                 target="_blank"
                 rel="noopener noreferrer">View All SEC Filings</a

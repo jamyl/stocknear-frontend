@@ -53,7 +53,8 @@
               >Size</Table.Head
             >
 
-            <Table.Head class=" text-right text-sm font-bold dark:font-semibold whitespace-nowrap"
+            <Table.Head
+              class=" text-right text-sm font-bold dark:font-semibold whitespace-nowrap"
               >Size / Avg Vol</Table.Head
             >
           </Table.Row>
@@ -64,7 +65,7 @@
               <Table.Cell class="text-sm sm:text-[1rem]">
                 <a
                   href={`/${item?.assetType === "Stock" ? "stocks" : "etf"}/${item?.ticker}`}
-                  class="text-blue-700 dark:text-blue-400 dark:sm:hover:text-white sm:hover:text-muted cursor-pointer"
+                  class="text-blue-800 dark:text-blue-400 dark:sm:hover:text-white sm:hover:text-muted cursor-pointer"
                   >{item?.ticker}</a
                 >
               </Table.Cell>

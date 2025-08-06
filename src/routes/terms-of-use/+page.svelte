@@ -37,7 +37,7 @@
                 bound by these Terms as well as our
                 <a
                   href="/privacy-policy"
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
                   >Privacy Policy</a
                 >. Stocknear reserves the right to modify these Terms at any
                 time.
@@ -136,7 +136,7 @@
                 us at
                 <a
                   href="mailto:contact@stocknear.com"
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
                   >contact@stocknear.com</a
                 >
                 using the subject line "Copyright Infringement" and provide a detailed
@@ -167,7 +167,7 @@
                 Settings or by contacting us at
                 <a
                   href="mailto:support@stocknear.com"
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
                   >support@stocknear.com</a
                 >.<br /><br />
                 If you are not completely satisfied with your subscription, you may
@@ -255,7 +255,7 @@
                 our contact form or email us directly at
                 <a
                   href="mailto:support@stocknear.com"
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
                   >support@stocknear.com</a
                 >.
               </div>
@@ -268,13 +268,13 @@
                 These Terms and Conditions, together with our
                 <a
                   href="/privacy-policy"
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
                   >Privacy Policy</a
                 >
                 and
                 <a
                   href="/imprint"
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
                   >Imprint</a
                 >, constitute the entire agreement between you and Stocknear.
                 <br /><br />

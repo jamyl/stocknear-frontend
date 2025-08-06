@@ -28,6 +28,6 @@
 <a
   href={getHref(symbol)}
   class="{!/^\d/.test(symbol)
-    ? 'sm:hover:text-muted dark:sm:hover:text-white text-blue-700 dark:text-blue-400'
+    ? 'sm:hover:text-muted dark:sm:hover:text-white text-blue-800 dark:text-blue-400'
     : ''} ">{symbol?.length !== 0 ? symbol : "-"}</a
 >

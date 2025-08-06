@@ -76,7 +76,7 @@
                         ><td class="text-left text-[1rem] px-2"
                           ><a
                             href={`/stocks/${item?.symbol}/dividends`}
-                            class="text-blue-700 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400"
+                            class="text-blue-800 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400"
                             >{removeCompanyStrings(item?.name)}</a
                           ></td
                         >
@@ -114,7 +114,7 @@
                     <li class="mb-3 last:mb-1">
                       {formatDate(item?.publishedDate)} &#183;
                       <a
-                        class="text-blue-700 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400"
+                        class="text-blue-800 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400"
                         href={item?.url}
                         target="_blank"
                         rel="noopener noreferrer nofollow">{item?.title}</a

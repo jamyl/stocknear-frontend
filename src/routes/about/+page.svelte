@@ -189,7 +189,7 @@
                   <div class="space-y-4">
                     <div class="space-y-1 text-lg font-semibold leading-6">
                       <h3>Muslem Rahimi, PhD</h3>
-                      <p class="text-blue-700 dark:text-blue-400">
+                      <p class="text-blue-800 dark:text-blue-400">
                         Founder / Chief of Nothing
                       </p>
                     </div>

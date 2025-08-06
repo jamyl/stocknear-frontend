@@ -43,7 +43,7 @@
                 Yes! We've created the
                 <a
                   href="/learning-center"
-                  class="text-blue-700 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white"
+                  class="text-blue-800 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white"
                   >Learning Center</a
                 > to explain each feature in detail—what it does, how to integrate
                 it into your strategies, and its market impact. We update it regularly,
@@ -74,7 +74,7 @@
               <p class="mb-5 mt-5 text-[1rem] sm:text-lg">
                 If you notice an inaccuracy, please contact us at <a
                   href={`mailto:${emailAddress}`}
-                  class="text-blue-700 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white"
+                  class="text-blue-800 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white"
                   >{emailAddress}</a
                 >.
               </p>
@@ -85,7 +85,7 @@
               <p class="mb-5 mt-5 text-[1rem] sm:text-lg">
                 Our <a
                   href="/options-flow"
-                  class="text-blue-700 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white"
+                  class="text-blue-800 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white"
                   >options flow</a
                 > feature provides real-time options data from Benzinga without delays.
               </p>
@@ -115,7 +115,7 @@
               <p class="mb-5 mt-5 text-[1rem] sm:text-lg">
                 Please email <a
                   href={`mailto:${emailAddress}`}
-                  class="text-blue-700 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white"
+                  class="text-blue-800 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white"
                   >{emailAddress}</a
                 >, and we’ll investigate immediately.
               </p>
@@ -132,7 +132,7 @@
                   href={discordURL}
                   rel="noopener noreferrer"
                   target="_blank"
-                  class="text-blue-700 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white"
+                  class="text-blue-800 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white"
                   >official Discord</a
                 > for quicker responses from our dev team. We’re always open to new
                 ideas to improve the platform.

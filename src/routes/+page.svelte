@@ -108,7 +108,7 @@
         <div class=" flex justify-center lg:mb-3">
           <a href="/options-screener"
             ><div
-              class="flex items-center justify-center sm:hover:text-muted dark:sm:hover:text-white text-blue-700 dark:text-blue-400"
+              class="flex items-center justify-center sm:hover:text-muted dark:sm:hover:text-white text-blue-800 dark:text-blue-400"
             >
               <div class="text-lg sm:text-xl font-semibold">
                 Options Screener

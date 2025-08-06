@@ -377,7 +377,7 @@
       <div class="inline-block">
         <a
           href={`/stocks/${$stockTicker}/profile`}
-          class="w-full text-md mt-1 cursor-pointer sm:hover:text-muted dark:sm:hover:text-white text-blue-700 dark:text-blue-400 sm:hover:underline"
+          class="w-full text-md mt-1 cursor-pointer sm:hover:text-muted dark:sm:hover:text-white text-blue-800 dark:text-blue-400 sm:hover:underline"
         >
           [Read more]
         </a>
@@ -388,7 +388,7 @@
           <span class="block font-semibold">Industry</span>
           <a
             href={getIndustryHref(industry)}
-            class="sm:hover:text-blue-700 dark:sm:hover:text-blue-400 underline underline-offset-4"
+            class="sm:hover:text-blue-800 dark:sm:hover:text-blue-400 underline underline-offset-4"
             >{industry}</a
           >
         </div>
@@ -397,7 +397,7 @@
           <a
             href={sectorNavigation?.find((item) => item?.title === sector)
               ?.link}
-            class="sm:hover:text-blue-700 dark:sm:hover:text-blue-400 underline underline-offset-4"
+            class="sm:hover:text-blue-800 dark:sm:hover:text-blue-400 underline underline-offset-4"
             >{sector}</a
           >
         </div>
@@ -409,7 +409,7 @@
           <span class="block font-semibold">Employees</span>
           <a
             href={`/stocks/${$stockTicker}/profile/employees`}
-            class="sm:hover:text-blue-700 dark:sm:hover:text-blue-400 underline underline-offset-4"
+            class="sm:hover:text-blue-800 dark:sm:hover:text-blue-400 underline underline-offset-4"
             >{new Intl.NumberFormat("en")?.format(employees)}</a
           >
         </div>
@@ -426,7 +426,7 @@
             <span class="block font-semibold">Website</span>
             <a
               href={website}
-              class="sm:hover:text-muted dark:sm:hover:text-white truncate text-blue-700 dark:text-blue-400"
+              class="sm:hover:text-muted dark:sm:hover:text-white truncate text-blue-800 dark:text-blue-400"
               target="_blank">{website}</a
             >
           </div>

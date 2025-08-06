@@ -43,7 +43,7 @@
                 policy in its entirety along with our
                 <a
                   href="/terms-of-use"
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
                   >Terms of use</a
                 >. Generally, you may use our website without providing personal
                 data. When personal data (such as your name, address, or email
@@ -121,7 +121,7 @@
                 wish to have it removed from our systems, please contact us at
                 <a
                   href={`mailto:${emailAddress}`}
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
                   >{emailAddress}</a
                 >.<br /><br />
                 In addition, you have the following rights:
@@ -188,7 +188,7 @@
                     at
                     <a
                       href={`mailto:${emailAddress}`}
-                      class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
+                      class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
                       >{emailAddress}</a
                     >.
                   </li>

@@ -70,7 +70,7 @@
         {#if !["Pro", "Plus"]?.includes(data?.user?.tier)}
           ... Unlock content with
           <a
-            class="inline-block ml-0.5 text-blue-700 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white"
+            class="inline-block ml-0.5 text-blue-800 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white"
             href="/pricing"
             >Pro Subscription <svg
               class="w-4 h-4 mb-1 inline-block"

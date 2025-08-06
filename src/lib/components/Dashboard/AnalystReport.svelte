@@ -18,7 +18,7 @@
       for
       <a
         href={`/stocks/${analystReport?.symbol}/forecast`}
-        class="text-blue-700 dark:text-blue-400 dark:sm:hover:text-white sm:hover:text-muted cursor-pointer"
+        class="text-blue-800 dark:text-blue-400 dark:sm:hover:text-white sm:hover:text-muted cursor-pointer"
         >{analystReport?.symbol}</a
       >
       stock is <strong>"{analystReport?.consensusRating}"</strong>. The 12-month

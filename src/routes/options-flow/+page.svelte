@@ -1678,7 +1678,7 @@
                         cy="18"
                         r="16"
                         fill="none"
-                        class="stroke-current text-blue-700"
+                        class="stroke-current text-blue-800"
                         stroke-width="3"
                         stroke-dasharray="100"
                         stroke-dashoffset={data?.user?.tier === "Pro"

@@ -82,7 +82,7 @@
       line at
       <a
         href="mailto:{emailAddress}"
-        class="text-blue-700 dark:text-blue-400 hover:underline"
+        class="text-blue-800 dark:text-blue-400 hover:underline"
       >
         {emailAddress}
       </a>.

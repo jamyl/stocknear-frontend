@@ -82,7 +82,7 @@
                         <input value={token} name="token" type="hidden" />
 
                         {#if form?.errors?.error}
-                            <div class="text-red-500 text-sm">
+                            <div class="text-red-800 dark:text-red-500 text-sm">
                                 {form.errors.error}
                             </div>
                         {/if}

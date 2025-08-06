@@ -54,7 +54,7 @@
               class="whitespace-nowrap border border-gray-300 dark:border-gray-800 px-2 py-1.5 text-left"
               ><a
                 href={`/${item?.underlying_type === "stock" ? "stocks" : "etf"}/${item?.ticker}/options/unusual-activity`}
-                class="text-blue-700 dark:text-blue-400 dark:sm:hover:text-white sm:hover:text-muted cursor-pointer"
+                class="text-blue-800 dark:text-blue-400 dark:sm:hover:text-white sm:hover:text-muted cursor-pointer"
                 >{item?.ticker}</a
               ></td
             >

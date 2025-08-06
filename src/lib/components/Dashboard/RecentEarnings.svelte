@@ -15,23 +15,23 @@
         <Card.Title
           class="text-xl sm:text-2xl text-muted dark:text-white font-semibold"
           ><a
-          href="/earnings-calendar"
-          class="text-xl sm:text-2xl text-muted dark:text-white font-semibold cursor-pointer sm:hover:underline sm:hover:underline-offset-4"
-        >
-          Recent Earnings
-          <svg
-            class="h-5 w-5 inline-block"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            style="max-width:40px"
-            aria-hidden="true"
-            ><path
-              fill-rule="evenodd"
-              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-              clip-rule="evenodd"
-            ></path></svg
-          ></a
-        ></Card.Title
+            href="/earnings-calendar"
+            class="text-xl sm:text-2xl text-muted dark:text-white font-semibold cursor-pointer sm:hover:underline sm:hover:underline-offset-4"
+          >
+            Recent Earnings
+            <svg
+              class="h-5 w-5 inline-block"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              style="max-width:40px"
+              aria-hidden="true"
+              ><path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              ></path></svg
+            ></a
+          ></Card.Title
         >
       </div>
     </div>
@@ -42,7 +42,7 @@
         {#each recentEarnings as item}
           <strong>{item?.name}</strong> (<a
             href={`/stocks/${item?.symbol}`}
-            class="text-blue-700 dark:text-blue-400 dark:sm:hover:text-white sm:hover:text-muted cursor-pointer"
+            class="text-blue-800 dark:text-blue-400 dark:sm:hover:text-white sm:hover:text-muted cursor-pointer"
             >{item?.symbol}</a
           >) has released its quarterly earnings at {formatTime(item?.time)}:
 

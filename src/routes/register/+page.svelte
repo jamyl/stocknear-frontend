@@ -762,7 +762,7 @@
           You already have an account?
           <a
             href="/login"
-            class="text-blue-700 dark:text-blue-400 sm:hover:underline ml-1"
+            class="text-blue-800 dark:text-blue-400 sm:hover:underline ml-1"
             >Sign in</a
           >
         </p>
@@ -771,13 +771,13 @@
           By registering you agree to Stocknear's
           <a
             href="/terms-of-use"
-            class="text-blue-700 dark:text-blue-400 sm:hover:underline"
+            class="text-blue-800 dark:text-blue-400 sm:hover:underline"
             >Terms of Use</a
           >
           and acknowledge that you've read our
           <a
             href="/privacy-policy"
-            class="text-blue-700 dark:text-blue-400 sm:hover:underline"
+            class="text-blue-800 dark:text-blue-400 sm:hover:underline"
             >Privacy Policy</a
           >.
         </p>

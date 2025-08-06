@@ -214,7 +214,7 @@ const output = await response.json();
             <div class="text-start w-full max-w-lg">
               <a
                 href="/reset-password"
-                class="text-start text-sm font-semibold text-blue-700 dark:text-blue-400 cursor-pointer sm:hover:underline"
+                class="text-start text-sm font-semibold text-blue-800 dark:text-blue-400 cursor-pointer sm:hover:underline"
                 >Forgot Password?</a
               >
             </div>
@@ -855,7 +855,7 @@ const output = await response.json();
               You don't have an account?
               <label
                 on:click={() => (displaySection = "register")}
-                class="text-blue-700 dark:text-blue-400 sm:hover:underline ml-1 cursor-pointer"
+                class="text-blue-800 dark:text-blue-400 sm:hover:underline ml-1 cursor-pointer"
                 >Sign up</label
               >
             </p>
@@ -1543,13 +1543,13 @@ const output = await response.json();
               By registering you agree to Stocknear's
               <a
                 href="/terms-of-use"
-                class="text-blue-700 dark:text-blue-400 sm:hover:underline"
+                class="text-blue-800 dark:text-blue-400 sm:hover:underline"
                 >Terms of Use</a
               >
               and acknowledge that you've read our
               <a
                 href="/privacy-policy"
-                class="text-blue-700 dark:text-blue-400 sm:hover:underline"
+                class="text-blue-800 dark:text-blue-400 sm:hover:underline"
                 >Privacy Policy</a
               >.
             </p>
@@ -1560,7 +1560,7 @@ const output = await response.json();
               You already have an account?
               <label
                 on:click={() => (displaySection = "login")}
-                class="text-blue-700 dark:text-blue-400 sm:hover:underline ml-1 cursor-pointer"
+                class="text-blue-800 dark:text-blue-400 sm:hover:underline ml-1 cursor-pointer"
                 >Sign in</label
               >
             </p>

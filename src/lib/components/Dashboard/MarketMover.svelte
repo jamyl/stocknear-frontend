@@ -71,7 +71,7 @@
               >
                 <a
                   href={`/stocks/${item?.symbol}`}
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white cursor-pointer"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white cursor-pointer"
                   >{item?.symbol}</a
                 ></td
               >
@@ -171,7 +171,7 @@
               >
                 <a
                   href={`/stocks/${item?.symbol}`}
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white cursor-pointer"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white cursor-pointer"
                   >{item?.symbol}</a
                 ></td
               >

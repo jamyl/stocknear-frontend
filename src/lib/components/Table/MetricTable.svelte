@@ -65,7 +65,7 @@
               {#if href}
                 <a
                   href={getHref(name)}
-                  class="sm:hover:text-blue-700 dark:sm:hover:text-blue-400 cursor-pointer underline underline-offset-4"
+                  class="sm:hover:text-blue-800 dark:sm:hover:text-blue-400 cursor-pointer underline underline-offset-4"
                 >
                   {name} Revenue
                 </a>

@@ -46,14 +46,14 @@
                   href={discordURL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
                 >
                   Discord
                 </a>
                 or contact our support team at
                 <a
                   href="mailto:{emailAddress}"
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
                 >
                   {emailAddress}
                 </a>.
@@ -69,7 +69,7 @@
                   href="https://site.financialmodelingprep.com/pricing-plans?couponCode=stocknear"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
                 >
                   Financial Modeling Prep (FMP)
                 </a>, a leading provider of financial data services. This
@@ -97,7 +97,7 @@
                   href="https://site.financialmodelingprep.com/pricing-plans?couponCode=stocknear"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
                 >
                   Financial Modeling Prep
                 </a>
@@ -121,7 +121,7 @@
                   href="https://site.financialmodelingprep.com/pricing-plans?couponCode=stocknear"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
                 >
                   Financial Modeling Prep
                 </a>. While we strive to present the most accurate forecasts,
@@ -138,7 +138,7 @@
                   href="https://site.financialmodelingprep.com/pricing-plans?couponCode=stocknear"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-blue-700 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
+                  class="text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:underline"
                 >
                   Financial Modeling Prep
                 </a>, ensuring accurate and timely information on fund

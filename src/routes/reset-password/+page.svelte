@@ -61,7 +61,7 @@
       />
     </a>
   </div>
-  <h2 class="text-center text-3xl font-bold tracking-tight mt-5 mb-2">
+  <h2 class="text-center text-2xl font-bold tracking-tight mt-5 mb-2">
     Reset Your Password
   </h2>
   <p class="text-center mt-1 mb-4">
@@ -71,16 +71,21 @@
     action="?/reset"
     method="POST"
     use:enhance={submitReset}
-    class="flex flex-col items-center space-y-2 w-5/6 sm:w-full pt-4"
+    class="flex flex-col items-center space-y-2 w-11/12 sm:w-full pt-2"
   >
-    <input
-      name="email"
-      class="input input-lg input-bordered border border-gray-600 focus:outline-none w-full max-w-lg bg-white dark:bg-secondary placeholder-gray-600 dark:placeholder-gray-300 whitespace-normal"
-      type="email"
-      required
-      bind:value={email}
-      autocomplete="off"
-    />
+    <div class="w-full max-w-lg">
+      <label class="text-start w-full label pb-1">
+        <span class="text-muted dark:text-white">Your Email</span>
+      </label>
+      <input
+        name="email"
+        class="input input-lg input-bordered border border-gray-300 shadow-xs dark:border-gray-600 focus:outline-none w-full max-w-lg bg-white dark:bg-secondary placeholder-gray-600 dark:placeholder-gray-300 whitespace-normal"
+        type="email"
+        required
+        bind:value={email}
+        autocomplete="off"
+      />
+    </div>
     <div class="w-full max-w-lg">
       <div class="w-full max-w-lg pt-2 m-auto pb-5">
         {#if !loading && !isClicked}

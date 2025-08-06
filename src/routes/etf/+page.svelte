@@ -152,7 +152,7 @@
                       <td class="text-sm sm:text-[1rem] text-start">
                         <a
                           href={`/etf/${item?.symbol}`}
-                          class="sm:hover:text-muted dark:sm:hover:text-white text-blue-700 dark:text-blue-400"
+                          class="sm:hover:text-muted dark:sm:hover:text-white text-blue-800 dark:text-blue-400"
                         >
                           {item?.symbol}
                         </a>

@@ -3510,7 +3510,7 @@ const handleKeyDown = (event) => {
                   <td class=" whitespace-nowrap">
                     <a
                       href={"/stocks/" + item?.symbol}
-                      class="text-blue-700 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
+                      class="text-blue-800 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
                       >{item?.symbol}</a
                     >
                   </td>
@@ -3575,7 +3575,7 @@ const handleKeyDown = (event) => {
                   <td class=" whitespace-nowrap">
                     <a
                       href={"/stocks/" + item?.symbol}
-                      class="text-blue-700 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
+                      class="text-blue-800 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
                       >{item?.symbol}</a
                     >
                   </td>
@@ -3659,7 +3659,7 @@ const handleKeyDown = (event) => {
                   <td class=" whitespace-nowrap">
                     <a
                       href={"/stocks/" + item?.symbol}
-                      class="text-blue-700 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
+                      class="text-blue-800 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
                       >{item?.symbol}</a
                     >
                   </td>
@@ -3713,7 +3713,7 @@ const handleKeyDown = (event) => {
                   <td class=" whitespace-nowrap">
                     <a
                       href={"/stocks/" + item?.symbol}
-                      class="text-blue-700 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
+                      class="text-blue-800 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
                       >{item?.symbol}</a
                     >
                   </td>
@@ -3787,7 +3787,7 @@ const handleKeyDown = (event) => {
                   <td class=" whitespace-nowrap">
                     <a
                       href={"/stocks/" + item?.symbol}
-                      class="text-blue-700 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
+                      class="text-blue-800 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400 text-sm sm:text-[1rem]"
                       >{item?.symbol}</a
                     >
                   </td>

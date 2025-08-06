@@ -103,7 +103,7 @@
                         ><td class="text-left px-2"
                           ><a
                             href={`/stocks/${item?.symbol}/profile/employees`}
-                            class="text-[1rem] text-blue-700 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400"
+                            class="text-[1rem] text-blue-800 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400"
                             >{item?.name?.length > 30
                               ? item?.name?.slice(0, 30) + "..."
                               : item?.name}</a

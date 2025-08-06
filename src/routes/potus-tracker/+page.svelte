@@ -817,7 +817,7 @@
                               href="https://truthsocial.com/@realDonaldTrump"
                               target="_blank"
                               rel="noopener noreferrer"
-                              class="hover:text-blue-700"
+                              class="hover:text-blue-800"
                             >
                               Donald J. Trump
                             </a>
@@ -827,7 +827,7 @@
                               href="https://truthsocial.com/@realDonaldTrump"
                               target="_blank"
                               rel="noopener noreferrer"
-                              class="hover:text-blue-700"
+                              class="hover:text-blue-800"
                             >
                               @realDonaldTrump
                             </a>
@@ -1108,7 +1108,7 @@
             href="https://truthsocial.com/@realDonaldTrump"
             target="_blank"
             rel="noopener noreferrer"
-            class="hover:text-blue-700"
+            class="hover:text-blue-800"
           >
             Donald J. Trump
           </a>
@@ -1118,7 +1118,7 @@
             href="https://truthsocial.com/@realDonaldTrump"
             target="_blank"
             rel="noopener noreferrer"
-            class="hover:text-blue-700"
+            class="hover:text-blue-800"
           >
             @realDonaldTrump
           </a>
