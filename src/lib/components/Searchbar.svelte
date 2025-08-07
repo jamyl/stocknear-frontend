@@ -13,6 +13,7 @@
   let timeoutId;
   let showSuggestions = false;
   let touchedInput = false;
+  let isNavigatingWithSpinner = false; // New state for navigation spinner
 
   $: inputValue = "";
   let nextPage = false;
@@ -53,13 +54,19 @@
     if (isNavigating) return;
     isNavigating = true;
 
+    // Close modal immediately on mobile and show spinner
+    if ($screenWidth < 640) {
+      searchBarModalChecked = false;
+      isNavigatingWithSpinner = true;
+      // Small delay to ensure modal closes before navigation
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+
     const upperSymbol = symbol?.toUpperCase();
 
     // normalize type to 'etf' | 'index' | 'stock'
     let type = (assetType || "stocks")?.toLowerCase();
     if (type.endsWith("s")) type = type.slice(0, -1);
-
-    // ... history & modal code unchanged ...
 
     // Pull current path's segments
     const segments = $page.url.pathname.split("/").filter(Boolean);
@@ -123,8 +130,12 @@
     }
 
     const newPath = `/${[root, upperSymbol, ...newSuffix].join("/")}`;
+
+    // Navigate and wait for completion
     await goto(newPath, { replaceState: true });
+
     inputValue = "";
+    isNavigatingWithSpinner = false; // Hide spinner after navigation
 
     // Find the item in searchBarData, searchHistory, or popularList
     let newSearchItem = searchBarData?.find(
@@ -147,7 +158,7 @@
 
     // If we found the item (from any source), update the history
     if (newSearchItem) {
-      // Create a new item object to ensure it's treated as "new" even if it was already at position 0
+      // Create a new item object to ensure it's treated as "new"
       const itemToAdd = {
         symbol: newSearchItem.symbol,
         name: newSearchItem.name,
@@ -164,12 +175,7 @@
     }
 
     setTimeout(() => (isNavigating = false), 100);
-
     searchOpen = false;
-    if ($screenWidth < 640) {
-      const closePopup = document.getElementById("searchBarModal");
-      closePopup?.dispatchEvent(new MouseEvent("click"));
-    }
   }
 
   async function search() {
@@ -188,8 +194,8 @@
         `/api/searchbar?query=${encodeURIComponent(inputValue)}&limit=5`,
       );
       searchBarData = await response?.json();
+      isLoading = false;
     }, 50); // delay
-    isLoading = false;
   }
 
   function handleKeyDown(symbol) {
@@ -218,7 +224,6 @@
     if (event.ctrlKey && event.key === "k") {
       const keyboardSearch = document.getElementById("combobox-input");
       keyboardSearch?.dispatchEvent(new MouseEvent("click"));
-      //inputValue = "";
       event.preventDefault();
     }
   };
@@ -257,6 +262,11 @@
     }
   }
 
+  // Reset spinner if user navigates away manually
+  $: if ($page) {
+    isNavigatingWithSpinner = false;
+  }
+
   $: {
     if (searchBarModalChecked === true && typeof window !== "undefined") {
       if ($screenWidth > 640) {
@@ -270,7 +280,10 @@
   $: {
     if (searchBarModalChecked === false && typeof window !== "undefined") {
       showSuggestions = "";
-      //inputValue = "";
+      // Clear input when modal closes
+      if (!isNavigatingWithSpinner) {
+        inputValue = "";
+      }
       document.body.classList?.remove("overflow-hidden");
     }
   }
@@ -309,6 +322,23 @@
     }
   }
 </script>
+
+<!-- Loading spinner overlay for mobile navigation -->
+{#if isNavigatingWithSpinner}
+  <div
+    class="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center"
+  >
+    <div class="relative">
+      <label
+        class="shadow-xs bg-default dark:bg-secondary rounded h-14 w-14 flex justify-center items-center"
+      >
+        <span
+          class="loading loading-spinner loading-md text-white dark:text-white"
+        ></span>
+      </label>
+    </div>
+  </div>
+{/if}
 
 <div class="hidden sm:block w-full sm:max-w-[600px] shadow-xs">
   <div>
@@ -536,6 +566,11 @@
           bind:value={inputValue}
           bind:this={inputElement}
           autocomplete="off"
+          on:keydown={(e) => {
+            if (e.key === "Enter" && inputValue) {
+              handleKeyDown(inputValue);
+            }
+          }}
         />
 
         <button class="absolute inset-0 right-auto group" aria-label="Search">
@@ -600,7 +635,6 @@
                 >{item?.symbol}</span
               >
               <span
-                c
                 class="whitespace-nowrap ml-3 mr-6 text-sm text-muted dark:text-white truncate"
                 >{item?.name}</span
               >
