@@ -216,9 +216,7 @@
                       >{`${earningsData?.positiveEpsSurprises}/${earningsData?.totalReports}`}
                       quarters</span
                     >
-                    <span
-                      class="text-xs font-semibold text-violet-700 dark:text-violet-400"
-                    >
+                    <span class="text-xs font-semibold">
                       {earningsData?.positiveEpsSurprises >
                       earningsData?.totalReports / 2
                         ? "Above Average"
@@ -243,9 +241,7 @@
                       >{`${earningsData?.positiveRevenueSurprises}/${earningsData?.totalReports}`}
                       quarters</span
                     >
-                    <span
-                      class="text-xs font-semibold text-red-800 dark:text-red-400"
-                    >
+                    <span class="text-xs font-semibold">
                       {earningsData?.positiveRevenueSurprises >
                       earningsData?.totalReports / 2
                         ? "Above Average"
@@ -269,11 +265,7 @@
                   >
                   <div class="flex flex-col ml-2">
                     <span class="text-sm">Next Day</span>
-                    <span
-                      class="text-xs font-semibold {metrics?.avgPriceImpact >= 0
-                        ? 'text-green-800 dark:text-green-400'
-                        : 'text-red-800 dark:text-red-400'}"
-                    >
+                    <span class="text-xs font-semibold">
                       {metrics?.avgPriceImpact >= 0 ? "Positive" : "Negative"} Trend
                     </span>
                   </div>
@@ -292,9 +284,7 @@
                   >
                   <div class="flex flex-col ml-2">
                     <span class="text-sm">Range</span>
-                    <span
-                      class="text-xs font-semibold text-yellow-700 dark:text-yellow-400"
-                    >
+                    <span class="text-xs font-semibold">
                       {Number(metrics.volatilityImpact) > 3 ? "High" : "Normal"}
                       Impact
                     </span>
