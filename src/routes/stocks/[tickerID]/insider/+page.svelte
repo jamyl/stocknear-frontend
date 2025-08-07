@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { displayCompanyName, stockTicker } from "$lib/store";
+  import { displayCompanyName, stockTicker, screenWidth } from "$lib/store";
   import {
     formatString,
     abbreviateNumber,
@@ -9,6 +9,8 @@
   import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
   import { Button } from "$lib/components/shadcn/button/index.js";
   import Tutorial from "$lib/components/Tutorial.svelte";
+  import highcharts from "$lib/highcharts.ts";
+  import { mode } from "mode-watcher";
 
   import { onMount } from "svelte";
 
@@ -21,6 +23,8 @@
   let rawData = data?.getInsiderTrading;
   let filterList = [];
   let checkedItems = new Set();
+  let historicalData = data?.getHistoricalPrice || [];
+  let chartConfig = null;
   let syncWorker: Worker | undefined;
   let transactionList = [
     "P-Purchase",
@@ -36,6 +40,280 @@
   ];
 
   let displayList = rawData?.slice(0, 50);
+
+  // Create chart configuration with insider trading markers
+  function createChartConfig() {
+    if (!historicalData?.length || !rawData?.length) return;
+
+    // Find insider trading date range first
+    const insiderDates =
+      rawData
+        ?.filter((item) => item?.price > 0)
+        ?.map((item) =>
+          Date.UTC(
+            new Date(item.transactionDate).getUTCFullYear(),
+            new Date(item.transactionDate).getUTCMonth(),
+            new Date(item.transactionDate).getUTCDate(),
+          ),
+        ) || [];
+
+    if (!insiderDates.length) return;
+
+    const minInsiderDate = Math.min(...insiderDates);
+    const maxInsiderDate = Math.max(...insiderDates);
+
+    // Filter historical data to only include dates within insider trading range
+    const filteredHistoricalData = historicalData?.filter((item) => {
+      const itemDate = Date.UTC(
+        new Date(item.time).getUTCFullYear(),
+        new Date(item.time).getUTCMonth(),
+        new Date(item.time).getUTCDate(),
+      );
+      return itemDate >= minInsiderDate && itemDate <= maxInsiderDate;
+    });
+
+    // Convert filtered historical data to series format
+    const priceData = filteredHistoricalData?.map((item) => [
+      Date.UTC(
+        new Date(item.time).getUTCFullYear(),
+        new Date(item.time).getUTCMonth(),
+        new Date(item.time).getUTCDate(),
+      ),
+      item.close,
+    ]);
+
+    if (!priceData?.length) return;
+
+    // Find min/max values for chart scaling
+    const prices = priceData.map((item) => item[1]);
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    const padding = 0.05;
+    const yMin = minPrice * (1 - padding);
+    const yMax = maxPrice * (1 + padding);
+
+    // Convert insider trading data to markers
+    const purchaseMarkers = [];
+    const saleMarkers = [];
+    const currentDate = new Date();
+    const sixMonthsAgo = new Date();
+
+    rawData
+      ?.filter((item) => {
+        return item?.price > 0;
+      })
+      ?.forEach((transaction) => {
+        const transactionDate = new Date(transaction.transactionDate);
+        const x = Date.UTC(
+          transactionDate.getUTCFullYear(),
+          transactionDate.getUTCMonth(),
+          transactionDate.getUTCDate(),
+        );
+
+        // Find corresponding price point
+        const pricePoint = priceData.find(
+          (p) => Math.abs(p[0] - x) < 7 * 24 * 60 * 60 * 1000, // Within 7 days
+        );
+
+        const y = pricePoint ? pricePoint[1] : transaction.price;
+        const value = transaction.securitiesTransacted * transaction.price;
+
+        const marker = {
+          x,
+          y,
+          z: Math.max(value / 1000, 5), // Size based on transaction value, minimum size 5
+          name: transaction.reportingName,
+          shares: transaction.securitiesTransacted,
+          price: transaction.price,
+          value: value,
+          date: transaction.transactionDate,
+        };
+
+        // Check transaction type more comprehensively
+        const transType = transaction.transactionType?.toUpperCase();
+
+        if (
+          transType === "P" ||
+          transType === "P-PURCHASE" ||
+          transType?.startsWith("P-") ||
+          transType?.includes("PURCHASE")
+        ) {
+          purchaseMarkers.push(marker);
+        } else if (
+          transType === "S" ||
+          transType === "S-SALE" ||
+          transType?.startsWith("S-") ||
+          transType?.includes("SALE")
+        ) {
+          saleMarkers.push(marker);
+        }
+      });
+
+    const options = {
+      chart: {
+        backgroundColor: $mode === "light" ? "#fff" : "#09090B",
+        animation: false,
+        height: 400,
+      },
+      credits: { enabled: false },
+      legend: {
+        enabled: true,
+        align: "center",
+        verticalAlign: "top",
+        layout: "horizontal",
+        itemStyle: {
+          color: $mode === "light" ? "black" : "white",
+        },
+      },
+      title: {
+        text: `<h3 class="mt-3 -mb-3 text-[1rem] sm:text-lg">Stock Price with Insider Trading Activity</h3>`,
+        useHTML: true,
+        style: { color: $mode === "light" ? "black" : "white" },
+      },
+      xAxis: {
+        type: "datetime",
+        min: minInsiderDate,
+        max: maxInsiderDate,
+        crosshair: {
+          color: $mode === "light" ? "black" : "white",
+          width: 1,
+          dashStyle: "Solid",
+        },
+        labels: {
+          style: { color: $mode === "light" ? "#545454" : "white" },
+          formatter: function () {
+            const date = new Date(this.value);
+            return `<span class="text-xs">${date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>`;
+          },
+        },
+      },
+      yAxis: {
+        title: {
+          text: $screenWidth < 640 ? null : "Stock Price ($)",
+          style: {
+            color: $mode === "light" ? "#6b7280" : "#fff",
+          },
+        },
+        labels: {
+          style: {
+            color: $mode === "light" ? "#6b7280" : "#fff",
+          },
+          formatter: function () {
+            return `$${this.value.toFixed(2)}`;
+          },
+        },
+        min: yMin,
+        max: yMax,
+        gridLineWidth: 1,
+        gridLineColor: $mode === "light" ? "#e5e7eb" : "#111827",
+      },
+      tooltip: {
+        shared: false,
+        useHTML: true,
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        borderColor: "rgba(255, 255, 255, 0.2)",
+        borderWidth: 1,
+        style: {
+          color: $mode === "light" ? "black" : "white",
+          fontSize: "14px",
+          padding: "10px",
+        },
+        borderRadius: 4,
+        formatter: function () {
+          const date = new Date(this.x);
+          const formattedDate = date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          });
+
+          if (this.series.type === "bubble") {
+            const isPurchase = this.series.name.includes("Purchase");
+            return `
+              <span class="text-white text-sm font-normal">${formattedDate}</span><br>
+              <span class="text-white text-sm font-[501]">${this.series.name}</span><br>
+              <span class="text-white text-sm">Insider: ${this.point.name}</span><br>
+              <span class="text-white text-sm">Price: $${this.point.price?.toFixed(2)}</span><br>
+              <span class="text-white text-sm">Shares: ${this.point.shares?.toLocaleString("en-US")}</span><br>
+              <span class="text-white text-sm">Value: $${this.point.value?.toLocaleString("en-US")}</span>
+            `;
+          } else {
+            return `
+              <span class="text-white text-sm font-normal">${formattedDate}</span><br>
+              <span class="text-white text-sm font-[501]">Stock Price: $${this.y?.toFixed(2)}</span>
+            `;
+          }
+        },
+      },
+      plotOptions: {
+        series: {
+          animation: false,
+          marker: {
+            enabled: false,
+            states: {
+              hover: { enabled: false },
+              select: { enabled: false },
+            },
+          },
+        },
+        spline: {
+          lineWidth: 2,
+          shadow: false,
+        },
+        bubble: {
+          minSize: 8,
+          maxSize: 30,
+          opacity: 0.8,
+          marker: {
+            enabled: true,
+            fillOpacity: 0.8,
+            lineWidth: 2,
+          },
+          dataLabels: {
+            enabled: false,
+          },
+          sizeBy: "z",
+        },
+      },
+      series: [
+        {
+          name: "Stock Price",
+          type: "spline",
+          data: priceData,
+          color: $mode === "light" ? "#000" : "#fff",
+          lineWidth: 2,
+          animation: false,
+          zIndex: 1,
+        },
+        {
+          name: "Insider Purchases",
+          type: "bubble",
+          data: purchaseMarkers,
+          color: "#22c55e", // Green for purchases
+          marker: {
+            lineColor: "#16a34a",
+          },
+          animation: false,
+          zIndex: 3,
+          showInLegend: purchaseMarkers.length > 0,
+        },
+        {
+          name: "Insider Sales",
+          type: "bubble",
+          data: saleMarkers,
+          color: "#ef4444", // Red for sales
+          marker: {
+            lineColor: "#dc2626",
+          },
+          animation: false,
+          zIndex: 3,
+          showInLegend: saleMarkers.length > 0,
+        },
+      ],
+    };
+
+    chartConfig = options;
+  }
 
   async function handleChangeValue(value) {
     if (checkedItems.has(value)) {
@@ -110,11 +388,19 @@
       syncWorker.onmessage = handleMessage;
     }
 
+    // Create chart configuration with server data
+    createChartConfig();
+
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   });
+
+  // Reactive statements for chart updates
+  $: if ($mode && historicalData?.length) {
+    createChartConfig();
+  }
 
   let columns = [
     { key: "reportingName", label: "Name", align: "left" },
@@ -319,6 +605,15 @@
             </DropdownMenu.Content>
           </DropdownMenu.Root>
         </div>
+
+        <!-- Chart Section -->
+        {#if chartConfig}
+          <div
+            class=" border border-gray-300 dark:border-gray-800 rounded mt-4 mb-4"
+            use:highcharts={chartConfig}
+          ></div>
+        {/if}
+
         {#if displayList?.length > 0}
           <div
             class="mt-3 flex justify-start items-center w-full m-auto rounded-none sm:rounded mb-4 overflow-x-auto no-scrollbar"
@@ -330,7 +625,7 @@
                 <TableHeader {columns} {sortOrders} {sortData} />
               </thead>
               <tbody>
-                {#each displayList as item, index}
+                {#each ["Plus", "Pro"]?.includes(data?.user?.tier) ? displayList : displayList?.slice(0, 6) as item, index}
                   {#if item?.price > 0}
                     <tr
                       class="dark:sm:hover:bg-[#245073]/10 odd:bg-[#F6F7F8] dark:odd:bg-odd {index +

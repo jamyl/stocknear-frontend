@@ -485,7 +485,7 @@
                       on:click={() => (plotPeriod = item)}
                       class="px-3 py-1 {plotPeriod === item
                         ? 'bg-black dark:bg-white text-white dark:text-black'
-                        : 'shadow text-muted dark:text-white bg-gray-100 dark:bg-table '} text-xs border border-gray-200 dark:border-gray-700 transition ease-out duration-100 sm:hover:bg-white sm:hover:text-black rounded-[2px] cursor-pointer"
+                        : 'shadow text-muted dark:text-white bg-gray-100 dark:bg-table '} text-xs border border-gray-200 dark:border-gray-700 transition ease-out duration-100 sm:hover:bg-black dark:sm:hover:bg-white sm:hover:text-white dark:sm:hover:text-black rounded-[2px] cursor-pointer"
                     >
                       {item}
                     </label>

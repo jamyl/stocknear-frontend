@@ -45,7 +45,7 @@ export const load = async ({ locals, params }) => {
 
     let output = await response.json();
 
-    output = !['Pro','Plus']?.includes(user?.tier) ? output?.slice(0, 6) : output;
+    //output = !['Pro','Plus']?.includes(user?.tier) ? output?.slice(0, 6) : output;
     
     output = output?.reduce((acc, item) => {
       const newTransactionType =
@@ -75,31 +75,38 @@ export const load = async ({ locals, params }) => {
     return output;
   };
 
-  /*
-  const getInsiderTradingStatistics = async () => {
+
+
+  const getHistoricalPrice = async () => {
     const postData = {
       ticker: params.tickerID,
+      timePeriod: "max", // Get 6 months of data for the chart
     };
 
-    // make the POST request to the endpoint
-    const response = await fetch(apiURL + "/insider-trading-statistics", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-KEY": apiKey,
-      },
-      body: JSON.stringify(postData),
-    });
+    try {
+      const response = await fetch(apiURL + "/historical-price", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-KEY": apiKey,
+        },
+        body: JSON.stringify(postData),
+      });
 
-    const output = await response?.json();
-
-    return output;
+      if (response.ok) {
+        const output = await response.json();
+        return output;
+      }
+    } catch (error) {
+      console.error("Failed to fetch historical price data:", error);
+    }
+    return [];
   };
-  */
 
   // Make sure to return a promise
   return {
     getInsiderTrading: await getInsiderTrading(),
+    getHistoricalPrice: await getHistoricalPrice(),
     //getInsiderTradingStatistics: await getInsiderTradingStatistics(),
   };
 };
