@@ -12,11 +12,16 @@
   import tippy from "tippy.js";
   import "tippy.js/dist/tippy.css";
   import highcharts from "$lib/highcharts.ts";
+  import { Button } from "$lib/components/shadcn/button/index.js";
+  import BarChart from "lucide-svelte/icons/chart-column-increasing";
+  import LineChart from "lucide-svelte/icons/chart-spline";
 
   export let data: any[];
   export let fields: { label: string; key: string }[];
 
   let config = null;
+
+  let chartMode = "bar";
 
   let modalLabel;
   let highestValue;
@@ -24,6 +29,9 @@
   let lowestValueDate;
   let lowestValue;
   let fiveYearsGrowth;
+
+  let currentLabel;
+  let currentKey;
 
   // Store references to info icon elements
   let infoElements: { [key: string]: HTMLElement } = {};
@@ -86,7 +94,7 @@
 
     const options = {
       chart: {
-        type: $selectedTimePeriod === "annual" ? "column" : "spline",
+        type: chartMode === "bar" ? "column" : "spline", // Changed this line
         backgroundColor: $mode === "light" ? "#fff" : "#2A2E39",
         plotBackgroundColor: $mode === "light" ? "#fff" : "#2A2E39",
         height: 360,
@@ -183,6 +191,8 @@
 
   async function handleChart(label, key) {
     modalLabel = label;
+    currentLabel = label; // Add this
+    currentKey = key; // Add this
     config = plotData(label, key);
   }
 
@@ -248,6 +258,18 @@
       });
     });
   });
+
+  function toggleMode() {
+    if (chartMode === "bar") {
+      chartMode = "line";
+    } else {
+      chartMode = "bar";
+    }
+    // Re-render the chart with the new mode
+    if (currentLabel && currentKey) {
+      config = plotData(currentLabel, currentKey);
+    }
+  }
 </script>
 
 {#each computedFields as { label, key, isMargin } (key)}
@@ -309,14 +331,33 @@
         bg-white dark:bg-secondary border border-gray-600 dark:border-gray-800"
   >
     {#if config}
+      <div class="flex justify-end items-center w-full">
+        <Button
+          on:click={toggleMode}
+          class="w-fit border-gray-300 dark:border-gray-600 border bg-black sm:hover:bg-default text-white dark:sm:hover:bg-primary ease-out  flex flex-row justify-between items-center px-4 py-1.5  rounded truncate"
+        >
+          {#if chartMode === "bar"}
+            <LineChart class="w-4.5 h-4.5" />
+            <span class="ml-1 mr-auto text-sm"> Line Chart </span>
+          {:else}
+            <BarChart class="w-4.5 h-4.5" />
+            <span class="ml-1 mr-auto text-sm"> Bar Chart </span>
+          {/if}</Button
+        >
+      </div>
+
       <div class="mt-2" use:highcharts={config}></div>
     {/if}
     <p class="text-sm mb-6">
-      {modalLabel} peaked at {abbreviateNumber(highestValue?.toFixed(2))} in {highestValueDate}
-      and hit its lowest at {abbreviateNumber(lowestValue?.toFixed(2))} in {lowestValueDate}.
-      Over the past five years, it has {fiveYearsGrowth >= 0
+      {modalLabel} peaked at
+      <strong>{abbreviateNumber(highestValue?.toFixed(2))}</strong>
+      in <strong>{highestValueDate}</strong>
+      and hit its lowest at
+      <strong>{abbreviateNumber(lowestValue?.toFixed(2))}</strong>
+      in <strong>{lowestValueDate}</strong>. Over the past five years, it has {fiveYearsGrowth >=
+      0
         ? "grown"
-        : "declined"} by {fiveYearsGrowth?.toFixed(2)}%.
+        : "declined"} by <strong>{fiveYearsGrowth?.toFixed(2)}%</strong>.
     </p>
 
     <div class="border-t border-gray-300 dark:border-gray-600 mt-2 w-full">
