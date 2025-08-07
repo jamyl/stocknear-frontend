@@ -68,6 +68,7 @@
 
   let stockList = originalData?.slice(0, 150);
   let scrollPosition = 0;
+  let priceAnimations = {};
   //$: stockList = originalData.slice(0, 150);
 
   let allRows = [
@@ -417,6 +418,24 @@
             if (originalData?.some((item) => "changesPercentage" in item)) {
               originalData = calculateChange(originalData, newList);
               stockList = updateStockList(stockList, originalData);
+              
+              // Track which items have price changes for animation
+              stockList.forEach(item => {
+                if (item.previous !== null && item.previous !== undefined && Math.abs(item.previous - item.price) >= 0.01) {
+                  // Set animation state to true for this symbol
+                  priceAnimations[item.symbol] = true;
+                  
+                  // Remove animation state after animation completes
+                  setTimeout(() => {
+                    priceAnimations[item.symbol] = false;
+                    priceAnimations = {...priceAnimations}; // Trigger reactivity
+                  }, 500); // Match animation duration
+                }
+              });
+              
+              // Force reactivity update
+              priceAnimations = {...priceAnimations};
+              
               setTimeout(() => {
                 stockList = stockList?.map((item) => ({
                   ...item,
@@ -962,13 +981,14 @@
       <tbody>
         {#each stockList as item, index}
           <tr
-            class="dark:sm:hover:bg-[#245073]/10 odd:bg-[#F6F7F8] dark:odd:bg-odd {index +
+            class="dark:sm:hover:bg-[#245073]/10 odd:bg-[#F6F7F8] dark:odd:bg-odd fade-in-row {index +
               1 ===
               rawData?.length &&
             !['Pro', 'Plus']?.includes(data?.user?.tier) &&
             hideLastRow
               ? 'opacity-[0.1]'
               : ''}"
+            style="animation-delay: {index * 20}ms"
           >
             {#each columns as column}
               <td
@@ -1010,7 +1030,7 @@
                   {/if}
                 {:else if column.key === "price"}
                   <div class="relative flex items-center justify-end">
-                    {#if item?.previous !== null && item?.previous !== undefined && Math.abs(item?.previous - item[column?.key]) >= 0.01}
+                    {#if priceAnimations[item.symbol]}
                       <span
                         class="absolute h-1 w-1 {item[column?.key] < 10
                           ? 'right-[35px] sm:right-[40px]'
@@ -1022,7 +1042,7 @@
                           class="inline-flex rounded-full h-1 w-1 {item?.previous >
                           item[column?.key]
                             ? 'bg-red-600 dark:bg-[#FF2F1F]'
-                            : 'bg-green-600 dark:bg-[#00FC50]'} pulse-animation"
+                            : 'bg-green-600 dark:bg-[#00FC50]'} pulse-dot"
                         ></span>
                       </span>
                     {/if}
@@ -1105,8 +1125,40 @@
     }
   }
 
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   /* Apply the animation styles to the element */
   .pulse-animation {
-    animation: pulse 500ms ease-out forwards; /* 300ms duration */
+    animation: pulse 500ms ease-out forwards; /* 500ms duration */
+    animation-iteration-count: 1;
+  }
+  
+  @keyframes pulse-enter {
+    from {
+      transform: scale(0);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  .pulse-dot {
+    animation: pulse-enter 150ms ease-out, pulse 500ms ease-out 150ms forwards;
+  }
+
+  .fade-in-row {
+    animation: fadeIn 400ms ease-out forwards;
+    animation-fill-mode: both;
   }
 </style>

@@ -204,6 +204,7 @@
   let downloadWorker: Worker | undefined;
   let displayWatchList;
   let allList = data?.getAllWatchlist;
+  let priceAnimations = {};
 
   const handleDownloadMessage = (event) => {
     isLoaded = false;
@@ -237,7 +238,6 @@
 
       socket.addEventListener("open", () => {
         console.log("WebSocket connection opened");
-        // Send only current watchlist symbols
         const tickerList = watchList?.map((item) => item?.symbol) || [];
         sendMessage(tickerList);
       });
@@ -247,15 +247,37 @@
         try {
           const newList = JSON?.parse(data);
           if (newList?.length > 0) {
-            //console.log("Received message:", newList);
+            // Calculate changes and update watchlist
             watchList = calculateChange(watchList, newList);
 
+            // Track which items have price changes for animation
+            watchList.forEach((item) => {
+              if (
+                item.previous !== null &&
+                item.previous !== undefined &&
+                Math.abs(item.previous - item.price) >= 0.01
+              ) {
+                // Set animation state to true for this symbol
+                priceAnimations[item.symbol] = true;
+
+                // Remove animation state after animation completes
+                setTimeout(() => {
+                  priceAnimations[item.symbol] = false;
+                  priceAnimations = { ...priceAnimations }; // Trigger reactivity
+                }, 500); // Match animation duration
+              }
+            });
+
+            // Force reactivity update
+            priceAnimations = { ...priceAnimations };
+
+            // Clear previous values after animation
             setTimeout(() => {
               watchList = watchList?.map((item) => ({
                 ...item,
                 previous: null,
               }));
-            }, 1000);
+            }, 800);
           }
         } catch (e) {
           console.error("Error parsing WebSocket message:", e);
@@ -901,7 +923,7 @@
     ruleOfList = [...ruleOfList];
 
     await updateStockScreenerData();
-    allRows = sortIndicatorCheckMarks(allRows);
+    //allRows = sortIndicatorCheckMarks(allRows);
     saveRules();
   }
 
@@ -1409,6 +1431,8 @@
                   <DropdownMenu.Root>
                     <DropdownMenu.Trigger asChild let:builder>
                       <Button
+                        on:click={() =>
+                          (allRows = sortIndicatorCheckMarks(allRows))}
                         builders={[builder]}
                         class=" sm:ml-auto min-w-[110px] w-full sm:w-fit border-gray-300 dark:border-gray-600 border bg-black sm:hover:bg-default text-white dark:sm:hover:bg-primary ease-out flex flex-row justify-between items-center px-3 py-2.5  rounded truncate"
                       >
@@ -1801,7 +1825,7 @@
                                               class="inline-flex rounded-full h-1 w-1 {item?.previous >
                                               item[row?.rule]
                                                 ? 'bg-[#FF2F1F]'
-                                                : 'bg-[#00FC50]'} pulse-animation"
+                                                : 'bg-[#00FC50]'} pulse-dot"
                                             ></span>
                                           </span>
                                         {/if}
@@ -2221,8 +2245,42 @@
     }
   }
 
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   /* Apply the animation styles to the element */
   .pulse-animation {
-    animation: pulse 500ms ease-out forwards; /* 300ms duration */
+    animation: pulse 500ms ease-out forwards; /* 500ms duration */
+    animation-iteration-count: 1;
+  }
+
+  @keyframes pulse-enter {
+    from {
+      transform: scale(0);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .pulse-dot {
+    animation:
+      pulse-enter 150ms ease-out,
+      pulse 500ms ease-out 150ms forwards;
+  }
+
+  .fade-in-row {
+    animation: fadeIn 400ms ease-out forwards;
+    animation-fill-mode: both;
   }
 </style>
