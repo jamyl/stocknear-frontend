@@ -20,6 +20,15 @@
 
   let editMode = false;
   let editedContent = "";
+  let textareaElement;
+
+  // Auto-resize textarea when edit mode changes or content changes
+  $: if (editMode && textareaElement && editedContent) {
+    setTimeout(() => {
+      textareaElement.style.height = 'auto';
+      textareaElement.style.height = textareaElement.scrollHeight + 'px';
+    }, 10);
+  }
   let loadingTime = 0;
   let intervalId: ReturnType<typeof setInterval> | null = null; // Specify type for clarity
   const loadingMessages = [
@@ -94,6 +103,15 @@
   function focus(element) {
     element.focus();
     element.select();
+    // Auto-resize on initial load
+    element.style.height = 'auto';
+    element.style.height = element.scrollHeight + 'px';
+  }
+
+  // Function to auto-resize textarea
+  function autoResize(element) {
+    element.style.height = 'auto';
+    element.style.height = element.scrollHeight + 'px';
   }
 </script>
 
@@ -132,41 +150,40 @@
         </div>
       {:else}
         <div class="w-full">
-          {#if message?.role === 'user' && editMode}
+          {#if message?.role === "user" && editMode}
             <div
               class="p-3 border border-gray-200 dark:border-gray-800 rounded-[5px] bg-gray-200 dark:bg-table"
             >
               <textarea
+                bind:this={textareaElement}
                 bind:value={editedContent}
-                class="w-full resize-none border-0 bg-transparent focus:outline-none"
-                style="min-height: auto; height: auto;"
+                class="w-96 sm:w-[500px] h-auto resize-none border-0 bg-transparent focus:outline-none"
                 placeholder="Edit your message..."
-                on:input={(e) => {
-                  e.target.style.height = 'auto';
-                  e.target.style.height = e.target.scrollHeight + 'px';
-                }}
+                on:input={(e) => autoResize(e.target)}
                 use:focus
               ></textarea>
               <div class="flex justify-end gap-2 mt-2">
                 <button
                   on:click={() => {
                     editMode = false;
-                    editedContent = '';
+                    editedContent = "";
                   }}
                   class="cursor-pointer px-2.5 py-1.5 rounded text-sm relative bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500"
-                  >Cancel</button>
+                  >Cancel</button
+                >
                 <button
                   on:click={() => {
                     if (editedContent.trim()) {
-                      dispatch('edit', {
+                      dispatch("edit", {
                         index,
                         content: editedContent.trim(),
                       });
                       editMode = false;
                     }
                   }}
-                  class="cursor-pointer px-3.5 py-1.5 rounded text-sm relative bg-blue-600 text-white hover:bg-blue-700"
-                  >Save & Regenerate</button>
+                  class="cursor-pointer px-3.5 py-1.5 rounded text-sm relative bg-black text-white dark:text-black sm:hove:bg-default dark:bg-white dark:sm:hover:bg-gray-100"
+                  >Save & Regenerate</button
+                >
               </div>
             </div>
           {:else}
@@ -298,6 +315,13 @@
                   on:click={() => {
                     editMode = true;
                     editedContent = message?.content || "";
+                    // Force resize after a short delay to ensure the textarea is rendered
+                    setTimeout(() => {
+                      if (textareaElement) {
+                        textareaElement.style.height = 'auto';
+                        textareaElement.style.height = textareaElement.scrollHeight + 'px';
+                      }
+                    }, 50);
                   }}
                   class="cursor-pointer text-token-text-secondary hover:bg-token-bg-secondary rounded-lg text-muted dark:text-gray-300 dark:sm:hover:text-white"
                   aria-label="Edit message"
