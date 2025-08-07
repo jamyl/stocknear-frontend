@@ -187,7 +187,7 @@
                 stroke-width="2"
                 d="M5 13l4 4L19 7"
               ></path></svg
-            ><span class="mr-2">10 AI Credits/mo</span>
+            ><span class="mr-2">10 Credits/mo</span>
           </li>
           <li class="flex items-start">
             <svg
@@ -799,7 +799,7 @@
                 stroke-width="2"
                 d="M5 13l4 4L19 7"
               ></path></svg
-            ><span class="mr-2">150 AI Credits/mo </span>
+            ><span class="mr-2">150 Credits/mo </span>
           </li>
           <li class="flex items-start">
             <svg
@@ -1202,7 +1202,7 @@
                 stroke-width="2"
                 d="M5 13l4 4L19 7"
               ></path></svg
-            ><span class="mr-2">1,000 AI Credits/mo</span>
+            ><span class="mr-2">1,000 Credits/mo</span>
           </li>
           <li class="flex items-start text-white">
             <svg
@@ -1390,6 +1390,28 @@
                     unmatched price. We also offer proprietary AI Agents and
                     models for accurate analyzes, all within a single unified
                     platform.
+                  </p>
+                </div>
+              </details>
+            </li>
+            <li class="border-b border-gray-300 dark:border-gray-800">
+              <details class="collapse collapse-arrow">
+                <summary
+                  class="font-semibold collapse-title text-[1rem] sm:text-xl flex items-center justify-between w-full text-left py-5"
+                >
+                  What are credits and how do they work?
+                </summary>
+                <div class="collapse-content">
+                  <p
+                    class="text-sm sm:text-[1rem] pb-5 dark:text-gray-200 overflow-hidden transition-all duration-300 ease-in-out"
+                  >
+                    On Stocknear, certain premium features have monthly usage
+                    limits. Credits represent your available usage for these
+                    features. The more credits you have, the more you can access
+                    advanced tools like chatting with our AI Agent and bulk
+                    downloading data. Your credits reset monthly based on your
+                    subscription plan, with higher-tier plans offering more
+                    credits for increased usage.
                   </p>
                 </div>
               </details>
