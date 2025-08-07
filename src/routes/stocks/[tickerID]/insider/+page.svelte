@@ -48,7 +48,11 @@
     // Find insider trading date range first
     const insiderDates =
       rawData
-        ?.filter((item) => item?.price > 0)
+        ?.filter(
+          (item) =>
+            item?.price > 0 &&
+            new Date(item.transactionDate).getFullYear() >= 2015,
+        )
         ?.map((item) =>
           Date.UTC(
             new Date(item.transactionDate).getUTCFullYear(),
@@ -183,7 +187,7 @@
           style: { color: $mode === "light" ? "#545454" : "white" },
           formatter: function () {
             const date = new Date(this.value);
-            return `<span class="text-xs">${date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>`;
+            return `<span class="text-xs">${date.toLocaleDateString("en-US", { month: "short", year: "numeric" })}</span>`;
           },
         },
       },
@@ -404,7 +408,7 @@
 
   let columns = [
     { key: "reportingName", label: "Name", align: "left" },
-    { key: "transactionDate", label: "Date", align: "right" },
+    { key: "transactionDate", label: "Transaction Date", align: "right" },
     { key: "securitiesTransacted", label: "Shares", align: "right" },
     { key: "price", label: "Price", align: "right" },
     { key: "value", label: "Value", align: "right" },
@@ -609,7 +613,7 @@
         <!-- Chart Section -->
         {#if chartConfig}
           <div
-            class=" border border-gray-300 dark:border-gray-800 rounded mt-4 mb-4"
+            class=" border border-gray-300 dark:border-gray-800 rounded mt-2 mb-4"
             use:highcharts={chartConfig}
           ></div>
         {/if}
