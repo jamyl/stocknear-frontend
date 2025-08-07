@@ -158,6 +158,7 @@
       ?.filter(Boolean); // Remove null values
 
     // Compute Average Return
+    // Compute Average Return
     returns = processedData
       ?.slice(0, -1) // Exclude the last entry (current/latest) since it has no score or future data
       ?.map((item, index) => {
@@ -179,19 +180,24 @@
         const nextPrice = nextItem.y;
         const actualReturn = ((nextPrice - currentPrice) / currentPrice) * 100;
 
-        // Only include returns where you would have followed the AI prediction
-        // Bullish (score > 6): include positive returns (correct predictions)
-        // Bearish (score < 5): include negative returns as positive returns (since you'd short/avoid)
-        // Neutral (score = 5): exclude from calculation
+        // Corrected logic:
+        // Bullish (score >= 7): go long - include the actual return
+        // Neutral (score 4-6): stay out of the market - exclude from calculation
+        // Bearish (score <= 3): go short - invert the return (profit from decline)
 
-        if (score > 6) {
-          // Bullish prediction - include the actual return (positive if correct, negative if wrong)
+        if (score >= 7) {
+          // Bullish prediction - go long
+          // If price goes up, you make money (positive return)
+          // If price goes down, you lose money (negative return)
           return actualReturn;
-        } else if (score < 5) {
-          // Bearish prediction - invert the return (you'd profit from price decline)
+        } else if (score <= 3) {
+          // Bearish prediction - go short
+          // If price goes down, you make money (negative return becomes positive)
+          // If price goes up, you lose money (positive return becomes negative)
           return -actualReturn;
         } else {
-          // Neutral - exclude from average calculation
+          // Neutral (scores 4-6) - stay out of the market
+          // No position taken, so no return to include
           return null;
         }
       })
