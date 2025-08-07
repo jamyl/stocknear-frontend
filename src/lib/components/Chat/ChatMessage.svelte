@@ -25,8 +25,14 @@
   // Auto-resize textarea when edit mode changes or content changes
   $: if (editMode && textareaElement && editedContent) {
     setTimeout(() => {
-      textareaElement.style.height = 'auto';
-      textareaElement.style.height = textareaElement.scrollHeight + 'px';
+      if (textareaElement && textareaElement.style && textareaElement.scrollHeight) {
+        try {
+          textareaElement.style.height = 'auto';
+          textareaElement.style.height = textareaElement.scrollHeight + 'px';
+        } catch (e) {
+          console.warn('Error in reactive textarea resize:', e);
+        }
+      }
     }, 10);
   }
   let loadingTime = 0;
@@ -101,17 +107,31 @@
   }
 
   function focus(element) {
-    element.focus();
-    element.select();
-    // Auto-resize on initial load
-    element.style.height = 'auto';
-    element.style.height = element.scrollHeight + 'px';
+    if (element) {
+      element.focus();
+      element.select();
+      // Auto-resize on initial load
+      if (element.style && element.scrollHeight) {
+        try {
+          element.style.height = 'auto';
+          element.style.height = element.scrollHeight + 'px';
+        } catch (e) {
+          console.warn('Error in focus resize:', e);
+        }
+      }
+    }
   }
 
   // Function to auto-resize textarea
   function autoResize(element) {
-    element.style.height = 'auto';
-    element.style.height = element.scrollHeight + 'px';
+    if (element && element.style && element.scrollHeight) {
+      try {
+        element.style.height = 'auto';
+        element.style.height = element.scrollHeight + 'px';
+      } catch (e) {
+        console.warn('Error in autoResize:', e);
+      }
+    }
   }
 </script>
 
@@ -317,11 +337,15 @@
                     editedContent = message?.content || "";
                     // Force resize after a short delay to ensure the textarea is rendered
                     setTimeout(() => {
-                      if (textareaElement) {
-                        textareaElement.style.height = 'auto';
-                        textareaElement.style.height = textareaElement.scrollHeight + 'px';
+                      if (textareaElement && textareaElement.style) {
+                        try {
+                          textareaElement.style.height = 'auto';
+                          textareaElement.style.height = textareaElement.scrollHeight + 'px';
+                        } catch (e) {
+                          console.warn('Error resizing textarea:', e);
+                        }
                       }
-                    }, 50);
+                    }, 100);
                   }}
                   class="cursor-pointer text-token-text-secondary hover:bg-token-bg-secondary rounded-lg text-muted dark:text-gray-300 dark:sm:hover:text-white"
                   aria-label="Edit message"
