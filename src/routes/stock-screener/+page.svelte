@@ -25,6 +25,7 @@
   //const userConfirmation = confirm('Unsaved changes detected. Leaving now will discard your strategy. Continue?');
 
   import { writable } from "svelte/store";
+  import { includes } from "lodash-es";
 
   let shouldLoadWorker = writable(false);
   export let data;
@@ -3186,7 +3187,7 @@ const handleKeyDown = (event) => {
                 class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
               >
                 <svg
-                  class="w-4 h-4 text-muted dark:text-gray-400"
+                  class="w-4 h-4 text-muted dark:text-gray-200"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -3209,7 +3210,7 @@ const handleKeyDown = (event) => {
                 on:keydown={handleQuickSearchKeydown}
                 on:focus={() => updateQuickSearchResults(quickSearchTerm)}
                 on:blur={closeQuickSearchDropdown}
-                class="block w-full sm:w-64 py-2.5 shadow-xs bg-white placeholder:text-muted pl-10 text-sm sm:text-[0.9rem] order border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 dark:bg-[#2A2E39] dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                class="block w-full sm:w-64 py-2.5 shadow-xs bg-white placeholder:text-muted pl-10 text-sm sm:text-[0.9rem] border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 dark:bg-[#2A2E39] dark:border-gray-800 dark:placeholder-gray-200 dark:text-white dark:focus:outline-none dark:focus:border-none"
               />
 
               <!-- Clear button -->
@@ -3243,35 +3244,47 @@ const handleKeyDown = (event) => {
             <!-- Quick Search Dropdown -->
             {#if showQuickSearchDropdown && quickSearchResults.length > 0}
               <div
-                class="absolute z-50 w-full mt-1 bg-white dark:bg-[#2A2E39] border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-64 overflow-y-auto"
+                class="absolute z-50 w-full mt-1 bg-white dark:bg-[#2A2E39] border border-gray-300 dark:border-gray-800 rounded-md shadow-lg max-h-64 overflow-y-auto"
               >
                 {#each quickSearchResults as result, index}
-                  <div class="flex flex-row items-center">
-                    <svg
-                      class="w-4 h-4 text-icon inline-block ml-3"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      style="max-width:40px"
-                      ><path
-                        fill-rule="evenodd"
-                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                        clip-rule="evenodd"
-                      ></path></svg
-                    >
+                  <button
+                    class="cursor-pointer w-full px-2 py-2 flex flex-row items-center sm:hover:bg-gray-100 dark:sm:hover:bg-gray-600 {index ===
+                    selectedQuickSearchIndex
+                      ? 'bg-gray-100 dark:bg-gray-600'
+                      : ''}"
+                    type="button"
+                    on:click={() => selectQuickSearchRule(result)}
+                  >
+                    {#if onlySubscriberRules?.includes(result?.rule) && !["Plus", "Pro"]?.includes(data?.user?.tier)}
+                      <svg
+                        class="w-4 h-4 text-icon inline-block ml-1 mr-2"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        ><path
+                          fill="currentColor"
+                          d="M17 9V7c0-2.8-2.2-5-5-5S7 4.2 7 7v2c-1.7 0-3 1.3-3 3v7c0 1.7 1.3 3 3 3h10c1.7 0 3-1.3 3-3v-7c0-1.7-1.3-3-3-3M9 7c0-1.7 1.3-3 3-3s3 1.3 3 3v2H9z"
+                        /></svg
+                      >
+                    {:else}
+                      <svg
+                        class="w-4 h-4 text-icon inline-block ml-1 mr-2"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        style="max-width:40px"
+                        ><path
+                          fill-rule="evenodd"
+                          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                          clip-rule="evenodd"
+                        ></path></svg
+                      >
+                    {/if}
 
-                    <button
-                      type="button"
-                      on:click={() => selectQuickSearchRule(result)}
-                      class="w-full px-2 py-2 text-left text-sm sm:text-[0.9rem] hover:bg-gray-100 dark:hover:bg-gray-700 {index ===
-                      selectedQuickSearchIndex
-                        ? 'bg-blue-50 dark:bg-blue-900/20'
-                        : ''}"
-                    >
+                    <label class="text-left text-sm sm:text-[0.9rem]">
                       <div class="font-medium text-gray-900 dark:text-white">
                         {result.label}
                       </div>
-                    </button>
-                  </div>
+                    </label>
+                  </button>
                 {/each}
               </div>
             {/if}
