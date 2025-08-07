@@ -100,6 +100,11 @@
   let displayTableTab = "general";
   let otherTabRules = [];
 
+  // Preloading system for tab data
+  let preloadedData = new Map(); // Cache for preloaded tab data
+  let preloadingTabs = new Set(); // Track which tabs are currently preloading
+  let hoverTimeout = null; // Debounce hover events
+
   let stockScreenerData = data?.getStockScreenerData?.filter((item) =>
     Object?.values(item)?.every(
       (value) =>
@@ -1814,6 +1819,116 @@
     });
   };
 
+  // Preloading function for tab data using downloadWorker
+  const preloadTabData = async (tabName) => {
+    // Prevent multiple preloads of the same tab
+    if (
+      preloadingTabs.has(tabName) ||
+      preloadedData.has(tabName) ||
+      tabName === displayTableTab
+    ) {
+      return;
+    }
+
+    preloadingTabs.add(tabName);
+
+    try {
+      // Get rules for the specific tab
+      let tabRules = [];
+      switch (tabName) {
+        case "performance":
+          tabRules = [
+            { name: "marketCap", value: "any" },
+            { name: "change1W", value: "any" },
+            { name: "change1M", value: "any" },
+            { name: "change3M", value: "any" },
+            { name: "change1Y", value: "any" },
+          ];
+          break;
+        case "analysts":
+          tabRules = [
+            { name: "marketCap", value: "any" },
+            { name: "analystRating", value: "any" },
+            { name: "analystCounter", value: "any" },
+            { name: "priceTarget", value: "any" },
+            { name: "upside", value: "any" },
+          ];
+          break;
+        case "dividends":
+          tabRules = [
+            { name: "marketCap", value: "any" },
+            { name: "annualDividend", value: "any" },
+            { name: "dividendYield", value: "any" },
+            { name: "payoutRatio", value: "any" },
+            { name: "dividendGrowth", value: "any" },
+          ];
+          break;
+        case "financials":
+          tabRules = [
+            { name: "marketCap", value: "any" },
+            { name: "revenue", value: "any" },
+            { name: "operatingIncome", value: "any" },
+            { name: "netIncome", value: "any" },
+            { name: "freeCashFlow", value: "any" },
+            { name: "eps", value: "any" },
+          ];
+          break;
+      }
+
+      if (tabRules.length > 0) {
+        // Create a temporary worker for preloading
+        const PreloadWorker = await import("./workers/downloadWorker?worker");
+        const preloadWorker = new PreloadWorker.default();
+
+        // Set up message handler for preloading
+        preloadWorker.onmessage = (event) => {
+          if (event.data.message === "success") {
+            // Cache the preloaded data
+            preloadedData.set(tabName, {
+              data: event.data.stockScreenerData,
+              rules: tabRules,
+              timestamp: Date.now(),
+            });
+          }
+          // Clean up the worker
+          preloadWorker.terminate();
+          preloadingTabs.delete(tabName);
+        };
+
+        // Send preload request to worker
+        preloadWorker.postMessage({
+          ruleOfList: [...ruleOfList, ...tabRules],
+        });
+      } else {
+        preloadingTabs.delete(tabName);
+      }
+    } catch (error) {
+      console.error(`Failed to preload data for ${tabName}:`, error);
+      preloadingTabs.delete(tabName);
+    }
+  };
+
+  // Debounced hover handler
+  const handleTabHover = (tabName) => {
+    // Clear existing timeout
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+    }
+
+    // Set new timeout for debouncing
+    hoverTimeout = setTimeout(() => {
+      preloadTabData(tabName);
+    }, 50);
+  };
+
+  // Clear hover timeout
+  const handleTabHoverLeave = () => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+      hoverTimeout = null;
+    }
+  };
+
   function handleAddRule() {
     if (ruleName === "") {
       toast.error("Please select a rule", {
@@ -1821,6 +1936,9 @@
       });
       return;
     }
+
+    // Clear preloaded data when rules change
+    preloadedData.clear();
 
     let newRule;
 
@@ -2011,6 +2129,12 @@ const handleKeyDown = (event) => {
     syncWorker?.terminate();
     syncWorker = undefined;
     clearCache();
+
+    // Clean up hover timeout
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+      hoverTimeout = null;
+    }
   });
 
   async function handleSave(showMessage) {
@@ -2599,6 +2723,12 @@ const handleKeyDown = (event) => {
   async function changeTab(state) {
     displayTableTab = state;
 
+    // Clear hover timeout when actually switching tabs
+    handleTabHoverLeave();
+
+    // Check if we have preloaded data for this tab
+    const preloaded = preloadedData.get(state);
+
     if (displayTableTab === "performance") {
       otherTabRules = [
         { name: "marketCap", value: "any" },
@@ -2611,6 +2741,11 @@ const handleKeyDown = (event) => {
         ?.map((rule) => allRows.find((row) => row.rule === rule.name))
         ?.filter(Boolean);
 
+      // Use preloaded data if available and fresh (within 5 minutes)
+      if (preloaded && Date.now() - preloaded.timestamp < 300000) {
+        handleScreenerMessage({ data: { stockScreenerData: preloaded.data } });
+        return;
+      }
       await updateStockScreenerData();
     } else if (displayTableTab === "analysts") {
       otherTabRules = [
@@ -2624,6 +2759,11 @@ const handleKeyDown = (event) => {
         ?.map((rule) => allRows?.find((row) => row?.rule === rule?.name))
         ?.filter(Boolean);
 
+      // Use preloaded data if available and fresh
+      if (preloaded && Date.now() - preloaded.timestamp < 300000) {
+        handleScreenerMessage({ data: { stockScreenerData: preloaded.data } });
+        return;
+      }
       await updateStockScreenerData();
     } else if (displayTableTab === "dividends") {
       otherTabRules = [
@@ -2637,6 +2777,11 @@ const handleKeyDown = (event) => {
         ?.map((rule) => allRows?.find((row) => row?.rule === rule?.name))
         ?.filter(Boolean);
 
+      // Use preloaded data if available and fresh
+      if (preloaded && Date.now() - preloaded.timestamp < 300000) {
+        handleScreenerMessage({ data: { stockScreenerData: preloaded.data } });
+        return;
+      }
       await updateStockScreenerData();
     } else if (displayTableTab === "financials") {
       otherTabRules = [
@@ -2651,6 +2796,11 @@ const handleKeyDown = (event) => {
         ?.map((rule) => allRows?.find((row) => row?.rule === rule?.name))
         ?.filter(Boolean);
 
+      // Use preloaded data if available and fresh
+      if (preloaded && Date.now() - preloaded.timestamp < 300000) {
+        handleScreenerMessage({ data: { stockScreenerData: preloaded.data } });
+        return;
+      }
       await updateStockScreenerData();
     }
   }
@@ -3438,6 +3588,8 @@ const handleKeyDown = (event) => {
           <li>
             <button
               on:click={() => changeTab("performance")}
+              on:mouseenter={() => handleTabHover("performance")}
+              on:mouseleave={handleTabHoverLeave}
               class="cursor-pointer text-[1rem] block rounded px-2 py-1 focus:outline-hidden sm:hover:text-white sm:hover:bg-default dark:sm:hover:bg-primary {displayTableTab ===
               'performance'
                 ? 'font-semibold bg-black text-white dark:bg-primary'
@@ -3449,6 +3601,8 @@ const handleKeyDown = (event) => {
           <li>
             <button
               on:click={() => changeTab("analysts")}
+              on:mouseenter={() => handleTabHover("analysts")}
+              on:mouseleave={handleTabHoverLeave}
               class="cursor-pointer text-[1rem] block rounded px-2 py-1 focus:outline-hidden sm:hover:text-white sm:hover:bg-default dark:sm:hover:bg-primary {displayTableTab ===
               'analysts'
                 ? 'font-semibold bg-black text-white dark:bg-primary'
@@ -3460,6 +3614,8 @@ const handleKeyDown = (event) => {
           <li>
             <button
               on:click={() => changeTab("dividends")}
+              on:mouseenter={() => handleTabHover("dividends")}
+              on:mouseleave={handleTabHoverLeave}
               class="cursor-pointer text-[1rem] block rounded px-2 py-1 focus:outline-hidden sm:hover:text-white sm:hover:bg-default dark:sm:hover:bg-primary {displayTableTab ===
               'dividends'
                 ? 'font-semibold bg-black text-white dark:bg-primary'
@@ -3471,6 +3627,8 @@ const handleKeyDown = (event) => {
           <li>
             <button
               on:click={() => changeTab("financials")}
+              on:mouseenter={() => handleTabHover("financials")}
+              on:mouseleave={handleTabHoverLeave}
               class="cursor-pointer text-[1rem] block rounded px-2 py-1 focus:outline-hidden sm:hover:text-white sm:hover:bg-default dark:sm:hover:bg-primary {displayTableTab ===
               'financials'
                 ? 'font-semibold bg-black text-white dark:bg-primary'
