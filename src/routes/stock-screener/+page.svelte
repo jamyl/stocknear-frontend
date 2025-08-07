@@ -3210,7 +3210,7 @@ const handleKeyDown = (event) => {
                 on:keydown={handleQuickSearchKeydown}
                 on:focus={() => updateQuickSearchResults(quickSearchTerm)}
                 on:blur={closeQuickSearchDropdown}
-                class="block w-full sm:w-64 py-2.5 shadow-xs bg-white placeholder:text-muted pl-10 text-sm sm:text-[0.9rem] border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 dark:bg-[#2A2E39] dark:border-gray-800 dark:placeholder-gray-200 dark:text-white dark:focus:outline-none dark:focus:border-none"
+                class="block w-full sm:w-64 py-2.5 shadow-xs bg-white placeholder:text-muted pl-10 text-[1rem] border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 dark:bg-[#2A2E39] dark:border-gray-800 dark:placeholder-gray-200 dark:text-white dark:focus:outline-none dark:focus:border-none"
               />
 
               <!-- Clear button -->
