@@ -9,9 +9,9 @@
   //import CompareGraph from "$lib/components/Plot/CompareGraph.svelte";
 
   export let message: {
-    text: string;
+    content: string;
     role: "user" | "system";
-    callComponent: {};
+    callComponent?: {};
   };
   export let isLoading = false;
   export let isStreaming = false;
@@ -19,6 +19,7 @@
   export let editable;
 
   let editMode = false;
+  let editedContent = "";
   let loadingTime = 0;
   let intervalId: ReturnType<typeof setInterval> | null = null; // Specify type for clarity
   const loadingMessages = [
@@ -89,6 +90,11 @@
         });
       });
   }
+
+  function focus(element) {
+    element.focus();
+    element.select();
+  }
 </script>
 
 <div
@@ -126,13 +132,52 @@
         </div>
       {:else}
         <div class="w-full">
-          <p
-            class="w-full {message?.role === 'user'
-              ? 'p-3  border border-gray-200 dark:border-gray-800 rounded-[5px] bg-gray-200 dark:bg-table'
-              : ''}"
-          >
-            {@html message?.content}
-          </p>
+          {#if message?.role === 'user' && editMode}
+            <div
+              class="p-3 border border-gray-200 dark:border-gray-800 rounded-[5px] bg-gray-200 dark:bg-table"
+            >
+              <textarea
+                bind:value={editedContent}
+                class="w-full resize-none border-0 bg-transparent focus:outline-none"
+                style="min-height: auto; height: auto;"
+                placeholder="Edit your message..."
+                on:input={(e) => {
+                  e.target.style.height = 'auto';
+                  e.target.style.height = e.target.scrollHeight + 'px';
+                }}
+                use:focus
+              ></textarea>
+              <div class="flex justify-end gap-2 mt-2">
+                <button
+                  on:click={() => {
+                    editMode = false;
+                    editedContent = '';
+                  }}
+                  class="cursor-pointer px-2.5 py-1.5 rounded text-sm relative bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500"
+                  >Cancel</button>
+                <button
+                  on:click={() => {
+                    if (editedContent.trim()) {
+                      dispatch('edit', {
+                        index,
+                        content: editedContent.trim(),
+                      });
+                      editMode = false;
+                    }
+                  }}
+                  class="cursor-pointer px-3.5 py-1.5 rounded text-sm relative bg-blue-600 text-white hover:bg-blue-700"
+                  >Save & Regenerate</button>
+              </div>
+            </div>
+          {:else}
+            <p
+              class="w-full {message?.role === 'user'
+                ? 'p-3  border border-gray-200 dark:border-gray-800 rounded-[5px] bg-gray-200 dark:bg-table'
+                : ''}"
+            >
+              {@html message?.content}
+            </p>
+          {/if}
 
           <!--
           {#if message?.callComponent?.plot && message?.callComponent?.tickerList?.length > 0}
@@ -248,62 +293,37 @@
               </button>
 
               <!-- Edit button -->
-              <!--
-              <button
-                on:click={() => (editMode = true)}
-                class="cursor-pointer text-token-text-secondary hover:bg-token-bg-secondary rounded-lg text-muted dark:text-gray-300 dark:sm:hover:text-white"
-                aria-label="Edit message"
-                aria-selected="false"
-                data-state="closed"
-              >
-                <span
-                  class="touch:w-10 flex h-8 w-8 items-center justify-center"
+              {#if editable}
+                <button
+                  on:click={() => {
+                    editMode = true;
+                    editedContent = message?.content || "";
+                  }}
+                  class="cursor-pointer text-token-text-secondary hover:bg-token-bg-secondary rounded-lg text-muted dark:text-gray-300 dark:sm:hover:text-white"
+                  aria-label="Edit message"
+                  aria-selected="false"
+                  data-state="closed"
                 >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="CurrentColor"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="icon"
+                  <span
+                    class="touch:w-10 flex h-8 w-8 items-center justify-center"
                   >
-                    <path
-                      d="M11.3312 3.56837C12.7488 2.28756 14.9376 2.33009 16.3038 3.6963L16.4318 3.83106C17.6712 5.20294 17.6712 7.29708 16.4318 8.66895L16.3038 8.80372L10.0118 15.0947C9.68833 15.4182 9.45378 15.6553 9.22179 15.8457L8.98742 16.0225C8.78227 16.1626 8.56423 16.2832 8.33703 16.3828L8.10753 16.4756C7.92576 16.5422 7.73836 16.5902 7.5216 16.6348L6.75695 16.7705L4.36339 17.169C4.22053 17.1928 4.06908 17.2188 3.94054 17.2285C3.84177 17.236 3.70827 17.2386 3.56261 17.2031L3.41417 17.1543C3.19115 17.0586 3.00741 16.8908 2.89171 16.6797L2.84581 16.5859C2.75951 16.3846 2.76168 16.1912 2.7716 16.0596C2.7813 15.931 2.80736 15.7796 2.83117 15.6367L3.2296 13.2432L3.36437 12.4785C3.40893 12.2616 3.45789 12.0745 3.52453 11.8926L3.6173 11.6621C3.71685 11.4352 3.83766 11.2176 3.97765 11.0127L4.15343 10.7783C4.34386 10.5462 4.58164 10.312 4.90538 9.98829L11.1964 3.6963L11.3312 3.56837ZM5.84581 10.9287C5.49664 11.2779 5.31252 11.4634 5.18663 11.6162L5.07531 11.7627C4.98188 11.8995 4.90151 12.0448 4.83507 12.1963L4.77355 12.3506C4.73321 12.4607 4.70242 12.5761 4.66808 12.7451L4.54113 13.4619L4.14269 15.8555L4.14171 15.8574H4.14464L6.5382 15.458L7.25499 15.332C7.424 15.2977 7.5394 15.2669 7.64953 15.2266L7.80285 15.165C7.95455 15.0986 8.09947 15.0174 8.23644 14.9238L8.3839 14.8135C8.53668 14.6876 8.72225 14.5035 9.0714 14.1543L14.0587 9.16602L10.8331 5.94044L5.84581 10.9287ZM15.3634 4.63673C14.5281 3.80141 13.2057 3.74938 12.3097 4.48048L12.1368 4.63673L12.7735 5.00001L15.0001 8.22559L15.3634 7.86329L15.5196 7.68946C16.2015 6.85326 16.2015 5.64676 15.5196 4.81056L15.3634 4.63673Z"
-                    ></path>
-                  </svg>
-                </span>
-              </button>
-            -->
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="CurrentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="icon"
+                    >
+                      <path
+                        d="M11.3312 3.56837C12.7488 2.28756 14.9376 2.33009 16.3038 3.6963L16.4318 3.83106C17.6712 5.20294 17.6712 7.29708 16.4318 8.66895L16.3038 8.80372L10.0118 15.0947C9.68833 15.4182 9.45378 15.6553 9.22179 15.8457L8.98742 16.0225C8.78227 16.1626 8.56423 16.2832 8.33703 16.3828L8.10753 16.4756C7.92576 16.5422 7.73836 16.5902 7.5216 16.6348L6.75695 16.7705L4.36339 17.169C4.22053 17.1928 4.06908 17.2188 3.94054 17.2285C3.84177 17.236 3.70827 17.2386 3.56261 17.2031L3.41417 17.1543C3.19115 17.0586 3.00741 16.8908 2.89171 16.6797L2.84581 16.5859C2.75951 16.3846 2.76168 16.1912 2.7716 16.0596C2.7813 15.931 2.80736 15.7796 2.83117 15.6367L3.2296 13.2432L3.36437 12.4785C3.40893 12.2616 3.45789 12.0745 3.52453 11.8926L3.6173 11.6621C3.71685 11.4352 3.83766 11.2176 3.97765 11.0127L4.15343 10.7783C4.34386 10.5462 4.58164 10.312 4.90538 9.98829L11.1964 3.6963L11.3312 3.56837ZM5.84581 10.9287C5.49664 11.2779 5.31252 11.4634 5.18663 11.6162L5.07531 11.7627C4.98188 11.8995 4.90151 12.0448 4.83507 12.1963L4.77355 12.3506C4.73321 12.4607 4.70242 12.5761 4.66808 12.7451L4.54113 13.4619L4.14269 15.8555L4.14171 15.8574H4.14464L6.5382 15.458L7.25499 15.332C7.424 15.2977 7.5394 15.2669 7.64953 15.2266L7.80285 15.165C7.95455 15.0986 8.09947 15.0174 8.23644 14.9238L8.3839 14.8135C8.53668 14.6876 8.72225 14.5035 9.0714 14.1543L14.0587 9.16602L10.8331 5.94044L5.84581 10.9287ZM15.3634 4.63673C14.5281 3.80141 13.2057 3.74938 12.3097 4.48048L12.1368 4.63673L12.7735 5.00001L15.0001 8.22559L15.3634 7.86329L15.5196 7.68946C16.2015 6.85326 16.2015 5.64676 15.5196 4.81056L15.3634 4.63673Z"
+                      ></path>
+                    </svg>
+                  </span>
+                </button>
+              {/if}
             </div>
           </div>
-          <!--
-          {#if editMode}
-            <div
-              class="min-h-[100px] h-auto max-h-[800px] overflow-y-auto border border-gray-200 dark:border-gray-800 rounded-[5px] bg-gray-100 dark:bg-table px-3 py-3"
-            >
-              <div class="m-2">
-                <textarea
-                  class="min-h-[100px] w-full resize-none p-0 m-0 w-full resize-none border-0 bg-transparent focus:outline-none"
-                  >{message?.content}</textarea
-                >
-              </div>
-              <div class="flex justify-end gap-2">
-                <button
-                  on:click={() => (editMode = false)}
-                  class="cursor-pointer px-2.5 py-1.5 rounded-full text-sm relative bg-secondary"
-                  ><div class="flex items-center justify-center">
-                    Cancel
-                  </div></button
-                ><button
-                  class="cursor-pointer px-3.5 py-1.5 rounded-full text-sm relative bg-white text-black"
-                  ><div class="flex items-center justify-center">
-                    Send
-                  </div></button
-                >
-              </div>
-            </div>
-          {/if}
-          -->
         {/if}
       {/if}
     </div>

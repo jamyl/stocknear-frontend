@@ -315,6 +315,26 @@
     }
   }
 
+  async function editMessage(event) {
+    if (editable) {
+      const { index, content } = event.detail;
+
+      if (index < 0 || index >= messages?.length) return;
+
+      // Update the message content at the specified index
+      messages[index].content = content;
+
+      // Remove all messages after the edited one (including any assistant responses)
+      messages = messages.slice(0, index + 1);
+
+      // Trigger reactivity to update the UI
+      messages = [...messages];
+
+      // Trigger chat regeneration with the edited message (pass the content directly)
+      await llmChat(content);
+    }
+  }
+
   async function saveChat() {
     const postData = { messages: messages, chatId: chatId };
 
@@ -473,6 +493,7 @@
               {isStreaming}
               {editable}
               on:rewrite={rewriteResponse}
+              on:edit={editMessage}
             />
           {:else}
             <ChatMessage
@@ -482,6 +503,7 @@
               {isStreaming}
               {editable}
               on:rewrite={rewriteResponse}
+              on:edit={editMessage}
             />
           {/if}
         {/each}
