@@ -59,9 +59,9 @@
     let type = (assetType || "stocks")?.toLowerCase();
     if (type.endsWith("s")) type = type.slice(0, -1);
 
-    // … history & modal code unchanged …
+    // ... history & modal code unchanged ...
 
-    // Pull current path’s segments
+    // Pull current path's segments
     const segments = $page.url.pathname.split("/").filter(Boolean);
     const prevRoot = segments[0]?.toLowerCase() || "";
 
@@ -126,14 +126,37 @@
     await goto(newPath, { replaceState: true });
     inputValue = "";
 
-    const newSearchItem = searchBarData?.find(
-      ({ symbol }) => symbol === upperSymbol,
+    // Find the item in searchBarData, searchHistory, or popularList
+    let newSearchItem = searchBarData?.find(
+      ({ symbol }) => symbol?.toUpperCase() === upperSymbol,
     );
 
+    // If not found in searchBarData, look in searchHistory
+    if (!newSearchItem) {
+      newSearchItem = searchHistory?.find(
+        ({ symbol }) => symbol?.toUpperCase() === upperSymbol,
+      );
+    }
+
+    // If still not found, look in popularList
+    if (!newSearchItem) {
+      newSearchItem = popularList?.find(
+        ({ symbol }) => symbol?.toUpperCase() === upperSymbol,
+      );
+    }
+
+    // If we found the item (from any source), update the history
     if (newSearchItem) {
-      const upperSymbol = newSearchItem.symbol.toUpperCase();
+      // Create a new item object to ensure it's treated as "new" even if it was already at position 0
+      const itemToAdd = {
+        symbol: newSearchItem.symbol,
+        name: newSearchItem.name,
+        type: newSearchItem.type,
+      };
+
+      // Remove any existing instance and add to the top
       updatedSearchHistory = [
-        newSearchItem,
+        itemToAdd,
         ...(searchHistory?.filter(
           (item) => item?.symbol?.toUpperCase() !== upperSymbol,
         ) || []),
