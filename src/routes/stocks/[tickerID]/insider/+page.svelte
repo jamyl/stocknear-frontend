@@ -166,7 +166,7 @@
         },
       },
       title: {
-        text: `<h3 class="mt-3 -mb-3 text-[1rem] sm:text-lg">Stock Price with Insider Trading Activity</h3>`,
+        text: `<h3 class="mt-3 -mb-3 text-[1rem] sm:text-lg">Insider Trading Activity</h3>`,
         useHTML: true,
         style: { color: $mode === "light" ? "black" : "white" },
       },
