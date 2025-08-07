@@ -14,55 +14,11 @@
   import { keymap } from "prosemirror-keymap";
   import { schema } from "prosemirror-schema-basic";
 
-  import { onMount, afterUpdate, tick, onDestroy } from "svelte";
+  import { onMount, afterUpdate, tick } from "svelte";
   import SEO from "$lib/components/SEO.svelte";
 
   export let data;
   let selectedGroup = "overview";
-
-  // Check if user is scrolled to bottom
-  function checkIfAtBottom() {
-    if (!chatContainer) {
-      console.log('No chat container found');
-      isAtBottom = true; // Default to true if no container
-      return;
-    }
-    
-    const { scrollTop, scrollHeight, clientHeight } = chatContainer;
-    const threshold = 100; // 100px threshold for "near bottom"
-    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-    
-    isAtBottom = distanceFromBottom <= threshold;
-    lastScrollTop = scrollTop;
-    
-    console.log('Scroll check:', { 
-      scrollTop, 
-      scrollHeight, 
-      clientHeight, 
-      distanceFromBottom, 
-      isAtBottom,
-      threshold,
-      containerElement: chatContainer?.tagName 
-    });
-  }
-
-  // Smooth scroll to bottom
-  function scrollToBottom(behavior = 'smooth') {
-    console.log('scrollToBottom called:', { bottomEl: !!bottomEl, behavior });
-    if (bottomEl) {
-      bottomEl.scrollIntoView({ behavior, block: 'end' });
-      console.log('Executed scrollIntoView');
-    }
-  }
-
-  // Conditional scroll to bottom (only if user is at bottom)
-  function conditionalScrollToBottom(behavior = 'smooth') {
-    console.log('conditionalScrollToBottom called:', { bottomEl: !!bottomEl, isAtBottom });
-    if (bottomEl && isAtBottom) {
-      bottomEl.scrollIntoView({ behavior, block: 'end' });
-      console.log('Executed conditional scrollIntoView');
-    }
-  }
   // Initialize messages with default or data
   let messages = data?.getChat?.messages || [
     { content: "Hello! How can I help you today?", role: "system" },
@@ -76,22 +32,6 @@
 
   // Auto-scrolling - Modified to track streaming state
   let isStreaming = false; // New variable to track streaming state
-  let isAtBottom = true; // Track if user is scrolled to bottom
-  let lastScrollTop = 0; // Track last scroll position
-  let scrollHandler = null; // Store scroll handler for cleanup
-  let scrollListenerAdded = false; // Track if listener is added
-
-  // Reactive statement to setup scroll listener when container is available
-  $: if (chatContainer && scrollHandler && !scrollListenerAdded) {
-    console.log('Setting up scroll listener on:', chatContainer);
-    chatContainer.addEventListener('scroll', scrollHandler, { passive: true });
-    scrollListenerAdded = true;
-    // Initial check
-    setTimeout(() => {
-      console.log('Running initial scroll check');
-      checkIfAtBottom();
-    }, 100);
-  }
 
   let editorDiv;
   let editorView;
@@ -191,11 +131,6 @@
   });
 
   onMount(async () => {
-    // Add scroll event listener to track user position
-    scrollHandler = () => {
-      checkIfAtBottom();
-    };
-
     editorView = new EditorView(editorDiv, {
       state: EditorState.create({
         schema,
@@ -246,26 +181,12 @@
     }
   });
 
-  onDestroy(() => {
-    // Clean up scroll listener
-    if (chatContainer && scrollHandler) {
-      chatContainer.removeEventListener('scroll', scrollHandler);
-    }
-  });
-
-  // Modified afterUpdate to only autoscroll during streaming when user is at bottom
+  // Modified afterUpdate to only autoscroll during streaming
   afterUpdate(async () => {
-    console.log('afterUpdate called:', { isStreaming, bottomEl: !!bottomEl });
     if (isStreaming && bottomEl) {
       // Wait for new messages to render
       await tick();
-      console.log('After tick, checking scroll position');
-      // Check scroll position and scroll if user was at bottom
-      checkIfAtBottom();
-      console.log('After checkIfAtBottom, isAtBottom =', isAtBottom);
-      if (isAtBottom) {
-        scrollToBottom('smooth');
-      }
+      bottomEl.scrollIntoView({ behavior: "smooth" });
     }
   });
 
@@ -302,18 +223,6 @@
 
     // Add placeholder for assistant response
     messages = [...messages, { content: "", role: "system" }];
-
-    // Auto-scroll to bottom when starting new message (force scroll for user's own message)
-    setTimeout(() => {
-      if (!userMessage) {
-        // Force scroll when user sends a new message
-        scrollToBottom('smooth');
-      } else {
-        // Conditional scroll for other cases
-        checkIfAtBottom();
-        conditionalScrollToBottom('smooth');
-      }
-    }, 50);
 
     try {
       const res = await fetch("/api/chat", {
@@ -377,14 +286,6 @@
         data.user.credits -= costOfCredit;
       }
       await saveChat();
-      
-      // Final scroll check after streaming ends
-      setTimeout(() => {
-        checkIfAtBottom();
-        if (isAtBottom) {
-          scrollToBottom('smooth');
-        }
-      }, 50);
     } catch (error) {
       console.error("Chat request failed:", error);
       messages = messages.slice(0, -1);

@@ -25,12 +25,16 @@
   // Auto-resize textarea when edit mode changes or content changes
   $: if (editMode && textareaElement && editedContent) {
     setTimeout(() => {
-      if (textareaElement && textareaElement.style && textareaElement.scrollHeight) {
+      if (
+        textareaElement &&
+        textareaElement.style &&
+        textareaElement.scrollHeight
+      ) {
         try {
-          textareaElement.style.height = 'auto';
-          textareaElement.style.height = textareaElement.scrollHeight + 'px';
+          textareaElement.style.height = "auto";
+          textareaElement.style.height = textareaElement.scrollHeight + "px";
         } catch (e) {
-          console.warn('Error in reactive textarea resize:', e);
+          console.warn("Error in reactive textarea resize:", e);
         }
       }
     }, 10);
@@ -113,10 +117,10 @@
       // Auto-resize on initial load
       if (element.style && element.scrollHeight) {
         try {
-          element.style.height = 'auto';
-          element.style.height = element.scrollHeight + 'px';
+          element.style.height = "auto";
+          element.style.height = element.scrollHeight + "px";
         } catch (e) {
-          console.warn('Error in focus resize:', e);
+          console.warn("Error in focus resize:", e);
         }
       }
     }
@@ -126,10 +130,10 @@
   function autoResize(element) {
     if (element && element.style && element.scrollHeight) {
       try {
-        element.style.height = 'auto';
-        element.style.height = element.scrollHeight + 'px';
+        element.style.height = "auto";
+        element.style.height = element.scrollHeight + "px";
       } catch (e) {
-        console.warn('Error in autoResize:', e);
+        console.warn("Error in autoResize:", e);
       }
     }
   }
@@ -339,10 +343,11 @@
                     setTimeout(() => {
                       if (textareaElement && textareaElement.style) {
                         try {
-                          textareaElement.style.height = 'auto';
-                          textareaElement.style.height = textareaElement.scrollHeight + 'px';
+                          textareaElement.style.height = "auto";
+                          textareaElement.style.height =
+                            textareaElement.scrollHeight + "px";
                         } catch (e) {
-                          console.warn('Error resizing textarea:', e);
+                          console.warn("Error resizing textarea:", e);
                         }
                       }
                     }, 100);
