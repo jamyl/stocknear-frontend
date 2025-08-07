@@ -14,7 +14,7 @@
   import { keymap } from "prosemirror-keymap";
   import { schema } from "prosemirror-schema-basic";
 
-  import { onMount, afterUpdate, tick } from "svelte";
+  import { onMount, afterUpdate, tick, onDestroy } from "svelte";
   import SEO from "$lib/components/SEO.svelte";
 
   export let data;
@@ -32,6 +32,8 @@
 
   // Auto-scrolling - Modified to track streaming state
   let isStreaming = false; // New variable to track streaming state
+  let saveTimeout = null; // Timeout for periodic saves during streaming
+  let lastSavedContent = ""; // Track last saved content to avoid redundant saves
 
   let editorDiv;
   let editorView;
@@ -130,6 +132,39 @@
     },
   });
 
+  // Function to save chat with debouncing during streaming
+  async function saveChatWithDebounce(assistantContent = "") {
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+    }
+
+    saveTimeout = setTimeout(async () => {
+      // Only save if content has changed
+      if (assistantContent !== lastSavedContent) {
+        lastSavedContent = assistantContent;
+        await saveChat();
+      }
+    }, 2000); // Save every 2 seconds during streaming
+  }
+
+  // Function to handle page unload during streaming
+  function handlePageUnload() {
+    if (isStreaming && messages.length > 0) {
+      // Use sendBeacon for reliable data sending during page unload
+      const postData = JSON.stringify({
+        messages: messages,
+        chatId: chatId,
+      });
+
+      navigator.sendBeacon(
+        "/api/update-chat",
+        new Blob([postData], {
+          type: "application/json",
+        }),
+      );
+    }
+  }
+
   onMount(async () => {
     editorView = new EditorView(editorDiv, {
       state: EditorState.create({
@@ -169,6 +204,10 @@
       editorView.focus();
     }, 100);
     editorText = editorView.state.doc.textContent;
+
+    // Add event listeners for page unload
+    window.addEventListener("beforeunload", handlePageUnload);
+    window.addEventListener("pagehide", handlePageUnload);
 
     if (messages.length === 1 && messages[0].role === "user") {
       const userQuery = messages[0]?.content;
@@ -272,6 +311,9 @@
               messages[idx].content = assistantText;
               //messages[idx].callComponent = json?.callComponent ?? {};
               messages = [...messages]; // Trigger reactivity
+
+              // Save periodically during streaming
+              await saveChatWithDebounce(assistantText);
             }
           } catch (err) {
             console.error("Parse error:", err, "Line:", line);
@@ -280,11 +322,20 @@
       }
 
       isStreaming = false; // End streaming - disable
+
+      // Clear any pending debounced saves
+      if (saveTimeout) {
+        clearTimeout(saveTimeout);
+        saveTimeout = null;
+      }
+
       const costOfCredit = getCreditFromQuery(userQuery, agentOptions);
 
       if (data?.user) {
         data.user.credits -= costOfCredit;
       }
+
+      // Final save after streaming completes
       await saveChat();
     } catch (error) {
       console.error("Chat request failed:", error);
@@ -300,6 +351,12 @@
     } finally {
       isLoading = false;
       isStreaming = false; // Ensure streaming is disabled
+
+      // Clear any pending saves in error cases
+      if (saveTimeout) {
+        clearTimeout(saveTimeout);
+        saveTimeout = null;
+      }
     }
   }
 
@@ -410,6 +467,18 @@
     editorView?.dispatch(tr);
     editorView?.focus();
   }
+
+  onDestroy(() => {
+    // Clean up event listeners and timeouts
+    if (typeof window !== "undefined") {
+      window.removeEventListener("beforeunload", handlePageUnload);
+      window.removeEventListener("pagehide", handlePageUnload);
+    }
+
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+    }
+  });
 
   function agentMentionDeletePlugin(agentNames: string[]) {
     return keymap({

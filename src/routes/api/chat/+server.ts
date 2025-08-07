@@ -75,20 +75,69 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     const decoder = new TextDecoder();
     const upstreamReader = upstream.body.getReader();
 
+    let fullResponse = "";
+    let controllerClosed = false;
+    
     const stream = new ReadableStream({
       async start(controller) {
         try {
           while (true) {
             const { done, value } = await upstreamReader.read();
             if (done) break;
-            // decode and enqueue as string chunks
-            controller.enqueue(decoder.decode(value, { stream: true }));
+            
+            const chunk = decoder.decode(value, { stream: true });
+            
+            // Only enqueue if controller is not closed
+            if (!controllerClosed) {
+              controller.enqueue(chunk);
+            }
+            
+            // Accumulate full response for server-side saving
+            try {
+              // Try to parse each chunk as JSON to extract content
+              const lines = chunk.split('\n');
+              for (const line of lines) {
+                if (line.trim()) {
+                  try {
+                    const parsed = JSON.parse(line);
+                    if (parsed.content) {
+                      fullResponse = parsed.content; // Keep updating with latest content
+                    }
+                  } catch (e) {
+                    // Ignore parse errors for individual lines
+                  }
+                }
+              }
+            } catch (e) {
+              // Ignore accumulation errors
+            }
           }
         } catch (err) {
           console.error("Stream error:", err);
-          controller.error(err);
+          if (!controllerClosed) {
+            controller.error(err);
+          }
         } finally {
-          controller.close();
+          if (!controllerClosed) {
+            controllerClosed = true;
+            controller.close();
+          }
+          
+          // Server-side backup save after streaming completes
+          if (fullResponse && fullResponse.trim()) {
+            try {
+              const updatedMessages = [...messages, 
+                { content: query, role: "user" },
+                { content: fullResponse, role: "system" }
+              ];
+              
+              await pb?.collection("chat")?.update(chatId, {
+                'messages': JSON.stringify(updatedMessages)
+              });
+            } catch (saveErr) {
+              console.error("Server-side save error:", saveErr);
+            }
+          }
         }
       }
     });
