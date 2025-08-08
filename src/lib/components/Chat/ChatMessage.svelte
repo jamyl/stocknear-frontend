@@ -17,6 +17,11 @@
   export let isStreaming = false;
   export let index;
   export let editable;
+  
+  // Smooth text rendering
+  let displayedContent = "";
+  let typewriterInterval = null;
+  let targetContent = "";
 
   let editMode = false;
   let editedContent = "";
@@ -71,8 +76,46 @@
     }
   }
 
+  // Smooth character-by-character rendering for streaming
+  $: if (message?.role === "system" && message?.content) {
+    targetContent = message.content;
+    if (isStreaming && targetContent.length > displayedContent.length) {
+      // Clear existing interval
+      if (typewriterInterval) {
+        clearInterval(typewriterInterval);
+      }
+      
+      // Start smooth rendering
+      const charsToAdd = targetContent.length - displayedContent.length;
+      const speed = Math.min(10, Math.max(1, Math.floor(charsToAdd / 20))); // Dynamic speed
+      
+      typewriterInterval = setInterval(() => {
+        if (displayedContent.length < targetContent.length) {
+          const nextChars = targetContent.slice(
+            displayedContent.length,
+            displayedContent.length + speed
+          );
+          displayedContent += nextChars;
+        } else {
+          clearInterval(typewriterInterval);
+          typewriterInterval = null;
+        }
+      }, 10); // 10ms interval for smooth rendering
+    } else if (!isStreaming) {
+      // Ensure full content is displayed when streaming ends
+      displayedContent = targetContent;
+      if (typewriterInterval) {
+        clearInterval(typewriterInterval);
+        typewriterInterval = null;
+      }
+    }
+  } else if (message?.role === "user") {
+    displayedContent = message?.content || "";
+  }
+  
   onDestroy(() => {
     if (intervalId) clearInterval(intervalId);
+    if (typewriterInterval) clearInterval(typewriterInterval);
   });
 
   function handleShare() {
@@ -212,11 +255,14 @@
             </div>
           {:else}
             <p
-              class="w-full {message?.role === 'user'
+              class="w-full transition-all duration-75 ease-out {message?.role === 'user'
                 ? 'p-3  border border-gray-200 dark:border-gray-800 rounded-[5px] bg-gray-200 dark:bg-table'
                 : ''}"
             >
-              {@html message?.content}
+              {@html isStreaming && message?.role === 'system' ? displayedContent : message?.content}
+              {#if isStreaming && message?.role === 'system' && typewriterInterval}
+                <span class="inline-block w-1 h-4 ml-0.5 bg-gray-600 dark:bg-gray-400 animate-pulse"></span>
+              {/if}
             </p>
           {/if}
 

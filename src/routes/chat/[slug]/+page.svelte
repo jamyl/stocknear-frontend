@@ -34,6 +34,10 @@
   let isStreaming = false; // New variable to track streaming state
   let saveTimeout = null; // Timeout for periodic saves during streaming
   let lastSavedContent = ""; // Track last saved content to avoid redundant saves
+  let animationFrameId = null; // For smooth rendering
+  let pendingContent = ""; // Buffer for content updates
+  let lastUpdateTime = 0; // Throttle DOM updates
+  const UPDATE_INTERVAL = 16; // ~60fps
 
   let editorDiv;
   let editorView;
@@ -285,6 +289,8 @@
       let buffer = "";
       const idx = messages?.length - 1;
       let assistantText = "";
+      let updateBuffer = [];
+      let batchTimeout = null;
 
       isLoading = false;
 
@@ -308,10 +314,35 @@
             }
             if (json?.content) {
               assistantText = json?.content;
-              messages[idx].content = assistantText;
-              //messages[idx].callComponent = json?.callComponent ?? {};
-              messages = [...messages]; // Trigger reactivity
-
+              pendingContent = assistantText;
+              
+              // Batch updates for smoother rendering
+              updateBuffer.push(assistantText);
+              
+              if (batchTimeout) {
+                clearTimeout(batchTimeout);
+              }
+              
+              // Process batch updates
+              batchTimeout = setTimeout(() => {
+                if (updateBuffer.length > 0) {
+                  const latestContent = updateBuffer[updateBuffer.length - 1];
+                  
+                  // Use requestAnimationFrame for smooth DOM update
+                  if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                  }
+                  
+                  animationFrameId = requestAnimationFrame(() => {
+                    messages[idx].content = latestContent;
+                    messages = [...messages]; // Trigger reactivity
+                    animationFrameId = null;
+                  });
+                  
+                  updateBuffer = []; // Clear buffer after processing
+                }
+              }, 30); // Batch updates every 30ms for smoother rendering
+              
               // Save periodically during streaming
               await saveChatWithDebounce(assistantText);
             }
@@ -322,6 +353,24 @@
       }
 
       isStreaming = false; // End streaming - disable
+      
+      // Clear batch timeout
+      if (batchTimeout) {
+        clearTimeout(batchTimeout);
+        batchTimeout = null;
+      }
+      
+      // Ensure final content is updated
+      if (pendingContent && messages[idx]) {
+        messages[idx].content = pendingContent;
+        messages = [...messages];
+      }
+      
+      // Clear animation frame if pending
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
 
       // Clear any pending debounced saves
       if (saveTimeout) {
@@ -477,6 +526,10 @@
 
     if (saveTimeout) {
       clearTimeout(saveTimeout);
+    }
+    
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
     }
   });
 
