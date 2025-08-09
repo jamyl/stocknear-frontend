@@ -260,7 +260,7 @@
       {
         loading: "Assigning premium access...",
         success: () => {
-          data.user.discordPremium = true;
+          data.user.discord = { access: true };
           return "Premium access granted!";
         },
         error: "Failed to assign premium access. Please try again later.",
@@ -340,7 +340,7 @@
 
             <div class="mt-2">
               {#if data?.getDiscordAccount}
-                {#if data?.user?.discordPremium}
+                {#if data?.user?.discord?.access}
                   <button
                     class="flex flex-row items-center w-fit border border-gray-300 dark:border-gray-300 dark:border-gray-600 bg-default sm:hover:bg-black dark:bg-default text-white dark:sm:hover:bg-primary text-sm sm:text-[1rem] px-4 py-2 rounded mt-5"
                   >
