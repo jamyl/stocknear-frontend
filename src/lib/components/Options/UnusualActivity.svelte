@@ -99,42 +99,39 @@
 
   function plotData() {
     let dates = [];
-    let callData = [];
-    let putData = [];
     let priceList = [];
-    let totalPremiums = [];
 
     // Sort history by date
     const history = rawData?.sort(
       (a, b) => new Date(a?.date) - new Date(b?.date),
     );
 
-    // Aggregate call size, put size, and premiums for each date
+    // Aggregate premiums for each date and track bubble data
     const aggregatedData = {};
+    const callBubbleData = [];
+    const putBubbleData = [];
 
     history?.forEach((item) => {
       const { date, optionType, size, premium } = item;
 
       if (!aggregatedData[date]) {
-        aggregatedData[date] = { callSize: 0, putSize: 0, totalPremium: 0 };
+        aggregatedData[date] = {
+          callPremiums: [],
+          putPremiums: [],
+        };
       }
 
       if (optionType === "Calls") {
-        aggregatedData[date].callSize += size;
+        aggregatedData[date].callPremiums.push({ size, premium });
       } else if (optionType === "Puts") {
-        aggregatedData[date].putSize += size;
+        aggregatedData[date].putPremiums.push({ size, premium });
       }
-
-      aggregatedData[date].totalPremium += premium;
     });
 
-    // Build data arrays from the aggregated data
+    // Build dates array from aggregated data
     dates = Object.keys(aggregatedData);
-    callData = dates?.map((date) => aggregatedData[date].callSize);
-    putData = dates?.map((date) => aggregatedData[date].putSize);
-    totalPremiums = dates?.map((date) => aggregatedData[date].totalPremium);
 
-    // Get the historical prices for matching dates
+    // Get historical prices for matching dates
     priceList = dates?.map((date) => {
       const matchingData = data?.getHistoricalPrice?.find(
         (d) => d?.time === date,
@@ -142,43 +139,88 @@
       return matchingData?.close || null;
     });
 
-    // Highcharts configuration options
+    // Calculate premium thresholds for bubble display
+    const allPremiums = history?.map((item) => item.premium) || [];
+    const maxPremium = Math.max(...allPremiums, 0);
+    const avgPremium =
+      allPremiums.reduce((sum, p) => sum + p, 0) / (allPremiums.length || 1);
+
+    // Dynamic threshold - show bubbles for significant premiums
+    const premiumThreshold = Math.min(avgPremium * 1.2, maxPremium * 0.3);
+
+    // Create bubble data for high-impact options
+    dates.forEach((date, index) => {
+      const dateData = aggregatedData[date];
+      const price = priceList[index];
+
+      if (price) {
+        // Process call premiums
+        dateData.callPremiums.forEach(({ size, premium }) => {
+          if (premium > premiumThreshold) {
+            callBubbleData.push({
+              x: index,
+              y: price,
+              z: premium,
+              name: `Call: ${size.toLocaleString()} contracts`,
+              date: date,
+            });
+          }
+        });
+
+        // Process put premiums
+        dateData.putPremiums.forEach(({ size, premium }) => {
+          if (premium > premiumThreshold) {
+            putBubbleData.push({
+              x: index,
+              y: price,
+              z: premium,
+              name: `Put: ${size.toLocaleString()} contracts`,
+              date: date,
+            });
+          }
+        });
+      }
+    });
+
+    // Highcharts configuration
     const options = {
       credits: {
         enabled: false,
       },
       plotOptions: {
-        column: {
-          groupPadding: 0.1, // Increase to add more space between groups of columns
-          pointPadding: 0.1, // Adjust to fine-tune spacing within a group
-          borderWidth: 0, // Optional: Remove borders if not needed
-        },
         series: {
-          color: $mode === "light" ? "black" : "white",
-          animation: false, // Disable series animation
+          animation: false,
           states: {
             hover: {
-              enabled: false, // Disable hover effect globally
+              enabled: false,
             },
+          },
+        },
+        bubble: {
+          minSize: 8,
+          maxSize: 50,
+          marker: {
+            fillOpacity: 0.6,
+            lineWidth: 2,
+          },
+          dataLabels: {
+            enabled: false,
           },
         },
       },
       chart: {
         backgroundColor: $mode === "light" ? "#fff" : "#09090B",
-        plotBackgroundColor: $mode === "light" ? "#fff" : "#09090B",
         height: 360,
         animation: false,
       },
       title: {
-        text: `<h3 class="mt-3 mb-1 text-[1rem] sm:text-lg">${ticker} Unusual Options Activity</h3>`,
+        text: `<h3 class="mt-3 mb-1 text-[1rem] sm:text-lg">${ticker} Unusual Options Activity with Premium Impact</h3>`,
+        useHTML: true,
         style: {
           color: $mode === "light" ? "black" : "white",
         },
-        useHTML: true,
       },
       xAxis: {
-        type: "datetime",
-        endOnTick: false,
         categories: dates,
         crosshair: {
           color: $mode === "light" ? "black" : "white",
@@ -190,50 +232,37 @@
             color: $mode === "light" ? "#545454" : "white",
           },
           formatter: function () {
-            const date = new Date(this.value);
-            return date.toLocaleDateString("en-US", {
-              month: "short",
-              year: "numeric",
-            });
+            // Only format if this.value is a valid date string
+            if (this.value && typeof this.value === "string") {
+              const date = new Date(this.value);
+              // Check if date is valid
+              if (!isNaN(date.getTime())) {
+                return date.toLocaleDateString("en-US", {
+                  month: "short",
+                  year: "numeric",
+                });
+              }
+            }
+            return "";
           },
-        },
-        tickPositioner: function () {
-          const positions = [];
-          const info = this.getExtremes();
-          const tickCount = 5;
-          const interval = Math.floor((info.max - info.min) / tickCount);
-
-          for (let i = 0; i <= tickCount; i++) {
-            positions.push(info.min + i * interval);
-          }
-          return positions;
+          // Show fewer labels to avoid crowding
+          step: Math.ceil(dates.length / 5),
         },
       },
-      yAxis: [
-        {
-          gridLineWidth: 1,
-          gridLineColor: $mode === "light" ? "#e5e7eb" : "#111827",
-          labels: {
-            style: { color: $mode === "light" ? "#545454" : "white" },
-          },
-          title: { text: null },
-          opposite: true,
+      yAxis: {
+        gridLineWidth: 1,
+        gridLineColor: $mode === "light" ? "#e5e7eb" : "#111827",
+        labels: {
+          style: { color: $mode === "light" ? "#545454" : "white" },
         },
-        {
-          title: {
-            text: null,
-          },
-          gridLineWidth: 0,
-          labels: {
-            enabled: false,
-          },
-        },
-      ],
+        title: { text: null },
+        opposite: true,
+      },
       tooltip: {
-        shared: true,
+        shared: false,
         useHTML: true,
-        backgroundColor: "rgba(0, 0, 0, 0.8)", // Semi-transparent black
-        borderColor: "rgba(255, 255, 255, 0.2)", // Slightly visible white border
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        borderColor: "rgba(255, 255, 255, 0.2)",
         borderWidth: 1,
         style: {
           color: "#fff",
@@ -242,23 +271,50 @@
         },
         borderRadius: 4,
         formatter: function () {
-          // Format the x value to display time in a custom format
-          let tooltipContent = `<span class="m-auto text-[1rem] font-[501]">${new Date(
-            this?.x,
-          ).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            timeZone: "UTC",
-          })}</span><br>`;
+          let tooltipContent = "";
 
-          // Loop through each point in the shared tooltip
-          this.points.forEach((point) => {
+          if (this.series.type === "bubble") {
+            const date = new Date(this.point.date);
+            tooltipContent = `<span class="m-auto text-[1rem] font-[501]">${date.toLocaleDateString(
+              "en-US",
+              {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                timeZone: "UTC",
+              },
+            )}</span><br>`;
+
+            tooltipContent += `<span class="font-semibold text-sm">${this.series.name}</span><br>`;
+            tooltipContent += `<span class="font-normal text-sm">Price: $${this.point.y?.toFixed(2)}</span><br>`;
+            tooltipContent += `<span class="font-normal text-sm">Premium: $${this.point.z?.toLocaleString("en-US")}</span><br>`;
+            tooltipContent += `<span class="font-normal text-xs">Impact: ${
+              this.point.z > avgPremium * 2
+                ? "Very High"
+                : this.point.z > avgPremium * 1.5
+                  ? "High"
+                  : "Medium"
+            }</span>`;
+          } else {
+            // For spline series, use the category value directly
+            const dateStr = dates[this.point.index] || this.x;
+            const date = new Date(dateStr);
+
+            tooltipContent = `<span class="m-auto text-[1rem] font-[501]">${date.toLocaleDateString(
+              "en-US",
+              {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                timeZone: "UTC",
+              },
+            )}</span><br>`;
+
             tooltipContent += `
-        <span style="display:inline-block; width:10px; height:10px; background-color:${point.color}; border-radius:50%; margin-right:5px;"></span>
-        <span class="font-semibold text-sm">${point.series.name}:</span> 
-        <span class="font-normal text-sm">${point.y?.toLocaleString("en-US")}</span><br>`;
-          });
+            <span style="display:inline-block; width:10px; height:10px; background-color:${this.color}; border-radius:50%; margin-right:5px;"></span>
+            <span class="font-semibold text-sm">${this.series.name}:</span> 
+            <span class="font-normal text-sm">$${this.y?.toFixed(2)}</span>`;
+          }
 
           return tooltipContent;
         },
@@ -267,51 +323,43 @@
         {
           name: "Stock Price",
           type: "spline",
-          yAxis: 1,
           data: priceList,
           marker: {
             enabled: false,
           },
-          animation: false,
-
           color: $mode === "light" ? "#000" : "#fff",
-          states: { hover: { enabled: false } },
           lineWidth: 1.5,
-          crisp: true,
+          zIndex: 2,
         },
         {
-          name: "Call",
-          type: "column",
-          data: callData,
+          name: "High Call Premium",
+          type: "bubble",
+          data: callBubbleData,
           color: "#00FC50",
-          borderColor: "#00FC50",
-          borderRadius: "0px",
-          animation: false,
-          states: { hover: { enabled: false } },
-          lineWidth: 1.5,
-          crisp: true,
+          zIndex: 3,
           marker: {
-            enabled: false,
+            lineColor: "rgba(0, 252, 80, 0.8)",
           },
         },
         {
-          name: "Put",
-          type: "column",
-          data: putData,
+          name: "High Put Premium",
+          type: "bubble",
+          data: putBubbleData,
           color: "#EE5365",
-          borderColor: "#EE5365",
-          borderRadius: "0px",
-          animation: false,
-          states: { hover: { enabled: false } },
-          lineWidth: 1.5,
-          crisp: true,
+          zIndex: 3,
           marker: {
-            enabled: false,
+            lineColor: "rgba(238, 83, 101, 0.8)",
           },
         },
       ],
       legend: {
-        enabled: false,
+        enabled: true,
+        align: "center",
+        verticalAlign: "top",
+        layout: "horizontal",
+        itemStyle: {
+          color: $mode === "light" ? "black" : "white",
+        },
       },
     };
 
@@ -357,7 +405,6 @@
         {
           name: "Stock Price",
           type: "spline",
-          yAxis: 1,
           data: filteredData.map((item) => [
             new Date(item.date).getTime(),
             item.price,
@@ -412,7 +459,6 @@
         {
           name: "Stock Price",
           type: "spline",
-          yAxis: 1,
           data: filteredData.map((item) => [
             new Date(item.date).getTime(),
             item.price,
@@ -863,7 +909,7 @@
                   <td
                     class=" text-sm sm:text-[1rem] text-end whitespace-nowrap"
                   >
-                    {abbreviateNumber(item?.premium, false, true)}
+                    ${item?.premium?.toLocaleString("en-US")}
                   </td>
                 </tr>
               {/each}
@@ -956,7 +1002,7 @@
             <label
               on:click={() => (selectGraphType = item)}
               class="px-3 py-1.5 {selectGraphType === item
-                ? 'shadow-xs bg-gray-100 dark:bg-white text-black '
+                ? 'shadow-xs bg-black text-white  dark:bg-white dark:text-black '
                 : 'shadow-xs text-opacity-[0.6] border border-gray-300 dark:border-gray-600'} transition ease-out duration-100 sm:hover:bg-white sm:hover:text-black rounded cursor-pointer"
             >
               {item}
@@ -1060,13 +1106,13 @@
                     </td>
 
                     <td class="text-sm sm:text-[1rem] text-end">
-                      {abbreviateNumber(item?.total_premium, false, true)}
+                      ${item?.total_premium?.toLocaleString("en-US")}
                     </td>
                     <td class="text-sm sm:text-[1rem] text-end">
-                      {abbreviateNumber(item?.gex, false, true)}
+                      {item?.gex?.toLocaleString("en-US")}
                     </td>
                     <td class="text-sm sm:text-[1rem] text-end">
-                      {abbreviateNumber(item?.dex, false, true)}
+                      {item?.dex?.toLocaleString("en-US")}
                     </td>
                   </tr>
                 {/each}
