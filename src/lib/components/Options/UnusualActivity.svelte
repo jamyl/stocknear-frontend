@@ -21,9 +21,13 @@
     }))
     ?.sort((a, b) => new Date(b?.date) - new Date(a?.date));
 
-  let displayList = rawData?.slice(0, 50) || [];
+  // Track the currently sorted data separately
+  let sortedData = [...rawData];
+  let displayList = sortedData?.slice(0, 50) || [];
+  let currentSortKey = null;
+  let currentSortOrder = "none";
 
-  let configUnusual = null;
+  let config = null;
 
   function daysLeft(targetDate) {
     const targetTime = new Date(targetDate).getTime();
@@ -343,12 +347,14 @@
   async function handleScroll() {
     const scrollThreshold = document.body.offsetHeight * 0.8; // 80% of the website height
     const isBottom = window.innerHeight + window.scrollY >= scrollThreshold;
-    if (isBottom && displayList?.length !== rawData?.length) {
+    if (isBottom && displayList?.length !== sortedData?.length) {
       const nextIndex = displayList?.length;
-      const filteredNewResults = rawData?.slice(nextIndex, nextIndex + 50);
+      // Use sortedData instead of rawData to maintain sort order
+      const filteredNewResults = sortedData?.slice(nextIndex, nextIndex + 50);
       displayList = [...displayList, ...filteredNewResults];
     }
   }
+
   onMount(async () => {
     window.addEventListener("scroll", handleScroll);
     return () => {
@@ -390,15 +396,19 @@
 
     // Cycle through 'none', 'asc', 'desc' for the clicked key
     const orderCycle = ["none", "asc", "desc"];
-    let originalData = rawData;
     const currentOrderIndex = orderCycle.indexOf(sortOrders[key].order);
     sortOrders[key].order =
       orderCycle[(currentOrderIndex + 1) % orderCycle.length];
     const sortOrder = sortOrders[key].order;
 
+    // Update tracking variables
+    currentSortKey = key;
+    currentSortOrder = sortOrder;
+
     // Reset to original data when 'none' and stop further sorting
     if (sortOrder === "none") {
-      displayList = [...originalData]?.slice(0, 150); // Reset originalData to rawData
+      sortedData = [...rawData];
+      displayList = sortedData?.slice(0, 50); // Start with 50 items
       return;
     }
 
@@ -439,13 +449,16 @@
       return 0;
     };
 
-    // Sort using the generic comparison function
-    displayList = [...originalData].sort(compareValues)?.slice(0, 150);
+    // Sort all data and store it
+    sortedData = [...rawData].sort(compareValues);
+    // Display the first batch of sorted data (preserve current display count)
+    const currentDisplayCount = Math.min(displayList.length, 50);
+    displayList = sortedData?.slice(0, currentDisplayCount);
   };
 
   $: {
     if ($mode) {
-      configUnusual = plotData() || null;
+      config = plotData() || null;
     }
   }
 </script>
@@ -565,7 +578,7 @@
               <!-- Apply the blur class to the chart -->
               <div
                 class="mt-5 shadow-xs sm:mt-0 sm:border sm:border-gray-300 dark:border-gray-800 rounded"
-                use:highcharts={configUnusual}
+                use:highcharts={config}
               ></div>
             </div>
           </div>
