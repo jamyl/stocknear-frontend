@@ -33,7 +33,7 @@
     dte: daysLeft(item?.expiry),
   }));
 
-  let displayList = rawData?.slice(0, 20) || [];
+  let displayList = rawData?.slice(0, 50) || [];
 
   let configUnusual = null;
 
@@ -65,18 +65,15 @@
   }
 
   function formatDate(dateStr) {
-    // Convert the input date string to a Date object in New York time
+    // Convert the input date string to a Date object in UTC
     let date = new Date(dateStr + "T00:00:00Z"); // Assume input is in UTC
-
     let options = {
       timeZone: "UTC",
-      month: "2-digit",
-      day: "2-digit",
-      year: "2-digit",
+      month: "short", // Changed from "2-digit" to "short" for "Jan"
+      day: "numeric", // Changed from "2-digit" to "numeric" for "17" (no leading zero)
+      year: "numeric", // Changed from "2-digit" to "numeric" for "2025"
     };
-
     let formatter = new Intl.DateTimeFormat("en-US", options);
-
     return formatter.format(date);
   }
   function getScroll() {
@@ -139,16 +136,18 @@
       return matchingData?.close || null;
     });
 
-    // Calculate premium thresholds for bubble display
+    // Calculate premium statistics for better visualization
     const allPremiums = history?.map((item) => item.premium) || [];
     const maxPremium = Math.max(...allPremiums, 0);
+    const minPremium = Math.min(...allPremiums.filter((p) => p > 0), 0);
     const avgPremium =
       allPremiums.reduce((sum, p) => sum + p, 0) / (allPremiums.length || 1);
 
-    // Dynamic threshold - show bubbles for significant premiums
-    const premiumThreshold = Math.min(avgPremium * 1.2, maxPremium * 0.3);
+    // Optional: Set a minimum threshold if you want to filter out very small values
+    // Set to 0 to show all premiums, or to a small value to filter noise
+    const minimumPremiumToShow = 0; // Show all premiums
 
-    // Create bubble data for high-impact options
+    // Create bubble data for ALL options (or those above minimum)
     dates.forEach((date, index) => {
       const dateData = aggregatedData[date];
       const price = priceList[index];
@@ -156,26 +155,46 @@
       if (price) {
         // Process call premiums
         dateData.callPremiums.forEach(({ size, premium }) => {
-          if (premium > premiumThreshold) {
+          // Include all premiums above the minimum threshold
+          if (premium >= minimumPremiumToShow) {
             callBubbleData.push({
               x: index,
               y: price,
               z: premium,
               name: `Call: ${size.toLocaleString()} contracts`,
               date: date,
+              // Add impact level for tooltip
+              impact:
+                premium > avgPremium * 2
+                  ? "Very High"
+                  : premium > avgPremium * 1.5
+                    ? "High"
+                    : premium > avgPremium
+                      ? "Above Average"
+                      : "Below Average",
             });
           }
         });
 
         // Process put premiums
         dateData.putPremiums.forEach(({ size, premium }) => {
-          if (premium > premiumThreshold) {
+          // Include all premiums above the minimum threshold
+          if (premium >= minimumPremiumToShow) {
             putBubbleData.push({
               x: index,
               y: price,
               z: premium,
               name: `Put: ${size.toLocaleString()} contracts`,
               date: date,
+              // Add impact level for tooltip
+              impact:
+                premium > avgPremium * 2
+                  ? "Very High"
+                  : premium > avgPremium * 1.5
+                    ? "High"
+                    : premium > avgPremium
+                      ? "Above Average"
+                      : "Below Average",
             });
           }
         });
@@ -197,8 +216,11 @@
           },
         },
         bubble: {
-          minSize: 8,
+          // Increased minSize to ensure small premiums are visible
+          minSize: 1, // Increased from 8 to make small bubbles more visible
           maxSize: 50,
+          // Optional: Use sizeBy to control how bubble size is calculated
+          sizeBy: "width", // Can be 'area' or 'width'
           marker: {
             fillOpacity: 0.6,
             lineWidth: 2,
@@ -206,6 +228,10 @@
           dataLabels: {
             enabled: false,
           },
+          // Optional: Set a minimum bubble value to ensure visibility
+          // This ensures even the smallest premium gets the minSize bubble
+          zMin: minPremium > 0 ? minPremium : 1,
+          zMax: maxPremium,
         },
       },
       chart: {
@@ -288,13 +314,7 @@
             tooltipContent += `<span class="font-semibold text-sm">${this.series.name}</span><br>`;
             tooltipContent += `<span class="font-normal text-sm">Price: $${this.point.y?.toFixed(2)}</span><br>`;
             tooltipContent += `<span class="font-normal text-sm">Premium: $${this.point.z?.toLocaleString("en-US")}</span><br>`;
-            tooltipContent += `<span class="font-normal text-xs">Impact: ${
-              this.point.z > avgPremium * 2
-                ? "Very High"
-                : this.point.z > avgPremium * 1.5
-                  ? "High"
-                  : "Medium"
-            }</span>`;
+            tooltipContent += `<span class="font-normal text-xs">Impact: ${this.point.impact || "N/A"}</span>`;
           } else {
             // For spline series, use the category value directly
             const dateStr = dates[this.point.index] || this.x;
@@ -332,7 +352,7 @@
           zIndex: 2,
         },
         {
-          name: "High Call Premium",
+          name: "Call Options", // Updated name to be more inclusive
           type: "bubble",
           data: callBubbleData,
           color: "#00FC50",
@@ -342,7 +362,7 @@
           },
         },
         {
-          name: "High Put Premium",
+          name: "Put Options", // Updated name to be more inclusive
           type: "bubble",
           data: putBubbleData,
           color: "#EE5365",
@@ -932,12 +952,9 @@
                   </td>
 
                   <td class="text-sm sm:text-[1rem] text-end whitespace-nowrap">
-                    <span
-                      class=" px-2 {item?.optionType === 'Calls'
-                        ? 'text-green-800 dark:text-[#00FC50]'
-                        : 'text-red-800 dark:text-[#FF2F1F]'}"
-                    >
+                    <span class="px-2">
                       {item?.optionType}
+                      {" " + item?.strike}
                     </span>
                     <label
                       on:click={() => handleViewData(item)}
@@ -945,9 +962,12 @@
                         getContractHistory(item?.option_symbol)}
                       class="cursor-pointer text-blue-800 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white"
                     >
-                      {item?.strike}
-
-                      {" " + item?.expiry}
+                      {new Date(item.expiry).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        timeZone: "UTC",
+                      })}
 
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
