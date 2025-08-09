@@ -22,6 +22,7 @@
         <HottestContracts
           {data}
           ticker={$stockTicker?.toUpperCase()}
+          assetType="stocks"
           type="volume"
           title="Highest Volume Options"
         />

@@ -22,6 +22,7 @@
         <HottestContracts
           {data}
           ticker={$stockTicker?.toUpperCase()}
+          assetType="stocks"
           type="oi"
           title="Highest Open Interest Options"
         />

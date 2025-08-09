@@ -363,6 +363,7 @@
   });
 
   $: columns = [
+    { key: "optionType", label: "Type", align: "left" },
     { key: "date", label: "Transaction Date", align: "left" },
     { key: "dte", label: "DTE", align: "right" },
     { key: "unusualType", label: "Type", align: "right" },
@@ -375,6 +376,7 @@
   ];
 
   $: sortOrders = {
+    optionType: { order: "none", type: "string" },
     date: { order: "none", type: "date" },
     optionSymbol: { order: "none", type: "string" },
     unusualType: { order: "none", type: "string" },
@@ -601,6 +603,19 @@
                     ? 'opacity-[0.1]'
                     : ''}"
                 >
+                  <td
+                    class=" text-sm sm:text-[1rem] text-start whitespace-nowrap flex flex-row items-center justify-between"
+                  >
+                    <span
+                      class={item?.optionType === "Calls"
+                        ? "dark:text-[#00FC50]"
+                        : "dark:text-[#FF2F1F]"}
+                    >
+                      {item?.optionType === "Calls" ? "Call" : "Put"}
+                      {" " + item?.strike}
+                    </span>
+                  </td>
+
                   <td
                     class=" text-sm sm:text-[1rem] text-start whitespace-nowrap"
                   >

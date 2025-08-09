@@ -22,6 +22,7 @@
         <HottestContracts
           {data}
           ticker={$etfTicker?.toUpperCase()}
+          assetType="etf"
           type="volume"
           title="Highest Volume Options"
         />

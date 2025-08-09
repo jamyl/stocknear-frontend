@@ -22,6 +22,7 @@
         <HottestContracts
           {data}
           ticker={$etfTicker?.toUpperCase()}
+          assetType="etf"
           type="oi"
           title="Highest Open Interest Options"
         />
