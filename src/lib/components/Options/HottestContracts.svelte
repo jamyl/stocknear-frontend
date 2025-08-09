@@ -148,7 +148,7 @@
   }
 
   $: columns = [
-    { key: "strike_price", label: "Chain", align: "left" },
+    { key: "strike_price", label: "Option Chain", align: "left" },
     { key: "dte", label: "DTE", align: "right" },
     { key: "otm", label: "% OTM", align: "right" },
     { key: "last", label: "Last", align: "right" },
@@ -243,7 +243,7 @@
 
     const categories = sortedData?.map(
       (item) =>
-        `${ticker} ${convertDateFormat(item.date_expiration)} ${item.strike_price}${item.option_type}`,
+        `${convertDateFormat(item.date_expiration)} ${item.strike_price}${item.option_type}`,
     );
     const data = sortedData.map((item) => ({
       y: type === "oi" ? item.open_interest : item.volume,
@@ -791,7 +791,7 @@
                     : ''}"
                 >
                   <td
-                    class=" text-sm sm:text-[1rem] text-start whitespace-nowrap"
+                    class=" text-sm sm:text-[1rem] text-start whitespace-nowrap flex flex-row items-center justify-between"
                   >
                     <span
                       class={item?.option_type === "C"
@@ -799,6 +799,7 @@
                         : "dark:text-[#FF2F1F]"}
                     >
                       {item?.option_type === "C" ? "Call" : "Put"}
+                      {" " + item?.strike_price}
                     </span>
                     <label
                       on:click={() => handleViewData(item)}
@@ -806,9 +807,16 @@
                         getContractHistory(item?.option_symbol)}
                       class="cursor-pointer text-blue-800 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white sm:hover:underline sm:hover:underline-offset-4"
                     >
-                      {item?.strike_price}
-
-                      {" " + item?.date_expiration}
+                      {" " +
+                        new Date(item.date_expiration).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                            timeZone: "UTC",
+                          },
+                        )}
 
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -876,7 +884,7 @@
                   <td
                     class=" text-sm sm:text-[1rem] text-end whitespace-nowrap"
                   >
-                    {abbreviateNumber(item?.total_premium)}
+                    ${item?.total_premium?.toLocaleString("en-US")}
                   </td>
                 </tr>
               {/each}
