@@ -76,6 +76,7 @@
   function plotData() {
     let filteredData = [];
     const rawData = data?.getHistoricalRevenue;
+
     if (timeIdx === 0) {
       // Clone the array before sorting
       filteredData = [...rawData?.annual];
@@ -85,7 +86,21 @@
     // Sort ascending for plotting
     filteredData.sort((a, b) => new Date(a?.date) - new Date(b?.date));
 
-    const dates = filteredData.map((item) => item?.date);
+    let categories;
+    if (timeIdx === 0) {
+      // Annual: Just show fiscal year
+      categories = filteredData.map((item) => {
+        const shortYear = `${String(item?.fiscalYear).slice(-2)}`;
+        return `FY${shortYear}`;
+      });
+    } else {
+      // Quarterly: "Q1 `25" format
+      categories = filteredData.map((item) => {
+        const shortYear = `'${String(item?.fiscalYear).slice(-2)}`;
+        return `${item?.period} ${shortYear}`;
+      });
+    }
+
     const valueList = filteredData.map((item) => item?.revenue);
 
     const options = {
@@ -112,13 +127,10 @@
       },
 
       xAxis: {
-        categories: dates,
+        categories,
         gridLineWidth: 0,
         labels: {
           style: { color: $mode === "light" ? "#545454" : "white" },
-          formatter: function () {
-            return timeIdx === 0 ? this?.value?.substring(0, 4) : this?.value;
-          },
         },
       },
       yAxis: {
@@ -133,8 +145,8 @@
       tooltip: {
         shared: true,
         useHTML: true,
-        backgroundColor: "rgba(0, 0, 0, 0.8)", // Semi-transparent black
-        borderColor: "rgba(255, 255, 255, 0.2)", // Slightly visible white border
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        borderColor: "rgba(255, 255, 255, 0.2)",
         borderWidth: 1,
         style: {
           color: "#fff",
@@ -143,16 +155,13 @@
         },
         borderRadius: 4,
         formatter: function () {
-          // Format the x value to display time in a custom format
-          let tooltipContent = `<span class="m-auto text-[1rem] font-[501]">${new Date(
-            this?.x,
-          ).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}</span><br>`;
+          // Get the x-axis category label for this point
+          const categoryLabel = this.points
+            ? this.points[0].series.xAxis.categories[this.points[0].point.index]
+            : this.series.xAxis.categories[this.point.index];
 
-          // Loop through each point in the shared tooltip
+          let tooltipContent = `<span class="m-auto text-[1rem] font-[501]">${categoryLabel}</span><br>`;
+
           this.points.forEach((point) => {
             tooltipContent += `
         <span style="display:inline-block; width:10px; height:10px; background-color:${point.color}; border-radius:50%; margin-right:5px;"></span>
