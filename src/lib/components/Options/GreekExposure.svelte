@@ -36,6 +36,90 @@
   let displayList = rawData?.slice(0, 150);
   let timePeriod = "3M";
 
+  // Calculate metrics for insight paragraph
+  $: currentExposure = rawData?.[0]
+    ? title === "Gamma"
+      ? rawData[0].netGex
+      : rawData[0].netDex
+    : 0;
+
+  $: periodData = (() => {
+    const history = data?.getData?.sort(
+      (a, b) => new Date(a?.date) - new Date(b?.date),
+    );
+    const { dateList, dataList } = filterDataByPeriod(history, timePeriod);
+    return dataList || [];
+  })();
+
+  $: averageExposure =
+    periodData.length > 0
+      ? periodData.reduce((sum, val) => sum + val, 0) / periodData.length
+      : 0;
+
+  $: maxExposure = periodData.length > 0 ? Math.max(...periodData) : 0;
+
+  $: minExposure = periodData.length > 0 ? Math.min(...periodData) : 0;
+
+  // Calculate recent trend (last 5 days vs previous 5 days)
+  $: recentTrend = (() => {
+    if (rawData.length < 10) return "stable";
+    const recent5 =
+      rawData
+        .slice(0, 5)
+        .reduce(
+          (sum, item) => sum + (title === "Gamma" ? item.netGex : item.netDex),
+          0,
+        ) / 5;
+    const previous5 =
+      rawData
+        .slice(5, 10)
+        .reduce(
+          (sum, item) => sum + (title === "Gamma" ? item.netGex : item.netDex),
+          0,
+        ) / 5;
+
+    const change = ((recent5 - previous5) / Math.abs(previous5)) * 100;
+    if (Math.abs(change) < 10) return "stable";
+    return change > 0 ? "increasing" : "decreasing";
+  })();
+
+  // Calculate volatility (standard deviation)
+  $: exposureVolatility = (() => {
+    if (periodData.length < 2) return 0;
+    const mean = averageExposure;
+    const squaredDiffs = periodData.map((val) => Math.pow(val - mean, 2));
+    const avgSquaredDiff =
+      squaredDiffs.reduce((sum, val) => sum + val, 0) / periodData.length;
+    return Math.sqrt(avgSquaredDiff);
+  })();
+
+  $: currentPutCallRatio = rawData?.[0]?.putCallRatio || 0;
+
+  $: averagePutCallRatio =
+    rawData
+      .slice(0, 20)
+      .reduce((sum, item) => sum + (item.putCallRatio || 0), 0) /
+      Math.min(20, rawData.length) || 0;
+
+  // Find date of max and min exposure in period
+  $: maxExposureDate = (() => {
+    const history = data?.getData?.sort(
+      (a, b) => new Date(a?.date) - new Date(b?.date),
+    );
+    const filtered = filterDataByPeriod(history, timePeriod);
+    const maxIndex = filtered.dataList?.indexOf(maxExposure);
+    return maxIndex >= 0 ? formatDate(filtered.dateList[maxIndex]) : "n/a";
+  })();
+
+  $: minExposureDate = (() => {
+    const history = data?.getData?.sort(
+      (a, b) => new Date(a?.date) - new Date(b?.date),
+    );
+    const filtered = filterDataByPeriod(history, timePeriod);
+    const minIndex = filtered.dataList?.indexOf(minExposure);
+    return minIndex >= 0 ? formatDate(filtered.dateList[minIndex]) : "n/a";
+  })();
+
   let config = null;
 
   function filterDataByPeriod(historicalData, period = "3M") {
@@ -247,22 +331,20 @@
   }
 
   function formatDate(dateStr) {
-    // Convert the input date string to a Date object in New York time
+    // Convert the input date string to a Date object
     let date = new Date(dateStr + "T00:00:00Z"); // Assume input is in UTC
 
-    // Convert to New York Time Zone
+    // Format as "Feb 15, 2025"
     let options = {
       timeZone: "UTC",
-      month: "2-digit",
-      day: "2-digit",
-      year: "2-digit",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     };
 
     let formatter = new Intl.DateTimeFormat("en-US", options);
-
     return formatter.format(date);
   }
-
   async function handleScroll() {
     const scrollThreshold = document.body.offsetHeight * 0.8; // 80% of the website height
     const isBottom = window.innerHeight + window.scrollY >= scrollThreshold;
@@ -383,6 +465,88 @@
   <h2 class=" flex flex-row items-center text-xl sm:text-2xl font-bold w-fit">
     {ticker} Daily {title} Exposure
   </h2>
+
+  <!-- Insightful overview paragraph -->
+  <div class="w-full mt-4 mb-6">
+    <p>
+      {#if title === "Gamma"}
+        <strong>{ticker}</strong>'s current Gamma Exposure (GEX) is
+        <strong>{currentExposure?.toLocaleString("en-US")}</strong>, which is
+        {currentExposure > averageExposure
+          ? `${((currentExposure / averageExposure - 1) * 100).toFixed(0)}% above`
+          : `${((1 - currentExposure / averageExposure) * 100).toFixed(0)}% below`}
+        the {timePeriod} average of
+        <strong>{averageExposure?.toLocaleString("en-US")}</strong>. Over this
+        period, GEX peaked at
+        <strong>{maxExposure?.toLocaleString("en-US")}</strong>
+        on {maxExposureDate}
+        and bottomed at
+        <strong>{abbreviateNumber(minExposure)?.toLocaleString("en-US")}</strong
+        >
+        on {minExposureDate},
+        {maxExposure > 0 && minExposure < 0
+          ? "showing a shift between positive and negative gamma regimes"
+          : maxExposure > 0 && minExposure > 0
+            ? "maintaining consistently positive gamma throughout"
+            : "remaining in negative gamma territory"}. The exposure has been
+        <strong>{recentTrend}</strong>
+        recently,
+        {recentTrend === "increasing" && currentExposure > 0
+          ? "suggesting growing dealer hedging that could dampen volatility"
+          : recentTrend === "decreasing" && currentExposure < 0
+            ? "indicating reduced hedging flows that may amplify price swings"
+            : recentTrend === "stable"
+              ? "indicating steady positioning"
+              : "signaling a shift in market maker hedging dynamics"}. Today's
+        put-call gamma ratio of
+        <strong>{currentPutCallRatio?.toFixed(2)}</strong>
+        {currentPutCallRatio > averagePutCallRatio
+          ? `is elevated versus the recent average of ${averagePutCallRatio.toFixed(2)}, suggesting increased put hedging`
+          : `is below the recent average of ${averagePutCallRatio.toFixed(2)}, indicating call-heavy positioning`}.
+        {exposureVolatility > Math.abs(averageExposure) * 0.5
+          ? ` High GEX volatility (±${exposureVolatility?.toLocaleString("en-US")}) suggests frequent repositioning and potential regime changes.`
+          : ` Stable GEX patterns (±${exposureVolatility?.toLocaleString("en-US")}) indicate consistent market maker positioning.`}
+      {:else}
+        <strong>{ticker}</strong>'s current Delta Exposure (DEX) is
+        <strong>{currentExposure?.toLocaleString("en-US")}</strong> shares,
+        which is
+        {Math.abs(currentExposure) > Math.abs(averageExposure)
+          ? `${((Math.abs(currentExposure) / Math.abs(averageExposure) - 1) * 100).toFixed(0)}% larger`
+          : `${((1 - Math.abs(currentExposure) / Math.abs(averageExposure)) * 100).toFixed(0)}% smaller`}
+        than the {timePeriod} average of
+        <strong>{averageExposure?.toLocaleString("en-US")}</strong>
+        shares. During this period, DEX ranged from
+        <strong>{minExposure?.toLocaleString("en-US")}</strong>
+        on {minExposureDate}
+        to <strong>{maxExposure?.toLocaleString("en-US")}</strong> on {maxExposureDate},
+        {maxExposure > 0 && minExposure < 0
+          ? "swinging between net long and short dealer positioning"
+          : maxExposure > 0 && minExposure >= 0
+            ? "with dealers maintaining net short exposure requiring continuous hedging"
+            : "with dealers consistently net long, providing natural buying support"}.
+        Delta exposure has been <strong>{recentTrend}</strong> recently,
+        {recentTrend === "increasing" && currentExposure > 0
+          ? "forcing increased dealer shorting that could cap rallies"
+          : recentTrend === "decreasing" && currentExposure < 0
+            ? "reducing dealer buying pressure that supported recent moves"
+            : recentTrend === "stable"
+              ? "maintaining steady hedging requirements"
+              : "shifting the directional hedging pressure"}. The current
+        put-call delta ratio of
+        <strong>{currentPutCallRatio?.toFixed(2)}</strong>
+        {currentPutCallRatio > 1.2
+          ? "signals heavy put positioning that could accelerate downside moves"
+          : currentPutCallRatio < 0.8
+            ? "shows bullish call positioning but leaves the market vulnerable to pullbacks"
+            : "reflects balanced options positioning"}.
+        {Math.abs(currentExposure) > Math.abs(maxExposure) * 0.8
+          ? ` Near extreme DEX levels suggest potential for mean reversion as positions unwind.`
+          : Math.abs(currentExposure) < Math.abs(averageExposure) * 0.5
+            ? ` Relatively low DEX indicates reduced hedging flows and potential for increased volatility.`
+            : ` Moderate DEX levels suggest normal market maker hedging activity.`}
+      {/if}
+    </p>
+  </div>
 
   <div class="w-full overflow-hidden m-auto mt-5">
     {#if config !== null}

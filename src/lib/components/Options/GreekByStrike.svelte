@@ -7,7 +7,7 @@
   import highcharts from "$lib/highcharts.ts";
   import { mode } from "mode-watcher";
   import { goto } from "$app/navigation";
-  import Infobox from "$lib/components/Infobox.svelte";
+  import InfoModal from "$lib/components/InfoModal.svelte";
 
   export let data;
   export let title = "Gamma";
@@ -29,6 +29,78 @@
 
   let rawData = [];
   let displayList = [];
+
+  // Calculate metrics for insight paragraph
+  $: totalCallExposure =
+    rawData?.reduce(
+      (sum, item) =>
+        sum + (isGamma ? (item?.call_gex ?? 0) : (item?.call_dex ?? 0)),
+      0,
+    ) || 0;
+
+  $: totalPutExposure =
+    rawData?.reduce(
+      (sum, item) =>
+        sum + (isGamma ? (item?.put_gex ?? 0) : (item?.put_dex ?? 0)),
+      0,
+    ) || 0;
+
+  $: totalNetExposure =
+    rawData?.reduce(
+      (sum, item) =>
+        sum + (isGamma ? (item?.net_gex ?? 0) : (item?.net_dex ?? 0)),
+      0,
+    ) || 0;
+
+  $: overallPutCallRatio =
+    totalCallExposure !== 0
+      ? Math.abs(totalPutExposure / totalCallExposure).toFixed(2)
+      : "n/a";
+
+  // Find the strike with maximum absolute exposure
+  $: maxExposureStrike =
+    rawData?.reduce((max, item) => {
+      const currentNet = Math.abs(
+        isGamma ? item?.net_gex || 0 : item?.net_dex || 0,
+      );
+      const maxNet = Math.abs(isGamma ? max?.net_gex || 0 : max?.net_dex || 0);
+      return currentNet > maxNet ? item : max;
+    }, rawData[0]) || {};
+
+  // Find strikes near current price with significant exposure
+  $: nearbyStrikes =
+    rawData?.filter((item) => {
+      const strikeDistance =
+        Math.abs(item.strike - currentPrice) / currentPrice;
+      return strikeDistance <= 0.05; // Within 5% of current price
+    }) || [];
+
+  $: nearbyNetExposure =
+    nearbyStrikes?.reduce(
+      (sum, item) => sum + (isGamma ? item?.net_gex || 0 : item?.net_dex || 0),
+      0,
+    ) || 0;
+
+  // Identify potential support/resistance levels
+  $: supportStrikes =
+    rawData
+      ?.filter(
+        (item) =>
+          item.strike < currentPrice &&
+          (isGamma ? item.net_gex > 0 : item.net_dex < 0),
+      )
+      ?.sort((a, b) => b.strike - a.strike)
+      ?.slice(0, 3) || [];
+
+  $: resistanceStrikes =
+    rawData
+      ?.filter(
+        (item) =>
+          item.strike > currentPrice &&
+          (isGamma ? item.net_gex > 0 : item.net_dex > 0),
+      )
+      ?.sort((a, b) => a.strike - b.strike)
+      ?.slice(0, 3) || [];
 
   // Function to handle date selection changes
   async function handleDateChange(dateValue) {
@@ -270,7 +342,7 @@
             tooltipContent += `
         <span style="display:inline-block; width:10px; height:10px; background-color:${point.color}; border-radius:50%; margin-right:5px;"></span>
         <span class="text-white font-semibold text-sm">${point.series.name}:</span> 
-        <span class="text-white font-normal text-sm">${abbreviateNumber(point.y)}</span><br>`;
+        <span class="text-white font-normal text-sm">${point.y?.toLocaleString("en-US")}</span><br>`;
           });
 
           return tooltipContent;
@@ -324,8 +396,8 @@
           name: `Put ${isGamma ? "Gamma" : "Delta"}`,
           data: putValues,
           stack: "value",
-          color: "#9B5DC4",
-          borderColor: "#9B5DC4",
+          color: "#E74C3C",
+          borderColor: "#E74C3C",
           borderRadius: "1px",
           animation: false,
         },
@@ -333,8 +405,8 @@
           name: `Net ${isGamma ? "Gamma" : "Delta"}`,
           data: netValues,
           stack: "value",
-          color: "#FF2F1F",
-          borderColor: "#FF2F1F",
+          color: "#2C6288",
+          borderColor: "#2C6288",
           borderRadius: "1px",
           animation: false,
         },
@@ -342,8 +414,8 @@
           name: `Call ${isGamma ? "Gamma" : "Delta"}`,
           data: callValues,
           stack: "value",
-          color: "#C4E916",
-          borderColor: "#C4E916",
+          color: "#2ECC71",
+          borderColor: "#2ECC71",
           borderRadius: "1px",
           animation: false,
         },
@@ -472,58 +544,116 @@
 <div class="sm:pl-7 sm:pb-7 sm:pt-5 w-full m-auto mt-2 sm:mt-0">
   <h2 class=" flex flex-row items-center text-xl sm:text-2xl font-bold w-fit">
     {ticker}
-    {title} Exposure By Strike
-  </h2>
-
-  <div class="mt-6 sm:mt-0">
-    <Infobox
-      text={title === "Gamma"
+    {title} Exposure By Strike <InfoModal
+      content={title === "Gamma"
         ? `Gamma Exposure (GEX) for ${ticker} options, representing the estimated dollar value of shares that option sellers must buy or sell to maintain delta neutrality for each 1% move in ${ticker}'s stock price.`
         : `Delta Exposure (DEX) for ${ticker} options, representing the estimated net number of ${ticker} shares that option sellers must hold or short to hedge their current options positions and maintain delta neutrality.`}
     />
-  </div>
+  </h2>
 
-  <p class="mt-3 mb-2">
-    {#if rawData?.length > 0}
-      {title} exposure data for <strong>{ticker}</strong> options contracts.
-      {#if selectedDates.has("All")}
-        Displaying aggregated exposure across all expiration dates.
-      {:else if selectedDates.size === 1}
-        Showing exposure for contracts expiring on <strong
-          >{formatDate(Array.from(selectedDates)[0])}</strong
-        >.
-      {:else}
-        Showing aggregated exposure for <strong>{selectedDates.size}</strong> selected
-        expiration dates.
-      {/if}
-      Total call {title.toLowerCase()}
-      exposure:
-      <strong>
-        {abbreviateNumber(
-          rawData
-            ?.reduce(
-              (sum, item) =>
-                sum + (isGamma ? (item?.call_gex ?? 0) : (item?.call_dex ?? 0)),
-              0,
-            )
-            ?.toFixed(2),
-        )}
-      </strong>. Total put {title.toLowerCase()} exposure:
-      <strong>
-        {abbreviateNumber(
-          rawData
-            ?.reduce(
-              (sum, item) =>
-                sum + (isGamma ? (item?.put_gex ?? 0) : (item?.put_dex ?? 0)),
-              0,
-            )
-            ?.toFixed(2),
-        )}
-      </strong>.
+  <!-- Insightful overview paragraph -->
+  <div class="w-full mt-4 mb-6">
+    {#if rawData?.length > 0 && currentPrice}
+      <p>
+        {#if isGamma}
+          <strong>{ticker}</strong> is currently trading at
+          <strong>${currentPrice}</strong>
+          with
+          {#if selectedDates.has("All")}
+            total Gamma Exposure (GEX) across all strikes and expirations
+            showing
+          {:else if selectedDates.size === 1}
+            Gamma Exposure (GEX) for <strong
+              >{formatDate(Array.from(selectedDates)[0])}</strong
+            > expiration showing
+          {:else}
+            combined Gamma Exposure (GEX) for <strong
+              >{selectedDates.size}</strong
+            > selected expirations showing
+          {/if}
+          <strong>{totalCallExposure?.toLocaleString("en-US")}</strong> from
+          calls and
+          <strong>{Math.abs(totalPutExposure)?.toLocaleString("en-US")}</strong>
+          from puts, with a put-call ratio of
+          <strong>{overallPutCallRatio}</strong>. The maximum exposure
+          concentration is at the
+          <strong>${maxExposureStrike?.strike?.toFixed(2)}</strong>
+          strike with
+          <strong>{maxExposureStrike?.net_gex?.toLocaleString("en-US")}</strong>
+          net GEX,
+          {maxExposureStrike?.strike > currentPrice
+            ? `acting as potential resistance ${(((maxExposureStrike?.strike - currentPrice) / currentPrice) * 100).toFixed(1)}% above current price`
+            : maxExposureStrike?.strike < currentPrice
+              ? `providing potential support ${(((currentPrice - maxExposureStrike?.strike) / currentPrice) * 100).toFixed(1)}% below current price`
+              : "right at the current price level, creating a strong pinning effect"}.
+          Strikes within 5% of current price carry
+          <strong>{nearbyNetExposure?.toLocaleString("en-US")}</strong>
+          net GEX,
+          {nearbyNetExposure > 0
+            ? "suggesting reduced volatility as market makers hedge by selling rallies and buying dips"
+            : nearbyNetExposure < 0
+              ? "indicating potential for increased volatility from negative gamma effects where market makers amplify moves"
+              : "showing balanced positioning"}.
+          {resistanceStrikes.length > 0 &&
+            ` Key resistance levels from positive gamma are at ${resistanceStrikes.map((s) => `$${s.strike.toFixed(2)}`).join(", ")}.`}
+          {supportStrikes.length > 0 &&
+            ` Support zones with positive gamma cushioning are at ${supportStrikes.map((s) => `$${s.strike.toFixed(2)}`).join(", ")}.`}
+        {:else}
+          <strong>{ticker}</strong> is currently trading at
+          <strong>${currentPrice}</strong>
+          with
+          {#if selectedDates.has("All")}
+            total Delta Exposure (DEX) across all strikes and expirations
+            showing
+          {:else if selectedDates.size === 1}
+            Delta Exposure (DEX) for <strong
+              >{formatDate(Array.from(selectedDates)[0])}</strong
+            > expiration showing
+          {:else}
+            combined Delta Exposure (DEX) for <strong
+              >{selectedDates.size}</strong
+            > selected expirations showing
+          {/if}
+          <strong>{abbreviateNumber(totalCallExposure)}</strong> shares from
+          calls and
+          <strong>{abbreviateNumber(Math.abs(totalPutExposure))}</strong> shares
+          from puts, with a put-call ratio of
+          <strong>{overallPutCallRatio}</strong>. The largest delta
+          concentration is at the
+          <strong>${maxExposureStrike?.strike?.toFixed(2)}</strong>
+          strike with
+          <strong>{abbreviateNumber(maxExposureStrike?.net_dex)}</strong> net
+          shares to hedge,
+          {maxExposureStrike?.net_dex > 0 &&
+          maxExposureStrike?.strike > currentPrice
+            ? `requiring market makers to short shares if reached, potentially capping upside ${(((maxExposureStrike?.strike - currentPrice) / currentPrice) * 100).toFixed(1)}% above`
+            : maxExposureStrike?.net_dex < 0 &&
+                maxExposureStrike?.strike < currentPrice
+              ? `forcing market makers to buy shares if breached, providing support ${(((currentPrice - maxExposureStrike?.strike) / currentPrice) * 100).toFixed(1)}% below`
+              : maxExposureStrike?.strike === currentPrice
+                ? "creating significant hedging pressure at the current level"
+                : "creating a key inflection point for hedging flows"}.
+          Near-term strikes carry
+          <strong>{abbreviateNumber(Math.abs(nearbyNetExposure))}</strong>
+          net delta exposure,
+          {nearbyNetExposure > 0
+            ? "with market makers needing to short shares on rallies, potentially creating resistance"
+            : nearbyNetExposure < 0
+              ? "requiring market makers to buy shares on declines, potentially providing support"
+              : "showing relatively neutral positioning"}.
+          {totalNetExposure > 0
+            ? ` The overall positive delta of ${abbreviateNumber(totalNetExposure)} suggests upward hedging pressure that could limit rallies.`
+            : totalNetExposure < 0
+              ? ` The overall negative delta of ${abbreviateNumber(Math.abs(totalNetExposure))} indicates downward hedging flows that could accelerate declines.`
+              : " The balanced delta profile suggests neutral market maker positioning."}
+        {/if}
+      </p>
     {:else}
-      No {title.toLowerCase()} exposure data available for the selected period.
+      <p>
+        No {title.toLowerCase()} exposure data available for the selected period.
+      </p>
     {/if}
-  </p>
+  </div>
 
   <div class="mt-7">
     <DropdownMenu.Root>
@@ -642,19 +772,19 @@
               {item?.strike?.toFixed(2)}
             </td>
             <td class=" text-sm sm:text-[1rem] text-end whitespace-nowrap">
-              {abbreviateNumber(
-                (isGamma ? item?.call_gex : item?.call_dex)?.toFixed(2),
+              {(isGamma ? item?.call_gex : item?.call_dex)?.toLocaleString(
+                "en-US",
               )}
             </td>
             <td class=" text-sm sm:text-[1rem] text-end whitespace-nowrap">
-              {abbreviateNumber(
-                (isGamma ? item?.put_gex : item?.put_dex)?.toFixed(2),
+              {(isGamma ? item?.put_gex : item?.put_dex)?.toLocaleString(
+                "en-US",
               )}
             </td>
 
             <td class=" text-sm sm:text-[1rem] text-end whitespace-nowrap">
-              {abbreviateNumber(
-                (isGamma ? item?.net_gex : item?.net_dex)?.toFixed(2),
+              {(isGamma ? item?.net_gex : item?.net_dex)?.toLocaleString(
+                "en-US",
               )}
             </td>
 

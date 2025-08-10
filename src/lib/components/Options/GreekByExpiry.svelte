@@ -4,7 +4,7 @@
   import TableHeader from "$lib/components/Table/TableHeader.svelte";
   import highcharts from "$lib/highcharts.ts";
   import { mode } from "mode-watcher";
-  import Infobox from "$lib/components/Infobox.svelte";
+  import InfoModal from "$lib/components/InfoModal.svelte";
 
   export let data;
   export let title = "Gamma";
@@ -42,6 +42,41 @@
   }, []);
 
   let displayList = rawData?.slice(0, 20);
+
+  // Calculate aggregate metrics for the insight paragraph
+  $: totalExposure =
+    rawData?.reduce((sum, item) => {
+      return sum + (isGamma ? item?.net_gex || 0 : item?.net_dex || 0);
+    }, 0) || 0;
+
+  $: totalCallExposure =
+    rawData?.reduce((sum, item) => {
+      return sum + (isGamma ? item?.call_gex || 0 : item?.call_dex || 0);
+    }, 0) || 0;
+
+  $: totalPutExposure =
+    rawData?.reduce((sum, item) => {
+      return sum + (isGamma ? item?.put_gex || 0 : item?.put_dex || 0);
+    }, 0) || 0;
+
+  $: nearestExpiry =
+    rawData?.length > 0 ? formatDate(rawData[0]?.expiry) : "n/a";
+
+  $: highestExposureExpiry =
+    rawData?.reduce((max, item) => {
+      const currentNet = isGamma
+        ? Math.abs(item?.net_gex || 0)
+        : Math.abs(item?.net_dex || 0);
+      const maxNet = isGamma
+        ? Math.abs(max?.net_gex || 0)
+        : Math.abs(max?.net_dex || 0);
+      return currentNet > maxNet ? item : max;
+    }, rawData[0]) || {};
+
+  $: overallPutCallRatio =
+    totalCallExposure !== 0
+      ? Math.abs(totalPutExposure / totalCallExposure).toFixed(2)
+      : "n/a";
 
   function formatDate(dateString) {
     if (!dateString) return null; // Handle null or undefined input
@@ -147,7 +182,7 @@
             tooltipContent += `
         <span style="display:inline-block; width:10px; height:10px; background-color:${point.color}; border-radius:50%; margin-right:5px;"></span>
         <span class="font-semibold text-sm">${point.series.name}:</span> 
-        <span class="font-normal text-sm">${abbreviateNumber(point.y)}</span><br>`;
+        <span class="font-normal text-sm">${point.y?.toLocaleString("en-US")}</span><br>`;
           });
 
           return tooltipContent;
@@ -174,6 +209,7 @@
               day: "2-digit", // Include day number
               month: "short", // Display short month name
               year: "numeric", // Include year
+              timeZone: "UTC",
             });
           },
         },
@@ -194,24 +230,24 @@
         {
           name: `Put ${isGamma ? "Gamma" : "Delta"}`,
           data: putValues,
-          color: "#9B5DC4",
-          borderColor: "#9B5DC4",
+          color: "#E74C3C",
+          borderColor: "#E74C3C",
           borderRadius: "1px",
           animation: false,
         },
         {
           name: `Net ${isGamma ? "Gamma" : "Delta"}`,
           data: netValues,
-          color: "#FF2F1F",
-          borderColor: "#FF2F1F",
+          color: "#2C6288",
+          borderColor: "#2C6288",
           borderRadius: "1px",
           animation: false,
         },
         {
           name: `Call ${isGamma ? "Gamma" : "Delta"}`,
           data: callValues,
-          color: "#C4E916",
-          borderColor: "#C4E916",
+          color: "#2ECC71",
+          borderColor: "#2ECC71",
           borderRadius: "1px",
           animation: false,
         },
@@ -340,15 +376,79 @@
 <div class="sm:pl-7 sm:pb-7 sm:pt-5 w-full m-auto mt-2 sm:mt-0">
   <h2 class=" flex flex-row items-center text-xl sm:text-2xl font-bold w-fit">
     {ticker}
-    {title} Exposure By Expiry
-  </h2>
-
-  <div class="mt-6 sm:mt-0">
-    <Infobox
-      text={title === "Gamma"
-        ? `Gamma Exposure (GEX) for ${ticker} options representing the estimated dollar value of shares that option sellers must buy or sell to maintain delta neutrality for each 1% move in ${ticker}’s stock price by expiration.`
+    {title} Exposure By Expiry <InfoModal
+      content={title === "Gamma"
+        ? `Gamma Exposure (GEX) for ${ticker} options representing the estimated dollar value of shares that option sellers must buy or sell to maintain delta neutrality for each 1% move in ${ticker}'s stock price by expiration.`
         : `Delta Exposure (DEX) for ${ticker} options representing the estimated net number of ${ticker} shares that option sellers must hold or short to hedge their current options positions and maintain delta neutrality at expiration.`}
     />
+  </h2>
+
+  <!-- Insightful overview paragraph -->
+  <div class="w-full mt-4 mb-6">
+    <p>
+      {#if isGamma}
+        The total Gamma Exposure (GEX) for <strong>{ticker}</strong> across all
+        expirations is
+        <strong>{totalExposure?.toLocaleString("en-US")}</strong> shares per 1%
+        move, with
+        <strong>{totalCallExposure?.toLocaleString("en-US")}</strong> from calls
+        and
+        <strong>{Math.abs(totalPutExposure)?.toLocaleString("en-US")}</strong>
+        from puts. The put-call GEX ratio of
+        <strong>{overallPutCallRatio}</strong>
+        {overallPutCallRatio !== "n/a" && parseFloat(overallPutCallRatio) > 1
+          ? "indicates heavy put positioning, suggesting market makers may need to buy shares on declines (supportive) and sell on rallies (resistance)"
+          : overallPutCallRatio !== "n/a" &&
+              parseFloat(overallPutCallRatio) < 0.5
+            ? "shows call-heavy positioning, potentially creating volatility as market makers hedge by selling into strength and buying weakness"
+            : "reflects balanced positioning between puts and calls"}. The
+        highest gamma concentration is at the
+        <strong>{formatDate(highestExposureExpiry?.expiry)}</strong>
+        expiration with
+        <strong
+          >{highestExposureExpiry?.net_gex?.toLocaleString("en-US")}</strong
+        >
+        net GEX, which may act as a {highestExposureExpiry?.net_gex > 0
+          ? "magnet"
+          : "pivot"} point for price action. Near-term exposure for
+        <strong>{nearestExpiry}</strong>
+        suggests {rawData?.[0]?.net_gex > 0
+          ? "potential support from positive gamma hedging flows"
+          : "possible volatility from negative gamma effects"}.
+      {:else}
+        The total Delta Exposure (DEX) for <strong>{ticker}</strong> across all
+        expirations shows
+        <strong>{totalExposure?.toLocaleString("en-US")}</strong> net shares
+        that market makers must hedge, with
+        <strong>{totalCallExposure?.toLocaleString("en-US")}</strong> from calls
+        and
+        <strong>{Math.abs(totalPutExposure)?.toLocaleString("en-US")}</strong>
+        from puts. The put-call delta ratio of
+        <strong>{overallPutCallRatio}</strong>
+        {overallPutCallRatio !== "n/a" && parseFloat(overallPutCallRatio) > 1
+          ? "indicates defensive positioning with heavy put protection, which could accelerate downward moves if breached"
+          : overallPutCallRatio !== "n/a" &&
+              parseFloat(overallPutCallRatio) < 0.5
+            ? "shows bullish positioning with call dominance, potentially providing upward momentum but leaving the market vulnerable to sharp pullbacks"
+            : "suggests neutral market maker positioning"}. The largest delta
+        concentration at
+        <strong>{formatDate(highestExposureExpiry?.expiry)}</strong>
+        with
+        <strong
+          >{abbreviteNumber(highestExposureExpiry?.net_dex)?.toLocaleString(
+            "en-US",
+          )}</strong
+        >
+        net DEX represents significant hedging pressure that {highestExposureExpiry?.net_dex >
+        0
+          ? "may cap upside moves"
+          : "could fuel downside acceleration"}. The nearest expiration on
+        <strong>{nearestExpiry}</strong>
+        carries {rawData?.[0]?.net_dex > 0
+          ? "positive delta requiring market makers to short shares, potentially creating resistance"
+          : "negative delta forcing market makers to buy shares, potentially providing support"}.
+      {/if}
+    </p>
   </div>
 
   <div class="w-full overflow-hidden m-auto sm:mt-3 shadow-xs">
@@ -388,19 +488,19 @@
               {formatDate(item?.expiry)}
             </td>
             <td class=" text-sm sm:text-[1rem] text-end whitespace-nowrap">
-              {abbreviateNumber(
-                (isGamma ? item?.call_gex : item?.call_dex)?.toFixed(2),
+              {(isGamma ? item?.call_gex : item?.call_dex)?.toLocaleString(
+                "en-US",
               )}
             </td>
             <td class=" text-sm sm:text-[1rem] text-end whitespace-nowrap">
-              {abbreviateNumber(
-                (isGamma ? item?.put_gex : item?.put_dex)?.toFixed(2),
+              {(isGamma ? item?.put_gex : item?.put_dex)?.toLocaleString(
+                "en-US",
               )}
             </td>
 
             <td class=" text-sm sm:text-[1rem] text-end whitespace-nowrap">
-              {abbreviateNumber(
-                (isGamma ? item?.net_gex : item?.net_dex)?.toFixed(2),
+              {(isGamma ? item?.net_gex : item?.net_dex)?.toLocaleString(
+                "en-US",
               )}
             </td>
 

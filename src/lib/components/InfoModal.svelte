@@ -73,7 +73,7 @@
       content: `
         <div class="text-sm  text-white p-2 w-full">
           <div class="font-semibold text-lg mb-2 ${title ? "" : "hidden"}">${title}</div>
-          <div>${isLoading ? "Loading..." : content}</div>
+          <div class="font-normal">${isLoading ? "Loading..." : content}</div>
           ${equation ? `<div class="mt-2 pt-2 border-t border-gray-500">${equation}</div>` : ""}
         </div>
       `,
