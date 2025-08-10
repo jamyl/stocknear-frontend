@@ -3,7 +3,6 @@
   import { displayCompanyName, screenWidth } from "$lib/store";
 
   import TableHeader from "$lib/components/Table/TableHeader.svelte";
-  import Infobox from "$lib/components/Infobox.svelte";
   import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
   import { Button } from "$lib/components/shadcn/button/index.js";
   import { goto } from "$app/navigation";
@@ -26,6 +25,79 @@
 
   let configStrike = null;
   let configExpiry = null;
+
+  // Calculate metrics for insight paragraph
+  $: nearTermMaxPain = rawData?.[0]?.maxPain || 0;
+  $: nearTermExpiry = rawData?.[0]?.expiration || null;
+  $: nearTermDaysLeft = nearTermExpiry ? daysLeft(nearTermExpiry) : 0;
+
+  $: priceVsMaxPain =
+    currentPrice && nearTermMaxPain
+      ? ((currentPrice - nearTermMaxPain) / nearTermMaxPain) * 100
+      : 0;
+
+  // Calculate average max pain across all expirations
+  $: averageMaxPain =
+    rawData.length > 0
+      ? rawData.reduce((sum, item) => sum + (item.maxPain || 0), 0) /
+        rawData.length
+      : 0;
+
+  // Find the trend in max pain (comparing near-term to longer-term)
+  $: maxPainTrend = (() => {
+    if (rawData.length < 3) return "stable";
+    const nearTerm =
+      rawData
+        .slice(0, Math.min(3, rawData.length))
+        .reduce((sum, item) => sum + item.maxPain, 0) /
+      Math.min(3, rawData.length);
+    const longerTerm =
+      rawData
+        .slice(3, Math.min(6, rawData.length))
+        .reduce((sum, item) => sum + item.maxPain, 0) /
+      Math.min(3, rawData.length - 3);
+
+    if (longerTerm === 0) return "stable";
+    const change = ((nearTerm - longerTerm) / longerTerm) * 100;
+
+    if (Math.abs(change) < 2) return "stable";
+    return change > 0 ? "rising" : "falling";
+  })();
+
+  // Find expirations where max pain is significantly different from current price
+  $: significantDeviations = rawData.filter((item) => {
+    const deviation = Math.abs(
+      ((item.maxPain - currentPrice) / currentPrice) * 100,
+    );
+    return deviation > 5; // More than 5% away
+  }).length;
+
+  // Calculate the range of max pain values
+  $: maxPainRange =
+    rawData.length > 0
+      ? {
+          min: Math.min(...rawData.map((item) => item.maxPain)),
+          max: Math.max(...rawData.map((item) => item.maxPain)),
+        }
+      : { min: 0, max: 0 };
+
+  // Identify if there's a clustering of max pain at certain levels
+  $: maxPainClusters = (() => {
+    if (rawData.length < 3) return [];
+    const threshold = 1; // Within 1% considered a cluster
+    const clusters = {};
+
+    rawData.forEach((item) => {
+      const rounded = Math.round(item.maxPain);
+      if (!clusters[rounded]) clusters[rounded] = 0;
+      clusters[rounded]++;
+    });
+
+    return Object.entries(clusters)
+      .filter(([_, count]) => count >= 2)
+      .map(([price, count]) => ({ price: parseFloat(price), count }))
+      .sort((a, b) => b.count - a.count);
+  })();
 
   function initialize() {
     currentPrice = Number(data?.getStockQuote?.price?.toFixed(2));
@@ -75,6 +147,7 @@
       return "n/a";
     }
   }
+
   function plotStrikePrice() {
     const raw = rawData?.find((item) => item?.expiration === selectedDate);
     if (!raw) return {};
@@ -462,13 +535,37 @@
           {removeCompanyStrings($displayCompanyName)} Max Pain By Strike
         </h2>
 
-        <Infobox
-          text={`The Max Pain for ${ticker} options expiring on ${formatDate(
-            selectedDate,
-          )} (${
-            selectedDate ? daysLeft(selectedDate) : "n/a"
-          } days) is $${selectedMaxPain}.`}
-        />
+        <!-- Insightful overview paragraph -->
+        <div class="w-full mt-4 mb-6">
+          <p>
+            <strong>{ticker}</strong> trades at
+            <strong>${currentPrice}</strong>,
+            {Math.abs(priceVsMaxPain) < 2
+              ? "pinned near"
+              : priceVsMaxPain > 0
+                ? `${Math.abs(priceVsMaxPain).toFixed(1)}% above`
+                : `${Math.abs(priceVsMaxPain).toFixed(1)}% below`}
+            the near-term max pain of <strong>${nearTermMaxPain}</strong>
+            expiring {formatDate(nearTermExpiry)} ({nearTermDaysLeft} days).
+            {Math.abs(priceVsMaxPain) > 5
+              ? priceVsMaxPain > 0
+                ? " Expect downward pressure as dealers benefit from price declining toward max pain."
+                : " Look for upward drift as max pain acts as a magnet pulling price higher."
+              : " Price stability likely with balanced options positioning at this level."}
+            Max pain is <strong>{maxPainTrend}</strong> across expirations (${maxPainRange.min}-${maxPainRange.max}),
+            {maxPainTrend === "rising"
+              ? "reflecting growing call interest at higher strikes"
+              : maxPainTrend === "falling"
+                ? "signaling increased put positioning or downside protection"
+                : "indicating stable market expectations"}.
+            {maxPainClusters.length > 0
+              ? ` Key magnetic zone at ${maxPainClusters[0].price} where ${maxPainClusters[0].count} expirations converge.`
+              : ""}
+            {significantDeviations > rawData.length * 0.5
+              ? ` High dispersion in max pain levels suggests competing forces and potential volatility.`
+              : ""}
+          </p>
+        </div>
 
         <div class="mt-4">
           <DropdownMenu.Root>
@@ -561,9 +658,38 @@
         >
           {removeCompanyStrings($displayCompanyName)} Max Pain By Expiry
         </h2>
-        <p class="text-sm sm:text-[1rem] mt-2">
-          The Max Pain for all expiration dates of <strong>{ticker}</strong>.
-        </p>
+
+        <!-- Insightful overview paragraph for Max Pain By Expiry section -->
+        <div class="w-full mt-4 mb-2">
+          <p>
+            Max pain for <strong>{ticker}</strong> shows
+            {maxPainTrend === "rising"
+              ? ` an upward trend from ${maxPainRange.min} to ${maxPainRange.max}, suggesting bullish positioning in longer-dated options`
+              : maxPainTrend === "falling"
+                ? ` a downward trend from ${maxPainRange.max} to ${maxPainRange.min}, indicating bearish sentiment or hedging activity`
+                : ` stable levels around ${averageMaxPain.toFixed(2)}, reflecting balanced market expectations`}.
+            The {(
+              ((maxPainRange.max - maxPainRange.min) / averageMaxPain) *
+              100
+            ).toFixed(0)}% spread
+            {Math.abs(maxPainRange.max - maxPainRange.min) / averageMaxPain >
+            0.1
+              ? " signals divergent expectations across timeframes"
+              : " suggests strong consensus on fair value"}.
+            {rawData.filter((item) => item.maxPain < currentPrice).length >
+            rawData.length * 0.7
+              ? ` Most levels below ${currentPrice} may cap rallies.`
+              : rawData.filter((item) => item.maxPain > currentPrice).length >
+                  rawData.length * 0.7
+                ? ` Most levels above ${currentPrice} could support dips.`
+                : ` Levels distributed around ${currentPrice}.`}
+            {maxPainClusters.length > 0 && maxPainClusters[0].count >= 3
+              ? ` Strong magnetic level at ${maxPainClusters[0].price} (${maxPainClusters[0].count} expirations).`
+              : ""}
+            Weekly expirations influence price 2-3 days before expiry; monthlies
+            throughout their final week.
+          </p>
+        </div>
 
         <div>
           <div class="grow mt-3">

@@ -435,9 +435,7 @@
         <strong>{formatDate(highestExposureExpiry?.expiry)}</strong>
         with
         <strong
-          >{abbreviteNumber(highestExposureExpiry?.net_dex)?.toLocaleString(
-            "en-US",
-          )}</strong
+          >{highestExposureExpiry?.net_dex?.toLocaleString("en-US")}</strong
         >
         net DEX represents significant hedging pressure that {highestExposureExpiry?.net_dex >
         0
