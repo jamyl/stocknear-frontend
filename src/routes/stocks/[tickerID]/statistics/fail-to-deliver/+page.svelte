@@ -175,11 +175,10 @@
                   <span class="text-xl font-bold">
                     {abbreviateNumber(
                       rawData?.slice(-1)?.at(0)?.failToDeliver,
-                      false,
                     )}</span
                   >
                   <div class="flex flex-col ml-2">
-                    <span class="text-sm text-violet-600 dark:text-violet-400">
+                    <span class="text-sm">
                       {rawData?.slice(-1)?.at(0)?.failToDeliver > 1e5
                         ? "Above Average"
                         : "Below Average"}
@@ -203,7 +202,7 @@
                         : "n/a"}</span
                   >
                   <div class="flex flex-col ml-2">
-                    <span class="text-sm text-red-800 dark:text-red-400">
+                    <span class="text-sm">
                       {relativeFTD > 20 ? "High Impact" : "Low Impact"}
                     </span>
                   </div>
@@ -225,15 +224,7 @@
                       : "n/a"}</span
                   >
                   <div class="flex flex-col ml-2">
-                    <span
-                      class="text-sm {changePercentageYearAgo
-                        ? changePercentageYearAgo >= 0
-                          ? "before:content-['+'] text-green-800 dark:text-[#00FC50]"
-                          : changePercentageYearAgo < 0
-                            ? 'text-red-800 dark:text-[#FF2F1F]'
-                            : ''
-                        : ''}"
-                    >
+                    <span class="text-sm">
                       {changePercentageYearAgo
                         ? changePercentageYearAgo >= 0
                           ? "Positive Trend"

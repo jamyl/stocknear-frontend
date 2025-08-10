@@ -95,12 +95,36 @@
     const totalNumber = failToDeliverList?.reduce((acc, item) => acc + item, 0);
     avgFailToDeliver = Math?.floor(totalNumber / failToDeliverList?.length);
 
+    // Calculate max and min FTD values for bubble scaling
+    const maxFTD = Math.max(...(failToDeliverList || [0]));
+    const minFTD = Math.min(...(failToDeliverList || [0]));
+
+    // Calculate dynamic threshold for significant FTD spikes
+    const avgFTD =
+      failToDeliverList?.reduce((sum, item) => sum + item, 0) /
+      (failToDeliverList?.length || 1);
+    const ftdThreshold = Math.min(avgFTD * 1.5, maxFTD * 0.3); // Show meaningful spikes
+
+    // Create FTD impact bubbles for significant spikes
+    const ftdImpactPoints =
+      rawData
+        ?.filter((item, index) => failToDeliverList[index] > ftdThreshold)
+        ?.map((item, index) => {
+          const originalIndex = rawData.indexOf(item);
+          const x = originalIndex; // Use index for category axis
+          const y = Number(item?.price) || 0;
+          const z = failToDeliverList[originalIndex] || 0;
+
+          // Only return valid data points with meaningful FTD
+          return x !== undefined && y && z > 0 ? { x, y, z } : null;
+        })
+        ?.filter(Boolean) || []; // Remove null/undefined values
+
     const options = {
       credits: {
         enabled: false,
       },
       chart: {
-        // Removed global type so each series can define its own type.
         backgroundColor: $mode === "light" ? "#fff" : "#09090B",
         plotBackgroundColor: $mode === "light" ? "#fff" : "#09090B",
         height: 360,
@@ -116,22 +140,50 @@
       plotOptions: {
         series: {
           color: $mode === "light" ? "black" : "white",
-          animation: false, // Disable series animation
+          animation: false,
           states: {
             hover: {
-              enabled: false, // Disable hover effect globally
+              enabled: false,
             },
           },
         },
+        bubble: {
+          minSize: 8, // Minimum bubble size
+          maxSize: 35, // Maximum bubble size
+          opacity: 0.8,
+          marker: {
+            enabled: true,
+            fillOpacity: 0.8,
+            lineWidth: 2,
+            lineColor: $mode === "light" ? "#dc2626" : "#ef4444",
+          },
+          dataLabels: {
+            enabled: false,
+          },
+          sizeBy: "z",
+          zMin: minFTD,
+          zMax: maxFTD,
+          sizeByAbsoluteValue: false,
+        },
       },
       legend: {
-        enabled: false,
+        enabled: true,
+        align: "center",
+        verticalAlign: "top",
+        layout: "horizontal",
+        squareSymbol: false,
+        symbolWidth: 20,
+        symbolHeight: 12,
+        symbolRadius: 0,
+        itemStyle: {
+          color: $mode === "light" ? "black" : "white",
+        },
       },
       tooltip: {
-        shared: true,
+        shared: false, // Changed to false for better bubble handling
         useHTML: true,
-        backgroundColor: "rgba(0, 0, 0, 0.8)", // Semi-transparent black
-        borderColor: "rgba(255, 255, 255, 0.2)", // Slightly visible white border
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        borderColor: "rgba(255, 255, 255, 0.2)",
         borderWidth: 1,
         style: {
           color: "#fff",
@@ -140,9 +192,8 @@
         },
         borderRadius: 4,
         formatter: function () {
-          // Format the x value to display time in hh:mm format
-          let tooltipContent = `<span class=" m-auto text-[1rem] font-[501]">${new Date(
-            this?.x,
+          let tooltipContent = `<span class="m-auto text-[1rem] font-[501]">${new Date(
+            dates[this.x] || this.x,
           ).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
@@ -150,13 +201,23 @@
             timeZone: "UTC",
           })}</span><br>`;
 
-          // Loop through each point in the shared tooltip
-          this.points.forEach((point) => {
-            tooltipContent += `
-            <span style=\"display:inline-block; width:10px; height:10px; background-color:${point.color}; border-radius:50%; margin-right:5px; vertical-align:middle;\"></span>
-            <span class=\"font-semibold text-sm\">${point.series.name}:</span>
-            <span class=\"font-normal text-sm\">${abbreviateNumber(point.y)}${point.series.name.includes("%") ? "%" : ""}</span><br/>`;
-          });
+          // Handle bubble series differently
+          if (this.series.type === "bubble") {
+            tooltipContent += `<span class="font-semibold text-sm">${this.series.name}</span><br>`;
+            tooltipContent += `<span class="font-normal text-sm">Price: $${this.point.y?.toFixed(2)}</span><br>`;
+            tooltipContent += `<span class="font-normal text-sm">FTD Shares: ${abbreviateNumber(this.point.z)}</span><br>`;
+            tooltipContent += `<span class="font-normal text-xs">Impact: ${
+              this.point.z === maxFTD
+                ? "Highest"
+                : this.point.z > avgFTD * 2
+                  ? "High"
+                  : "Medium"
+            }</span>`;
+          } else if (this.series.type === "line") {
+            tooltipContent += `<span class="font-semibold text-sm">Stock Price: $${this.y?.toFixed(2)}</span><br>`;
+          } else if (this.series.type === "area") {
+            tooltipContent += `<span class="font-semibold text-sm">FTD Shares: ${abbreviateNumber(this.y)}</span>`;
+          }
 
           return tooltipContent;
         },
@@ -165,19 +226,19 @@
         endOnTick: false,
         categories: dates,
         crosshair: {
-          color: $mode === "light" ? "black" : "white", // Set the color of the crosshair line
-          width: 1, // Adjust the line width as needed
+          color: $mode === "light" ? "black" : "white",
+          width: 1,
           dashStyle: "Solid",
         },
-
         labels: {
           style: { color: $mode === "light" ? "black" : "white" },
-          distance: 10, // Increases space between label and axis
+          distance: 10,
           formatter: function () {
             return new Date(this.value).toLocaleDateString("en-US", {
-              day: "2-digit", // Include day number
-              month: "short", // Display short month name
-              year: "numeric", // Include year
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              timeZone: "UTC",
             });
           },
         },
@@ -208,7 +269,7 @@
       ],
       series: [
         {
-          // Price line series drawn on top
+          // Price line series drawn on top of area
           name: "Stock Price",
           type: "line",
           data: priceList,
@@ -222,11 +283,11 @@
             },
           },
           lineWidth: 2,
+          zIndex: 2, // Middle z-index
         },
         {
-          // FTD Shares area series drawn first (behind the line)
           name: "FTD Shares",
-          type: "area",
+          type: "column",
           data: failToDeliverList,
           fillOpacity: 1,
           yAxis: 1,
@@ -239,13 +300,24 @@
               },
             },
           },
+          zIndex: 1, // Lowest z-index
+        },
+        {
+          // FTD impact bubbles drawn on top
+          name: "High FTD Impact",
+          type: "bubble",
+          data: ftdImpactPoints,
+          color: "#E11D48",
+          yAxis: 0, // Use the price axis for y-positioning
+          animation: false,
+          zIndex: 3, // Highest z-index to appear on top
+          showInLegend: true,
         },
       ],
     };
 
     return options;
   }
-
   $: {
     if ($stockTicker || $etfTicker || $mode) {
       const ticker = $assetType === "stock" ? $stockTicker : $etfTicker;
@@ -270,14 +342,43 @@
       <h1 class="text-xl sm:text-2xl font-bold">FTD Chart</h1>
     </div>
 
-    {#if rawData?.length !== 0}
-      <div class="w-full flex flex-col items-start">
-        <div class=" text-[1rem] mt-2 mb-2 w-full">
-          Over the past year, {$displayCompanyName} has seen a monthly average of
-          <span class="font-semibold"
-            >{avgFailToDeliver?.toLocaleString("en-US")}
-          </span> fail to deliver shares.
-        </div>
+    {#if rawData?.length > 0}
+      <div class="text-[1rem] mt-2 mb-2 w-full">
+        As of <strong
+          >{new Date(rawData?.slice(-1)?.at(0)?.date).toLocaleDateString(
+            "en-US",
+            { month: "short", day: "numeric", year: "numeric" },
+          )}</strong
+        >,
+        <strong>{$displayCompanyName}</strong> has
+        <strong
+          >{rawData
+            ?.slice(-1)
+            ?.at(0)
+            ?.failToDeliver?.toLocaleString("en-US")}</strong
+        >
+        shares failed to deliver, representing <strong>{weightedFTD}%</strong>
+        of the average daily volume of
+        <strong
+          >{data?.getStockQuote?.avgVolume?.toLocaleString("en-US")}</strong
+        >
+        shares. Over the past year, the monthly average FTD is
+        <strong>{avgFailToDeliver?.toLocaleString("en-US")}</strong>
+        shares, with the current level {@html rawData?.slice(-1)?.at(0)
+          ?.failToDeliver > avgFailToDeliver
+          ? `<strong>${((rawData?.slice(-1)?.at(0)?.failToDeliver / avgFailToDeliver - 1) * 100).toFixed(0)}% above</strong>`
+          : `<strong>${((1 - rawData?.slice(-1)?.at(0)?.failToDeliver / avgFailToDeliver) * 100).toFixed(0)}% below</strong>`}
+        the historical average, indicating
+        <strong
+          >{rawData?.slice(-1)?.at(0)?.failToDeliver > avgFailToDeliver * 1.5
+            ? "elevated"
+            : rawData?.slice(-1)?.at(0)?.failToDeliver < avgFailToDeliver * 0.5
+              ? "low"
+              : "moderate"}</strong
+        >
+        settlement pressure. {weightedFTD > 1
+          ? `The weighted FTD ratio above 1% suggests potential liquidity constraints or heightened short-selling activity.`
+          : `The weighted FTD ratio below 1% suggests normal market making activity with adequate liquidity.`}
       </div>
 
       <div
