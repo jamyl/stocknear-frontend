@@ -10,7 +10,8 @@
   export let title;
   export let ticker;
 
-  let rawData = data?.getData || [];
+  let rawData =
+    data?.getData?.sort((a, b) => new Date(b?.date) - new Date(a?.date)) || [];
 
   rawData = rawData?.map((item) => {
     if (title === "Gamma") {
@@ -146,7 +147,7 @@
             tooltipContent += `
         <span style="display:inline-block; width:10px; height:10px; background-color:${point.color}; border-radius:50%; margin-right:5px;"></span>
         <span class="font-semibold text-sm">${point.series.name}:</span> 
-        <span class="font-normal text-sm">${abbreviateNumber(point.y)}</span><br>`;
+        <span class="font-normal text-sm">${point.y?.toLocaleString("en-US")}</span><br>`;
           });
 
           return tooltipContent;
