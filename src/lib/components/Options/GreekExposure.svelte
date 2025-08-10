@@ -452,20 +452,20 @@
               {formatDate(item?.date)}
             </td>
             <td class=" text-sm sm:text-[1rem] text-end whitespace-nowrap">
-              {abbreviateNumber(
-                title === "Gamma" ? item?.call_gex : item?.call_dex,
-              )}
+              {title === "Gamma"
+                ? item?.call_gex?.toLocaleString("en-US")
+                : item?.call_dex?.toLocaleString("en-US")}
             </td>
             <td class=" text-sm sm:text-[1rem] text-end whitespace-nowrap">
-              {abbreviateNumber(
-                title === "Gamma" ? item?.put_gex : item?.put_dex,
-              )}
+              {title === "Gamma"
+                ? item?.put_gex?.toLocaleString("en-US")
+                : item?.put_dex?.toLocaleString("en-US")}
             </td>
 
             <td class=" text-sm sm:text-[1rem] text-end whitespace-nowrap">
-              {abbreviateNumber(
-                title === "Gamma" ? item?.netGex : item?.netDex,
-              )}
+              {title === "Gamma"
+                ? item?.netGex?.toLocaleString("en-US")
+                : item?.netDex?.toLocaleString("en-US")}
             </td>
 
             <td class=" text-sm sm:text-[1rem] text-end whitespace-nowrap">
