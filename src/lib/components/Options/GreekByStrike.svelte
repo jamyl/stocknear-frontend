@@ -16,16 +16,31 @@
 
   $: isGamma = title === "Gamma";
 
-  let dateList = [
+  // Calculate DTE (Days to Expiration) for each date
+  function calculateDTE(dateStr) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const expiryDate = new Date(dateStr + "T00:00:00Z");
+    const diffTime = expiryDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  }
+
+  // Create DTE-based options
+  let dteOptions = [
     "All",
-    ...Object?.keys(data?.getData ?? {})?.sort(
-      (a, b) => new Date(a) - new Date(b),
-    ),
+    "5 DTE",
+    "10 DTE",
+    "20 DTE",
+    "60 DTE",
+    "90 DTE",
+    "180 DTE",
   ];
 
   // New variables for multiple selection
-  let selectedDates = new Set(["All"]); // Start with "All" selected
-  let checkedDates = new Set(["All"]); // Track which dates are checked
+  let selectedDTEs = new Set(["All"]); // Start with "All" selected
+  let checkedDTEs = new Set(["All"]); // Track which DTEs are checked
+  let selectedDTEsText = "All"; // Text to display in the dropdown
 
   let rawData = [];
   let displayList = [];
@@ -102,63 +117,50 @@
       ?.sort((a, b) => a.strike - b.strike)
       ?.slice(0, 3) || [];
 
-  // Function to handle date selection changes
-  async function handleDateChange(dateValue) {
-    if (dateValue === "All") {
-      // If "All" is selected, clear other selections
-      if (checkedDates.has("All")) {
-        checkedDates.delete("All");
-        selectedDates.delete("All");
-      } else {
-        checkedDates.clear();
-        selectedDates.clear();
-        checkedDates.add("All");
-        selectedDates.add("All");
-      }
+  // Function to handle DTE selection changes
+  async function handleDTEChange(dteValue) {
+    // Always allow only one selection at a time
+    checkedDTEs.clear();
+    selectedDTEs.clear();
+
+    selectedDTEsText = dteValue;
+
+    if (dteValue === "All" || !dteValue) {
+      checkedDTEs.add("All");
+      selectedDTEs.add("All");
     } else {
-      // If a specific date is selected
-      if (checkedDates.has(dateValue)) {
-        checkedDates.delete(dateValue);
-        selectedDates.delete(dateValue);
-      } else {
-        // Remove "All" if it was selected
-        checkedDates.delete("All");
-        selectedDates.delete("All");
-        checkedDates.add(dateValue);
-        selectedDates.add(dateValue);
-      }
+      checkedDTEs.add(dteValue);
+      selectedDTEs.add(dteValue);
     }
 
-    // If no dates are selected, default to "All"
-    if (selectedDates.size === 0) {
-      checkedDates.add("All");
-      selectedDates.add("All");
-    }
+    // Trigger reactive updates
+    selectedDTEs = new Set(selectedDTEs);
+    checkedDTEs = new Set(checkedDTEs);
 
-    // Update the arrays to trigger reactivity
-    selectedDates = new Set(selectedDates);
-    checkedDates = new Set(checkedDates);
-
-    // Recalculate data
-    updateDataForSelectedDates();
-    dateList = [...dateList];
+    updateDataForSelectedDTEs();
+    dteOptions = [...dteOptions];
   }
 
-  function isDateChecked(dateValue) {
-    return checkedDates.has(dateValue);
+  function isDTEChecked(dteValue) {
+    return checkedDTEs.has(dteValue);
   }
 
-  function updateDataForSelectedDates() {
-    if (selectedDates.has("All")) {
+  function updateDataForSelectedDTEs() {
+    if (selectedDTEs.has("All")) {
       rawData = aggregateDict(data?.getData) || [];
     } else {
-      // Aggregate data for selected dates only
       const selectedData = {};
-      selectedDates.forEach((date) => {
-        if (data?.getData[date]) {
+      const dteStr = Array.from(selectedDTEs)[0]; // Only one is allowed
+      const targetDTE = parseInt(dteStr.split(" ")[0]);
+
+      Object.keys(data?.getData ?? {}).forEach((date) => {
+        const dte = calculateDTE(date);
+
+        if (dte <= targetDTE) {
           selectedData[date] = data?.getData[date];
         }
       });
+
       rawData = aggregateDict(selectedData) || [];
     }
 
@@ -187,19 +189,6 @@
     displayList = rawData?.slice(0, 20);
     config = plotData() || null;
   }
-
-  // Get display text for selected dates
-  function getSelectedDatesText() {
-    if (selectedDates.has("All")) {
-      return "All Expiries";
-    } else if (selectedDates.size === 1) {
-      const singleDate = Array.from(selectedDates)[0];
-      return formatDate(singleDate);
-    } else {
-      return `${selectedDates.size} Expiries Selected`;
-    }
-  }
-
   function aggregateDict(data) {
     const map = new Map();
 
@@ -233,24 +222,6 @@
 
     // sort by strike ascending
     return Array?.from(map?.values())?.sort((a, b) => a?.strike - b?.strike);
-  }
-
-  function formatDate(dateStr) {
-    try {
-      let date = new Date(dateStr + "T00:00:00Z");
-      let options = {
-        timeZone: "UTC",
-        month: "short", // Full month name
-        day: "numeric", // Day without leading zero
-        year: "numeric", // Full year
-      };
-
-      let formatter = new Intl.DateTimeFormat("en-US", options);
-
-      return formatter?.format(date);
-    } catch (e) {
-      return "n/a";
-    }
   }
 
   function plotData() {
@@ -438,7 +409,7 @@
 
   onMount(() => {
     window.addEventListener("scroll", handleScroll);
-    updateDataForSelectedDates(); // Initialize data
+    updateDataForSelectedDTEs(); // Initialize data
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
@@ -559,17 +530,17 @@
           <strong>{ticker}</strong> is currently trading at
           <strong>${currentPrice}</strong>
           with
-          {#if selectedDates.has("All")}
+          {#if selectedDTEs.has("All")}
             total Gamma Exposure (GEX) across all strikes and expirations
             showing
-          {:else if selectedDates.size === 1}
+          {:else if selectedDTEs.size === 1}
             Gamma Exposure (GEX) for <strong
-              >{formatDate(Array.from(selectedDates)[0])}</strong
-            > expiration showing
+              >{Array.from(selectedDTEs)[0]}</strong
+            > showing
           {:else}
             combined Gamma Exposure (GEX) for <strong
-              >{selectedDates.size}</strong
-            > selected expirations showing
+              >{selectedDTEs.size}</strong
+            > selected DTEs showing
           {/if}
           <strong>{totalCallExposure?.toLocaleString("en-US")}</strong> from
           calls and
@@ -602,17 +573,17 @@
           <strong>{ticker}</strong> is currently trading at
           <strong>${currentPrice}</strong>
           with
-          {#if selectedDates.has("All")}
+          {#if selectedDTEs.has("All")}
             total Delta Exposure (DEX) across all strikes and expirations
             showing
-          {:else if selectedDates.size === 1}
+          {:else if selectedDTEs.size === 1}
             Delta Exposure (DEX) for <strong
-              >{formatDate(Array.from(selectedDates)[0])}</strong
-            > expiration showing
+              >{Array.from(selectedDTEs)[0]}</strong
+            > showing
           {:else}
             combined Delta Exposure (DEX) for <strong
-              >{selectedDates.size}</strong
-            > selected expirations showing
+              >{selectedDTEs.size}</strong
+            > selected DTEs showing
           {/if}
           <strong>{abbreviateNumber(totalCallExposure)}</strong> shares from
           calls and
@@ -663,7 +634,7 @@
           class=" border border-gray-300 dark:border-gray-700  text-white bg-black sm:hover:bg-default dark:default h-[38px] flex flex-row justify-between items-center min-w-[130px] max-w-[240px] sm:w-auto  px-3  rounded truncate"
         >
           <span class="truncate text-sm"
-            >Date Expiration | {getSelectedDatesText()}</span
+            >Date to Expiration | {selectedDTEsText}</span
           >
           <svg
             class="-mr-1 ml-2 h-5 w-5 inline-block"
@@ -689,7 +660,7 @@
         class="min-w-56 w-auto max-w-60 max-h-[400px] overflow-y-auto scroller relative"
       >
         <DropdownMenu.Group class="pb-2">
-          {#each dateList as item, index}
+          {#each dteOptions as item, index}
             {#if data?.user?.tier === "Pro" || index === 0}
               <DropdownMenu.Item
                 class="sm:hover:bg-gray-300 dark:sm:hover:bg-primary"
@@ -700,12 +671,12 @@
                 >
                   <label
                     class="cursor-pointer"
-                    on:click={() => handleDateChange(item)}
+                    on:click={() => handleDTEChange(item)}
                     for={item}
                   >
-                    <input type="checkbox" checked={isDateChecked(item)} />
+                    <input type="checkbox" checked={isDTEChecked(item)} />
                     <span class="ml-2">
-                      {item === "All" ? "All Expiries" : formatDate(item)}
+                      {item === "All" ? "All DTE" : item}
                     </span>
                   </label>
                 </div>
@@ -715,7 +686,7 @@
                 on:click={() => goto("/pricing")}
                 class="cursor-pointer sm:hover:bg-gray-200 dark:sm:hover:bg-primary"
               >
-                {formatDate(item)}
+                {item}
                 <svg
                   class="ml-1 size-4"
                   viewBox="0 0 20 20"
