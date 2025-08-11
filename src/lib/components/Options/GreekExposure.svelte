@@ -470,19 +470,18 @@
   <div class="w-full mt-4 mb-6">
     <p>
       {#if title === "Gamma"}
-        <strong>{ticker}</strong>'s current Gamma Exposure (GEX) is
-        <strong>{currentExposure?.toLocaleString("en-US")}</strong>, which is
+        Current Gamma Exposure (GEX) is
+        <strong>{abbreviateNumber(currentExposure)}</strong>, which is
         {currentExposure > averageExposure
           ? `${((currentExposure / averageExposure - 1) * 100).toFixed(0)}% above`
           : `${((1 - currentExposure / averageExposure) * 100).toFixed(0)}% below`}
         the {timePeriod} average of
-        <strong>{averageExposure?.toLocaleString("en-US")}</strong>. Over this
-        period, GEX peaked at
-        <strong>{maxExposure?.toLocaleString("en-US")}</strong>
+        <strong>{abbreviateNumber(averageExposure)}</strong>. Over this period,
+        GEX peaked at
+        <strong>{abbreviateNumber(maxExposure)}</strong>
         on {maxExposureDate}
         and bottomed at
-        <strong>{abbreviateNumber(minExposure)?.toLocaleString("en-US")}</strong
-        >
+        <strong>{abbreviateNumber(minExposure)}</strong>
         on {minExposureDate},
         {maxExposure > 0 && minExposure < 0
           ? "showing a shift between positive and negative gamma regimes"
@@ -504,21 +503,20 @@
           ? `is elevated versus the recent average of ${averagePutCallRatio.toFixed(2)}, suggesting increased put hedging`
           : `is below the recent average of ${averagePutCallRatio.toFixed(2)}, indicating call-heavy positioning`}.
         {exposureVolatility > Math.abs(averageExposure) * 0.5
-          ? ` High GEX volatility (±${exposureVolatility?.toLocaleString("en-US")}) suggests frequent repositioning and potential regime changes.`
-          : ` Stable GEX patterns (±${exposureVolatility?.toLocaleString("en-US")}) indicate consistent market maker positioning.`}
+          ? ` High GEX volatility (±${abbreviateNumber(exposureVolatility)}) suggests frequent repositioning and potential regime changes.`
+          : ` Stable GEX patterns (±${abbreviateNumber(exposureVolatility)}) indicate consistent market maker positioning.`}
       {:else}
         <strong>{ticker}</strong>'s current Delta Exposure (DEX) is
-        <strong>{currentExposure?.toLocaleString("en-US")}</strong> shares,
-        which is
+        <strong>{abbreviateNumber(currentExposure)}</strong> shares, which is
         {Math.abs(currentExposure) > Math.abs(averageExposure)
           ? `${((Math.abs(currentExposure) / Math.abs(averageExposure) - 1) * 100).toFixed(0)}% larger`
           : `${((1 - Math.abs(currentExposure) / Math.abs(averageExposure)) * 100).toFixed(0)}% smaller`}
         than the {timePeriod} average of
-        <strong>{averageExposure?.toLocaleString("en-US")}</strong>
+        <strong>{abbreviateNumber(averageExposure)}</strong>
         shares. During this period, DEX ranged from
-        <strong>{minExposure?.toLocaleString("en-US")}</strong>
+        <strong>{abbreviateNumber(minExposure)}</strong>
         on {minExposureDate}
-        to <strong>{maxExposure?.toLocaleString("en-US")}</strong> on {maxExposureDate},
+        to <strong>{abbreviateNumber(maxExposure)}</strong> on {maxExposureDate},
         {maxExposure > 0 && minExposure < 0
           ? "swinging between net long and short dealer positioning"
           : maxExposure > 0 && minExposure >= 0

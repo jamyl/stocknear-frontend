@@ -552,10 +552,59 @@
           <Tutorial {steps} />
         </div>
 
+        <p class="mt-4">
+          We track
+          <strong>{rawData?.length?.toLocaleString("en-US")}</strong> insider
+          transactions spanning
+          <strong
+            >{rawData
+              ?.filter((item) => item?.transactionType?.includes("P"))
+              ?.length?.toLocaleString("en-US")}</strong
+          >
+          purchases and
+          <strong
+            >{rawData
+              ?.filter((item) => item?.transactionType?.includes("S"))
+              ?.length?.toLocaleString("en-US")}</strong
+          >
+          sales, with a total transaction value of
+          <strong
+            >${abbreviateNumber(
+              rawData?.reduce((sum, item) => sum + (item?.value || 0), 0),
+            )}</strong
+          >. Recent activity shows
+          <strong
+            >{rawData?.filter(
+              (item) =>
+                new Date(item?.transactionDate) >
+                new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
+            )?.length || 0}</strong
+          >
+          transactions in the last 90 days, indicating
+          <strong
+            >{rawData?.filter(
+              (item) =>
+                new Date(item?.transactionDate) >
+                  new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) &&
+                item?.transactionType?.includes("P"),
+            )?.length >
+            rawData?.filter(
+              (item) =>
+                new Date(item?.transactionDate) >
+                  new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) &&
+                item?.transactionType?.includes("S"),
+            )?.length
+              ? "bullish insider accumulation"
+              : "insider distribution"}</strong
+          >
+          among company executives and key stakeholders.
+        </p>
+
         <div class="w-full flex flex-row justify-between items-center">
           <h3 class="transactions-count-driver text-xl font-semibold">
             {(rawData?.length || 0)?.toLocaleString("en-US")} Transactions
           </h3>
+
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild let:builder>
               <Button
@@ -680,7 +729,7 @@
                       <td
                         class="text-end text-sm sm:text-[1rem] whitespace-nowrap"
                       >
-                        ${abbreviateNumber(item?.value)}
+                        ${item?.value?.toLocaleString("en-US")}
                       </td>
                       <td
                         class="text-end text-sm sm:text-[1rem] whitespace-nowrap"

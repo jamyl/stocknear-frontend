@@ -198,7 +198,7 @@
         animation: false,
       },
       title: {
-        text: `<h3 class="mt-3 mb-1 text-[1rem] sm:text-lg">${ticker} Unusual Options Activity with Premium Impact</h3>`,
+        text: `<h3 class="mt-3 mb-1 text-[1rem] sm:text-lg">Unusual Options Activity</h3>`,
         useHTML: true,
         style: {
           color: $mode === "light" ? "black" : "white",
