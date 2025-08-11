@@ -3,27 +3,7 @@ import { validateData } from "$lib/utils";
 import { loginUserSchema, registerUserSchema } from "$lib/schemas";
 
 
-const transactionTypeMap = {
-  "P-Purchase": "Bought",
-  "A-Award": "Grant",
-  "D-Return": "Grant",
-  "G-Gift": "Grant",
-  "S-Sale": "Sale",
-  "M-Exempt": "Exercise",
-  "X-InTheMoney": "Exercise",
-  "C-Conversion": "Exercise",
-  "F-InKind": "Sale",
-  "J-Other": (item) => {
-    if (item.acquistionOrDisposition === "D") {
-      return "Sale";
-    } else if (item.acquistionOrDisposition === "A") {
-      return "Bought";
-    } else {
-      return "Other";
-    }
-  },
-  "": "n/a",
-};
+
 
 export const load = async ({ locals, params }) => {
   const { apiURL, apiKey, user } = locals;
@@ -46,28 +26,8 @@ export const load = async ({ locals, params }) => {
     let output = await response.json();
 
     //output = !['Pro','Plus']?.includes(user?.tier) ? output?.slice(0, 6) : output;
-    
-    output = output?.reduce((acc, item) => {
-      const newTransactionType =
-        typeof transactionTypeMap[item?.transactionType] === "function"
-          ? transactionTypeMap[item?.transactionType](item)
-          : transactionTypeMap[item?.transactionType];
-
-      // Only include items with 'Bought' or 'Sale'
-      if (newTransactionType === "Bought" || newTransactionType === "Sale") {
-        const value = item?.securitiesTransacted * item?.price;
-        if (value > 0) {
-          acc.push({
-            ...item,
-           //transactionType: newTransactionType,
-            value: value, // new key 'value'
-          });
-        }
-      }
-
-      return acc;
-    }, []);
-    
+  
+  
     output?.sort(
     (a, b) => new Date(b?.transactionDate) - new Date(a?.transactionDate),
   );
