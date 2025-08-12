@@ -941,7 +941,7 @@
             </div>
 
             <!-- Tab Content with Enhanced Styling -->
-            <div class="p-6">
+            <div class="p-3">
                 <!-- Buy Conditions Tab Content -->
                 <Tabs.Content value="buy" class="outline-none">
                     <div class="space-y-4">
@@ -1731,13 +1731,13 @@
             </div>
 
             <!-- Strategy Summary in Plain English -->
-            <div class="px-6 pb-6">
-                <div
-                    class="rounded p-6 border border-indigo-200 dark:border-indigo-800/30"
-                >
+            <div class="p-3 mt-4">
+                <div class="">
                     <div class="flex items-start gap-3">
                         <div class="flex-1">
-                            <h4 class="font-semibold mb-2">Strategy Summary</h4>
+                            <h4 class="font-semibold mb-2 text-xl sm:text-2xl">
+                                Strategy Summary
+                            </h4>
                             <div class="space-y-2 text-sm">
                                 <div class="flex items-start gap-2">
                                     <span
