@@ -11,8 +11,6 @@
 
     //const userConfirmation = confirm('Unsaved changes detected. Leaving now will discard your strategy. Continue?');
 
-    import { writable } from "svelte/store";
-
     export let data;
     export let form;
 
@@ -28,22 +26,10 @@
     ];
 
     // Buy conditions
-    let buyConditions = [
-        {
-            indicator: "rsi",
-            operator: "below",
-            value: 30,
-        },
-    ];
+    let buyConditions = [];
 
     // Sell conditions
-    let sellConditions = [
-        {
-            indicator: "rsi",
-            operator: "above",
-            value: 70,
-        },
-    ];
+    let sellConditions = [];
 
     // Risk Management
     let riskManagement = {

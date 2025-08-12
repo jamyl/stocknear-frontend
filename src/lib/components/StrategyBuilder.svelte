@@ -1,11 +1,10 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import { fade, fly } from "svelte/transition";
+    import { fly } from "svelte/transition";
     import Trash2 from "lucide-svelte/icons/trash-2";
     import Plus from "lucide-svelte/icons/plus";
     import GripVertical from "lucide-svelte/icons/grip-vertical";
     import ChevronDown from "lucide-svelte/icons/chevron-down";
-    import Link2 from "lucide-svelte/icons/link-2";
 
     import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
     import { Button } from "$lib/components/shadcn/button/index.js";
@@ -34,9 +33,6 @@
     let draggedOverBlock = null;
     let isDragging = false;
 
-    // UI state
-    let showIndicatorMenu = false;
-    let selectedBlockId = null;
     let blockIdCounter = 0;
 
     // Generate unique IDs using timestamp and counter to avoid duplicates
@@ -629,13 +625,6 @@
                 <p class="text-gray-500 dark:text-gray-400 mb-4">
                     No conditions added yet
                 </p>
-                <button
-                    class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-black text-white hover:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded transition-all"
-                    on:click={() => addBlock(BLOCK_TYPES.CONDITION)}
-                >
-                    <Plus size={16} />
-                    Add your first condition
-                </button>
             </div>
         </div>
     {/if}
