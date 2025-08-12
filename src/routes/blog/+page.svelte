@@ -73,7 +73,7 @@
                     </div>
                     <div class="mt-6 flex items-center">
                       <div class="flex text-sm">
-                        Published: <time datetime={item?.created} class="">
+                        Published: <time datetime={item?.created} class="ml-1">
                           {new Date(item?.created)?.toLocaleString("en-US", {
                             month: "short",
                             day: "numeric",
