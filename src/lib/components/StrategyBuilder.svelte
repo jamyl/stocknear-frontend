@@ -43,16 +43,32 @@
 
     function createConditionBlock(
         indicator = "rsi",
-        operator = "below",
-        value = 30,
+        operator = null,
+        value = null,
     ) {
         const id = `block_${blockIdCounter++}`;
+        const config = getIndicatorConfig(indicator);
+
+        // Use config defaults if not provided
+        const finalOperator = operator || config.defaultOperator || "equals";
+        let finalValue = value;
+
+        if (finalValue === null) {
+            if (Array.isArray(config.defaultValue)) {
+                // For array defaultValue, use the first option
+                finalValue = config.defaultValue[0];
+            } else {
+                // For numeric defaultValue, use the number directly
+                finalValue = config.defaultValue;
+            }
+        }
+
         return {
             id,
             type: BLOCK_TYPES.CONDITION,
             indicator,
-            operator,
-            value,
+            operator: finalOperator,
+            value: finalValue,
             logicOperator: null,
         };
     }
@@ -327,10 +343,26 @@
                             <select
                                 class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-800 focus:outline-none focus:border-blue-500 min-w-[180px]"
                                 value={block.indicator}
-                                on:change={(e) =>
+                                on:change={(e) => {
+                                    const newIndicator = e.target.value;
+                                    const config =
+                                        getIndicatorConfig(newIndicator);
+                                    let newValue;
+
+                                    // Set default value based on indicator type
+                                    if (Array.isArray(config.defaultValue)) {
+                                        newValue = config.defaultValue[0];
+                                    } else {
+                                        newValue = config.defaultValue;
+                                    }
+
                                     updateBlock(block.id, {
-                                        indicator: e.target.value,
-                                    })}
+                                        indicator: newIndicator,
+                                        operator:
+                                            config.defaultOperator || "equals",
+                                        value: newValue,
+                                    });
+                                }}
                             >
                                 {#each Object.entries(availableIndicators) as [key, config]}
                                     <option value={key}>{config.label}</option>
@@ -350,17 +382,41 @@
                                 {/each}
                             </select>
 
-                            <input
-                                type="number"
-                                class="w-[100px] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-800 focus:outline-none focus:border-blue-500"
-                                value={block.value}
-                                min={getIndicatorConfig(block.indicator).min}
-                                max={getIndicatorConfig(block.indicator).max}
-                                on:input={(e) =>
-                                    updateBlock(block.id, {
-                                        value: parseFloat(e.target.value),
-                                    })}
-                            />
+                            <!-- Dynamic value input based on indicator type -->
+                            {#if Array.isArray(getIndicatorConfig(block.indicator).defaultValue)}
+                                <!-- Dropdown for indicators with array defaultValue -->
+                                <select
+                                    class="w-[120px] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-800 focus:outline-none focus:border-blue-500"
+                                    value={block.value}
+                                    on:change={(e) =>
+                                        updateBlock(block.id, {
+                                            value: e.target.value,
+                                        })}
+                                >
+                                    {#each getIndicatorConfig(block.indicator).defaultValue as option}
+                                        <option value={option}>
+                                            {getIndicatorConfig(block.indicator)
+                                                .valueLabels?.[option] ||
+                                                option}
+                                        </option>
+                                    {/each}
+                                </select>
+                            {:else}
+                                <!-- Number input for indicators with numeric defaultValue -->
+                                <input
+                                    type="number"
+                                    class="w-[100px] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-800 focus:outline-none focus:border-blue-500"
+                                    value={block.value}
+                                    min={getIndicatorConfig(block.indicator)
+                                        .min}
+                                    max={getIndicatorConfig(block.indicator)
+                                        .max}
+                                    on:input={(e) =>
+                                        updateBlock(block.id, {
+                                            value: parseFloat(e.target.value),
+                                        })}
+                                />
+                            {/if}
                         </div>
 
                         <button
@@ -409,7 +465,7 @@
                             class="flex-1 h-px bg-gray-300 dark:bg-gray-600"
                         ></div>
                         <button
-                            class="flex items-center gap-1 px-3 py-1.5 mx-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
+                            class="flex items-center gap-1 px-3 py-1.5 mx-3 bg-black text-white dark:bg-white border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm font-semibold transition-all"
                             on:click={() => {
                                 const newOp =
                                     block.logicOperator === LOGIC_OPERATORS.AND
@@ -435,7 +491,7 @@
                     No conditions added yet
                 </p>
                 <button
-                    class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded text-gray-600 dark:text-gray-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
+                    class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded transition-all"
                     on:click={() => addBlock(BLOCK_TYPES.CONDITION)}
                 >
                     <Plus size={16} />

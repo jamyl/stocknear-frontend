@@ -24,13 +24,10 @@
 
     let removeList = false;
 
-    $: testList = [];
-
     let strategyList = data?.getAllStrategies;
     let selectedStrategy = strategyList?.at(0)?.id ?? "";
     let ruleOfList = strategyList?.at(0)?.rules ?? [];
-    let groupedRules = {};
-    let displayRules = [];
+
     let selectedPopularStrategy = "";
     let activeTab = "buy";
     const popularStrategyList = [
@@ -43,48 +40,6 @@
         { key: "strongCashFlow", label: "Strong Cash Flow" },
     ];
 
-    const onlySubscriberRules = [
-        "gexRatio",
-        "ivRank",
-        "iv30d",
-        "totalOI",
-        "changeOI",
-        "netCallPrem",
-        "netPutPrem",
-        "callVolume",
-        "putVolume",
-        "pcRatio",
-        "topAnalystRating",
-        "topAnalystCounter",
-        "topAnalystPriceTarget",
-        "topAnalystUpside",
-        "score",
-    ];
-
-    const checkedRules = [
-        "sma20",
-        "sma50",
-        "sma100",
-        "sma200",
-        "ema20",
-        "ema50",
-        "ema100",
-        "ema200",
-        "grahamNumber",
-        "lynchFairValue",
-        "analystRating",
-        "earningsTime",
-        "earningsDate",
-        "payoutFrequency",
-        "topAnalystRating",
-        "halalStocks",
-        "score",
-        "sector",
-        "industry",
-        "country",
-    ];
-
-    let displayTableTab = "general";
     let otherTabRules = [];
 
     // Preloading system for tab data
@@ -127,6 +82,99 @@
         },
     };
 
+    // Backtesting parameters
+    let selectedTickers = ["AAPL"];
+    let startDate = "2020-01-01";
+    let endDate = "2025-08-30";
+
+    // Strategy data collection - this is the main object you requested
+    let strategyData = {};
+
+    // Function to collect and format all strategy data
+    function updateStrategyData() {
+        strategyData = {
+            tickers: selectedTickers,
+            start_date: startDate,
+            end_date: endDate,
+            buy_condition: formatConditionsForBacktesting(buyConditions),
+            sell_condition: formatConditionsForBacktesting(sellConditions),
+        };
+
+        console.log("Updated Strategy Data:", strategyData);
+        console.log("Raw Buy Conditions:", buyConditions);
+        console.log("Raw Sell Conditions:", sellConditions);
+    }
+
+    // Convert conditions to backtesting format
+    function formatConditionsForBacktesting(conditions) {
+        return conditions.map((condition, index) => {
+            const formattedCondition = {
+                name: mapIndicatorName(condition.indicator),
+                value: condition.value,
+                operator: condition.operator,
+            };
+
+            // For moving averages comparing to other indicators, we need special handling
+            if (
+                condition.indicator === "sma20" ||
+                condition.indicator === "ema20"
+            ) {
+                // If the value is a string like "price", "sma50", etc., keep it as is
+                // If it's a number, convert appropriately
+                if (typeof condition.value === "string") {
+                    // Map the comparison target (e.g., "sma50" -> "ma_50")
+                    if (
+                        condition.value.startsWith("sma") ||
+                        condition.value.startsWith("ema")
+                    ) {
+                        formattedCondition.value = `ma_${condition.value.slice(3)}`;
+                    } else if (condition.value === "price") {
+                        formattedCondition.value = "price";
+                    } else {
+                        formattedCondition.value = condition.value;
+                    }
+                }
+            }
+
+            // Add connector except for the last condition
+            if (index < conditions.length - 1) {
+                formattedCondition.connector =
+                    condition.logic?.toUpperCase() || "AND";
+            }
+
+            return formattedCondition;
+        });
+    }
+
+    // Map frontend indicator names to backend format
+    function mapIndicatorName(indicator) {
+        const mapping = {
+            rsi: "rsi",
+            sma20: "price", // 20-day SMA compared to price or other MAs
+            ema20: "price", // 20-day EMA compared to price or other MAs
+            macd: "macd",
+            volume: "volume",
+            price: "price",
+        };
+        return mapping[indicator] || indicator;
+    }
+
+    // Sync selectedTicker with selectedTickers array
+    $: if (selectedTicker) {
+        selectedTickers = [selectedTicker];
+    }
+
+    // Update strategy data whenever conditions change
+    $: if (
+        buyConditions ||
+        sellConditions ||
+        selectedTickers ||
+        startDate ||
+        endDate
+    ) {
+        updateStrategyData();
+    }
+
     // Define all possible indicators and their properties
     const availableIndicators = {
         rsi: {
@@ -138,21 +186,33 @@
             min: 0,
             max: 100,
         },
-        sma: {
-            label: "Simple Moving Average",
+        sma20: {
+            label: "20-Day Moving Average",
             category: "Technical Analysis",
             operators: ["above", "below", "equals"],
             defaultOperator: "above",
-            defaultValue: 20,
+            defaultValue: ["price", "sma50", "sma100", "sma200"],
+            valueLabels: {
+                price: "Current Price",
+                sma50: "50-Day SMA",
+                sma100: "100-Day SMA",
+                sma200: "200-Day SMA",
+            },
             min: 1,
             max: 200,
         },
-        ema: {
-            label: "Exponential Moving Average",
+        ema20: {
+            label: "20-Day Exponential Moving Average",
             category: "Technical Analysis",
             operators: ["above", "below", "equals"],
             defaultOperator: "above",
-            defaultValue: 20,
+            defaultValue: ["price", "ema50", "ema100", "ema200"],
+            valueLabels: {
+                price: "Current Price",
+                ema50: "50-Day EMA",
+                ema100: "100-Day EMA",
+                ema200: "200-Day EMA",
+            },
             min: 1,
             max: 200,
         },
@@ -761,8 +821,6 @@
     let isBacktesting = false;
     let backtestError = null;
     let selectedTicker = "AAPL";
-    let startDate = "2023-01-01";
-    let endDate = "2024-01-01";
     let initialCapital = 100000;
 
     // Mock data for demonstration (replace with actual API call)
@@ -815,8 +873,21 @@
         backtestError = null;
 
         try {
+            // Update strategyData before running backtest
+            updateStrategyData();
+
+            console.log("Strategy Data for Backtesting:", strategyData);
+
             // Simulate API call delay
             await new Promise((resolve) => setTimeout(resolve, 2000));
+
+            // Here you would send strategyData to your backend API
+            // const response = await fetch('/api/backtest', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify(strategyData)
+            // });
+            // const results = await response.json();
 
             // For now, use mock data - replace with actual API call
             backtestResults = mockBacktestResults;
@@ -838,10 +909,6 @@ const handleKeyDown = (event) => {
 */
 
     let LoginPopup;
-
-    onMount(async () => {
-        groupedRules = groupScreenerRules(allRows);
-    });
 
     async function handleSave(showMessage) {
         if (!data?.user) return;
@@ -2027,7 +2094,7 @@ const handleKeyDown = (event) => {
                                 <button
                                     on:click={runBacktest}
                                     disabled={isBacktesting}
-                                    class="inline-flex items-center gap-2 px-3 py-2 bg-black sm:hover:bg-default disabled:bg-black/80 text-white rounded font-medium transition-colors"
+                                    class="inline-flex items-center gap-2 px-3 py-2 bg-black sm:hover:bg-default disabled:bg-black/80 text-white dark:text-muted bg-white sm:hover:bg-gray-100 dark:disabled:bg-white/80 rounded font-medium transition-colors"
                                 >
                                     {#if isBacktesting}
                                         <svg
@@ -2401,7 +2468,7 @@ const handleKeyDown = (event) => {
                                 <div
                                     class="h-64 bg-gray-50 dark:bg-gray-900/50 rounded flex items-center justify-center border border-gray-300 dark:border-gray-800"
                                 >
-                                    <div class="text-center dark:text-gray-400">
+                                    <div class="text-center">
                                         <svg
                                             class="w-16 h-16 mx-auto mb-4"
                                             fill="none"
