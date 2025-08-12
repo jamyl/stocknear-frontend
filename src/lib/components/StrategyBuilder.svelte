@@ -3,7 +3,6 @@
     import { fly } from "svelte/transition";
     import Trash2 from "lucide-svelte/icons/trash-2";
     import Plus from "lucide-svelte/icons/plus";
-    import GripVertical from "lucide-svelte/icons/grip-vertical";
     import ChevronDown from "lucide-svelte/icons/chevron-down";
 
     import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
@@ -28,11 +27,6 @@
         OR: "OR",
     };
 
-    // Drag and drop state
-    let draggedBlock = null;
-    let draggedOverBlock = null;
-    let isDragging = false;
-
     let blockIdCounter = 0;
 
     // Generate unique IDs using timestamp and counter to avoid duplicates
@@ -44,9 +38,9 @@
         return newId;
     }
 
-    // Initialize with default blocks if empty
+    // Initialize with empty blocks by default
     if (strategyBlocks.length === 0) {
-        strategyBlocks = [createConditionBlock()];
+        strategyBlocks = [];
     }
 
     function createConditionBlock(
@@ -148,121 +142,6 @@
         }
     }
 
-    // Drag and drop handlers
-    function handleDragStart(event, block) {
-        draggedBlock = block;
-        isDragging = true;
-        event.dataTransfer.effectAllowed = "move";
-        event.dataTransfer.setData("text/html", event.target.innerHTML);
-    }
-
-    function handleDragOver(event, block) {
-        if (event.preventDefault) {
-            event.preventDefault();
-        }
-        event.dataTransfer.dropEffect = "move";
-        draggedOverBlock = block;
-        return false;
-    }
-
-    function handleDragEnter(event, block) {
-        if (draggedBlock && draggedBlock.id !== block.id) {
-            event.currentTarget.classList.add(
-                "border-blue-500",
-                "bg-blue-50",
-                "dark:bg-blue-900/20",
-            );
-        }
-    }
-
-    function handleDragLeave(event) {
-        event.currentTarget.classList.remove(
-            "border-blue-500",
-            "bg-blue-50",
-            "dark:bg-blue-900/20",
-        );
-    }
-
-    function normalizeLogicOperators() {
-        // Ensure last block has no connector and non-last blocks have a default if missing
-        strategyBlocks.forEach((b, i) => {
-            if (i === strategyBlocks.length - 1) {
-                b.logicOperator = null;
-            } else if (!b.logicOperator) {
-                b.logicOperator = LOGIC_OPERATORS.AND;
-            }
-        });
-    }
-
-    function handleDrop(event, targetBlock) {
-        if (event.stopPropagation) {
-            event.stopPropagation();
-        }
-
-        event.currentTarget.classList.remove(
-            "border-blue-500",
-            "bg-blue-50",
-            "dark:bg-blue-900/20",
-        );
-
-        if (
-            !draggedBlock ||
-            !targetBlock ||
-            draggedBlock.id === targetBlock.id
-        ) {
-            // nothing to do
-            return false;
-        }
-
-        const draggedIndex = strategyBlocks.findIndex(
-            (b) => b.id === draggedBlock.id,
-        );
-        const targetIndex = strategyBlocks.findIndex(
-            (b) => b.id === targetBlock.id,
-        );
-
-        if (draggedIndex === -1 || targetIndex === -1) {
-            return false;
-        }
-
-        // Remove dragged block
-        const [removed] = strategyBlocks.splice(draggedIndex, 1);
-
-        let insertIndex =
-            draggedIndex < targetIndex ? targetIndex : targetIndex + 1;
-
-        // Clamp to valid bounds
-        if (insertIndex < 0) insertIndex = 0;
-        if (insertIndex > strategyBlocks.length)
-            insertIndex = strategyBlocks.length;
-
-        // Insert in new position
-        strategyBlocks.splice(insertIndex, 0, removed);
-
-        // Normalize logic operators so last block has null and non-last blocks have sensible defaults
-        normalizeLogicOperators();
-
-        strategyBlocks = [...strategyBlocks];
-        dispatch("change", { blocks: strategyBlocks });
-
-        return false;
-    }
-
-    function handleDragEnd(event) {
-        isDragging = false;
-        draggedBlock = null;
-        draggedOverBlock = null;
-
-        // Remove all drag-over classes
-        document.querySelectorAll(".border-blue-500").forEach((el) => {
-            el.classList.remove(
-                "border-blue-500",
-                "bg-blue-50",
-                "dark:bg-blue-900/20",
-            );
-        });
-    }
-
     // Get indicator configuration
     function getIndicatorConfig(indicatorKey) {
         return (
@@ -319,10 +198,6 @@
                 <tr>
                     <th
                         scope="col"
-                        class="px-4 py-1.5 text-left text-sm font-semibold w-8"
-                    ></th>
-                    <th
-                        scope="col"
                         class="px-4 py-1.5 text-left text-sm font-semibold"
                     >
                         Indicator
@@ -359,27 +234,9 @@
                 {#each strategyBlocks as block, index (block.id)}
                     {#if block.type === BLOCK_TYPES.CONDITION}
                         <tr
-                            class="transition-all duration-300 cursor-move hover:bg-gray-100 dark:hover:bg-gray-700/50"
-                            class:opacity-50={isDragging &&
-                                draggedBlock?.id === block.id}
-                            draggable="true"
-                            on:dragstart={(e) => handleDragStart(e, block)}
-                            on:dragover={(e) => handleDragOver(e, block)}
-                            on:dragenter={(e) => handleDragEnter(e, block)}
-                            on:dragleave={handleDragLeave}
-                            on:drop={(e) => handleDrop(e, block)}
-                            on:dragend={handleDragEnd}
+                            class="transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-700/50"
                             transition:fly={{ y: 20, duration: 300 }}
                         >
-                            <!-- Drag Handle -->
-                            <td class="px-4 py-2">
-                                <div
-                                    class="cursor-move text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                                >
-                                    <GripVertical size={16} />
-                                </div>
-                            </td>
-
                             <!-- Indicator Selection -->
                             <td class="px-4 py-2">
                                 <DropdownMenu.Root>
@@ -493,11 +350,7 @@
                             </td>
 
                             <!-- Value Selection/Input -->
-                            <td
-                                class="px-4 py-2"
-                                on:dragstart|preventDefault
-                                on:mousedown|stopPropagation
-                            >
+                            <td class="px-4 py-2">
                                 {#if Array.isArray(getIndicatorConfig(block.indicator).defaultValue)}
                                     <DropdownMenu.Root>
                                         <DropdownMenu.Trigger
@@ -565,10 +418,6 @@
                                                     e.target.value,
                                                 ),
                                             })}
-                                        on:mousedown|stopPropagation
-                                        on:click|stopPropagation
-                                        on:dragstart|preventDefault
-                                        on:selectstart|stopPropagation
                                     />
                                 {/if}
                             </td>
