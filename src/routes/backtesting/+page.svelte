@@ -1,44 +1,27 @@
 <script lang="ts">
-    import { onMount, onDestroy } from "svelte";
+    import { onMount } from "svelte";
     import { goto } from "$app/navigation";
-    import { clearCache, screenWidth, getCache, setCache } from "$lib/store";
-    import Copy from "lucide-svelte/icons/copy";
+    import { screenWidth } from "$lib/store";
     import { toast } from "svelte-sonner";
     import { mode } from "mode-watcher";
-    import InfoModal from "$lib/components/InfoModal.svelte";
 
-    import {
-        abbreviateNumber,
-        sectorList,
-        industryList,
-        listOfRelevantCountries,
-        groupScreenerRules,
-    } from "$lib/utils";
+    import { groupScreenerRules } from "$lib/utils";
     import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
     import { Button } from "$lib/components/shadcn/button/index.js";
     import * as Tabs from "$lib/components/shadcn/tabs/index.js";
-    import TableHeader from "$lib/components/Table/TableHeader.svelte";
-    import DownloadData from "$lib/components/DownloadData.svelte";
-    import Infobox from "$lib/components/Infobox.svelte";
-    import Input from "$lib/components/Input.svelte";
+
     import SEO from "$lib/components/SEO.svelte";
     import StrategyBuilder from "$lib/components/StrategyBuilder.svelte";
 
     //const userConfirmation = confirm('Unsaved changes detected. Leaving now will discard your strategy. Continue?');
 
     import { writable } from "svelte/store";
-    import { includes } from "lodash-es";
 
     let shouldLoadWorker = writable(false);
     export let data;
     export let form;
-    let showFilters = true;
-    let isLoaded = false;
-    let syncWorker: Worker | undefined;
     let downloadWorker: Worker | undefined;
-    let searchQuery = "";
-    let infoText = {};
-    let tooltipTitle;
+
     let removeList = false;
 
     $: testList = [];
@@ -683,79 +666,6 @@
         }
     }
 
-    async function handleResetAll() {
-        selectedPopularStrategy = "";
-        displayTableTab = "general";
-        ruleOfList = [];
-        Object?.keys(allRules)?.forEach((ruleName) => {
-            ruleCondition[ruleName] = allRules[ruleName].defaultCondition;
-            valueMappings[ruleName] = allRules[ruleName].defaultValue;
-        });
-        ruleName = "";
-        filteredData = [];
-        displayResults = [];
-        checkedItems = new Map();
-        ruleOfList = [...ruleOfList];
-        await updateStockScreenerData();
-        //await handleSave(false);
-    }
-
-    async function handleDeleteRule(state) {
-        selectedPopularStrategy = "";
-
-        // Find the index of the rule to be deleted or updated
-        const index = ruleOfList?.findIndex((rule) => rule.name === state);
-        if (index !== -1) {
-            // Get the rule and its default values
-            const rule = ruleOfList[index];
-            const defaultCondition = allRules[state].defaultCondition;
-            const defaultValue = allRules[state].defaultValue;
-
-            // Check if current values differ from defaults
-            const isAtDefaultValues =
-                ruleCondition[state] === defaultCondition &&
-                (Array.isArray(valueMappings[state]) &&
-                Array.isArray(defaultValue)
-                    ? JSON.stringify(valueMappings[state]) ===
-                      JSON.stringify(defaultValue)
-                    : valueMappings[state] === defaultValue);
-
-            if (!isAtDefaultValues) {
-                // If not at defaults, reset to defaults
-                ruleCondition[state] = defaultCondition;
-                valueMappings[state] = defaultValue;
-
-                // Update the rule in ruleOfList
-                ruleOfList[index] = {
-                    ...rule,
-                    condition: defaultCondition,
-                    value: defaultValue,
-                };
-                ruleOfList = [...ruleOfList]; // Trigger reactivity
-            } else {
-                // If already at defaults, remove the rule
-                ruleOfList.splice(index, 1);
-                ruleOfList = [...ruleOfList];
-
-                // Reset checkedItems for multi-select rules
-                if (checkedItems.has(state)) {
-                    checkedItems.delete(state);
-                }
-
-                // Handle cases when the list is empty or matches the current rule name
-                if (ruleOfList?.length === 0) {
-                    ruleName = "";
-                    filteredData = [];
-                    displayResults = [];
-                } else if (state === ruleName) {
-                    ruleName = "";
-                }
-            }
-
-            await updateStockScreenerData();
-        }
-    }
-
     async function handleScroll() {
         const scrollThreshold = document.body.offsetHeight * 0.8; // 80% of the website height
         const isBottom = window.innerHeight + window.scrollY >= scrollThreshold;
@@ -845,6 +755,77 @@
         sellConditionBlocks,
         "sell",
     );
+
+    // Backtesting variables
+    let backtestResults = null;
+    let isBacktesting = false;
+    let backtestError = null;
+    let selectedTicker = "AAPL";
+    let startDate = "2023-01-01";
+    let endDate = "2024-01-01";
+    let initialCapital = 100000;
+
+    // Mock data for demonstration (replace with actual API call)
+    const mockBacktestResults = {
+        strategy: {
+            name: "Custom Strategy",
+            totalReturn: 15.2,
+            annualReturn: 15.2,
+            sharpeRatio: 1.35,
+            maxDrawdown: -8.4,
+            winRate: 65.2,
+            totalTrades: 23,
+            finalValue: 115200,
+        },
+        benchmark: {
+            name: "SPY",
+            totalReturn: 12.1,
+            annualReturn: 12.1,
+            sharpeRatio: 1.12,
+            maxDrawdown: -12.3,
+            finalValue: 112100,
+        },
+        performanceData: [
+            { date: "2023-01-01", strategy: 100000, benchmark: 100000 },
+            { date: "2023-02-01", strategy: 102500, benchmark: 101200 },
+            { date: "2023-03-01", strategy: 98800, benchmark: 99800 },
+            { date: "2023-04-01", strategy: 105200, benchmark: 103400 },
+            { date: "2023-05-01", strategy: 108900, benchmark: 105600 },
+            { date: "2023-06-01", strategy: 107300, benchmark: 104800 },
+            { date: "2023-07-01", strategy: 111500, benchmark: 107200 },
+            { date: "2023-08-01", strategy: 109200, benchmark: 108600 },
+            { date: "2023-09-01", strategy: 113800, benchmark: 109900 },
+            { date: "2023-10-01", strategy: 110400, benchmark: 107500 },
+            { date: "2023-11-01", strategy: 116700, benchmark: 111800 },
+            { date: "2023-12-01", strategy: 115200, benchmark: 112100 },
+        ],
+    };
+
+    async function runBacktest() {
+        if (
+            buyConditionBlocks.length === 0 ||
+            sellConditionBlocks.length === 0
+        ) {
+            backtestError =
+                "Please set up both buy and sell conditions before running backtest";
+            return;
+        }
+
+        isBacktesting = true;
+        backtestError = null;
+
+        try {
+            // Simulate API call delay
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+
+            // For now, use mock data - replace with actual API call
+            backtestResults = mockBacktestResults;
+        } catch (error) {
+            backtestError = "Failed to run backtest: " + error.message;
+        } finally {
+            isBacktesting = false;
+        }
+    }
 
     /*
 const handleKeyDown = (event) => {
@@ -1281,371 +1262,11 @@ const handleKeyDown = (event) => {
             await updateStockScreenerData();
         }
     }
-
-    function handleInput(event) {
-        const searchQuery = event.target.value?.toLowerCase() || "";
-
-        setTimeout(() => {
-            testList = [];
-
-            if (searchQuery.length > 0) {
-                const rawList =
-                    ruleName === "country"
-                        ? listOfRelevantCountries
-                        : ruleName === "sector"
-                          ? sectorList
-                          : ruleName === "industry"
-                            ? industryList
-                            : [
-                                    "analystRating",
-                                    "topAnalystRating",
-                                    "score",
-                                ]?.includes(ruleName)
-                              ? [
-                                    "Strong Buy",
-                                    "Buy",
-                                    "Hold",
-                                    "Sell",
-                                    "Strong Sell",
-                                ]
-                              : []; //["Compliant", "Non-Compliant"];
-                testList =
-                    rawList?.filter((item) => {
-                        const index = item?.toLowerCase();
-                        // Check if country starts with searchQuery
-                        return index?.startsWith(searchQuery);
-                    }) || [];
-            }
-        }, 50);
-    }
-
-    const sortData = (key) => {
-        // Reset all other keys to 'none' except the current key
-        for (const k in sortOrders) {
-            if (k !== key) {
-                sortOrders[k].order = "none";
-            }
-        }
-
-        // Cycle through 'none', 'asc', 'desc' for the clicked key
-        const orderCycle = ["none", "asc", "desc"];
-
-        let originalData = filteredData;
-
-        const currentOrderIndex = orderCycle.indexOf(sortOrders[key].order);
-        sortOrders[key].order =
-            orderCycle[(currentOrderIndex + 1) % orderCycle.length];
-        const sortOrder = sortOrders[key].order;
-
-        // Reset to original data when 'none' and stop further sorting
-        if (sortOrder === "none") {
-            displayResults = [...originalData]?.slice(0, 50); // Reset to original data (spread to avoid mutation)
-            return;
-        }
-
-        // Define a generic comparison function
-        const compareValues = (a, b) => {
-            const { type } = sortOrders[key];
-            let valueA, valueB;
-
-            switch (type) {
-                case "date":
-                    valueA = new Date(a[key]);
-                    valueB = new Date(b[key]);
-                    break;
-                case "string":
-                    valueA = a[key].toUpperCase();
-                    valueB = b[key].toUpperCase();
-                    return sortOrder === "asc"
-                        ? valueA.localeCompare(valueB)
-                        : valueB.localeCompare(valueA);
-                case "number":
-                default:
-                    valueA = parseFloat(a[key]);
-                    valueB = parseFloat(b[key]);
-                    break;
-            }
-
-            if (sortOrder === "asc") {
-                return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
-            } else {
-                return valueA > valueB ? -1 : valueA < valueB ? 1 : 0;
-            }
-        };
-
-        // Sort using the generic comparison function
-        displayResults = [...originalData].sort(compareValues)?.slice(0, 50);
-    };
-
-    let columns;
-    let sortOrders;
-
-    // Initial columns and sort orders for the "general" tab
-    const generalColumns = [
-        { key: "symbol", label: "Symbol", align: "left" },
-        { key: "name", label: "Name", align: "left" },
-        { key: "marketCap", label: "Market Cap", align: "right" },
-        { key: "price", label: "Price", align: "right" },
-        { key: "changesPercentage", label: "% Change", align: "right" },
-        { key: "volume", label: "Volume", align: "right" },
-        { key: "priceToEarningsRatio", label: "PE Ratio", align: "right" },
-    ];
-
-    const generalSortOrders = {
-        symbol: { order: "none", type: "string" },
-        name: { order: "none", type: "string" },
-        marketCap: { order: "none", type: "number" },
-        changesPercentage: { order: "none", type: "number" },
-        price: { order: "none", type: "number" },
-        volume: { order: "none", type: "number" },
-        priceToEarningsRatio: { order: "none", type: "number" },
-    };
-
-    const stringTypeRules = [
-        "country",
-        "industry",
-        "score",
-        "sector",
-        "analystRating",
-        "earningsTime",
-        "earningsDate",
-        "topAnalystRating",
-        "halalStocks",
-        "payoutFrequency",
-    ];
-
-    // Helper to determine the type based on stringTypeRules
-    const getType = (key) =>
-        stringTypeRules.includes(key) ? "string" : "number";
-
-    $: {
-        if (displayTableTab) {
-            const baseColumnsMap = {
-                performance: [
-                    { key: "symbol", label: "Symbol", align: "left" },
-                    { key: "name", label: "Name", align: "left" },
-                    { key: "marketCap", label: "Market Cap", align: "right" },
-                ],
-                analysts: [
-                    { key: "symbol", label: "Symbol", align: "left" },
-                    { key: "name", label: "Name", align: "left" },
-                    { key: "marketCap", label: "Market Cap", align: "right" },
-                ],
-                filters: [
-                    { key: "symbol", label: "Symbol", align: "left" },
-                    { key: "name", label: "Name", align: "left" },
-                    { key: "marketCap", label: "Market Cap", align: "right" },
-                ],
-                dividends: [
-                    { key: "symbol", label: "Symbol", align: "left" },
-                    { key: "name", label: "Name", align: "left" },
-                    { key: "marketCap", label: "Market Cap", align: "right" },
-                ],
-                financials: [
-                    { key: "symbol", label: "Symbol", align: "left" },
-                    { key: "name", label: "Name", align: "left" },
-                    { key: "marketCap", label: "Market Cap", align: "right" },
-                ],
-            };
-
-            const baseSortOrdersMap = {
-                performance: {
-                    symbol: { order: "none", type: "string" },
-                    name: { order: "none", type: "string" },
-                    marketCap: { order: "none", type: "number" },
-                },
-                analysts: {
-                    symbol: { order: "none", type: "string" },
-                    name: { order: "none", type: "string" },
-                    marketCap: { order: "none", type: "number" },
-                },
-                dividends: {
-                    symbol: { order: "none", type: "string" },
-                    name: { order: "none", type: "string" },
-                    marketCap: { order: "none", type: "number" },
-                },
-                financials: {
-                    symbol: { order: "none", type: "string" },
-                    name: { order: "none", type: "string" },
-                    marketCap: { order: "none", type: "number" },
-                },
-                filters: {
-                    symbol: { order: "none", type: "string" },
-                    name: { order: "none", type: "string" },
-                    marketCap: { order: "none", type: "number" },
-                },
-            };
-
-            if (displayTableTab === "general") {
-                columns = [...generalColumns];
-                sortOrders = { ...generalSortOrders };
-            } else {
-                columns = [...(baseColumnsMap[displayTableTab] || [])];
-                sortOrders = { ...(baseSortOrdersMap[displayTableTab] || {}) };
-
-                const rulesList = [
-                    "performance",
-                    "analysts",
-                    "dividends",
-                    "financials",
-                ]?.includes(displayTableTab)
-                    ? tabRuleList
-                    : displayRules;
-                rulesList?.forEach((rule) => {
-                    if (rule.rule !== "marketCap") {
-                        columns.push({
-                            key: rule.rule,
-                            label: rule.label,
-                            align: "right",
-                        });
-                        sortOrders[rule.rule] = {
-                            order: "none",
-                            type: getType(rule.rule),
-                        };
-                    }
-                });
-            }
-        }
-    }
-
-    let tabRuleList = [];
-
-    async function changeTab(state) {
-        displayTableTab = state;
-
-        // Clear hover timeout when actually switching tabs
-        handleTabHoverLeave();
-
-        // Check if we have preloaded data for this tab
-        const preloaded = preloadedData.get(state);
-
-        if (displayTableTab === "performance") {
-            otherTabRules = [
-                { name: "marketCap", value: "any" },
-                { name: "change1W", value: "any" },
-                { name: "change1M", value: "any" },
-                { name: "change3M", value: "any" },
-                { name: "change1Y", value: "any" },
-            ];
-            tabRuleList = otherTabRules
-                ?.map((rule) => allRows.find((row) => row.rule === rule.name))
-                ?.filter(Boolean);
-
-            // Use preloaded data if available and fresh (within 5 minutes)
-            if (preloaded && Date.now() - preloaded.timestamp < 300000) {
-                handleScreenerMessage({
-                    data: { stockScreenerData: preloaded.data },
-                });
-                return;
-            }
-            await updateStockScreenerData();
-        } else if (displayTableTab === "analysts") {
-            otherTabRules = [
-                { name: "marketCap", value: "any" },
-                { name: "analystRating", value: "any" },
-                { name: "analystCounter", value: "any" },
-                { name: "priceTarget", value: "any" },
-                { name: "upside", value: "any" },
-            ];
-            tabRuleList = otherTabRules
-                ?.map((rule) =>
-                    allRows?.find((row) => row?.rule === rule?.name),
-                )
-                ?.filter(Boolean);
-
-            // Use preloaded data if available and fresh
-            if (preloaded && Date.now() - preloaded.timestamp < 300000) {
-                handleScreenerMessage({
-                    data: { stockScreenerData: preloaded.data },
-                });
-                return;
-            }
-            await updateStockScreenerData();
-        } else if (displayTableTab === "dividends") {
-            otherTabRules = [
-                { name: "marketCap", value: "any" },
-                { name: "annualDividend", value: "any" },
-                { name: "dividendYield", value: "any" },
-                { name: "payoutRatio", value: "any" },
-                { name: "dividendGrowth", value: "any" },
-            ];
-            tabRuleList = otherTabRules
-                ?.map((rule) =>
-                    allRows?.find((row) => row?.rule === rule?.name),
-                )
-                ?.filter(Boolean);
-
-            // Use preloaded data if available and fresh
-            if (preloaded && Date.now() - preloaded.timestamp < 300000) {
-                handleScreenerMessage({
-                    data: { stockScreenerData: preloaded.data },
-                });
-                return;
-            }
-            await updateStockScreenerData();
-        } else if (displayTableTab === "financials") {
-            otherTabRules = [
-                { name: "marketCap", value: "any" },
-                { name: "revenue", value: "any" },
-                { name: "operatingIncome", value: "any" },
-                { name: "netIncome", value: "any" },
-                { name: "freeCashFlow", value: "any" },
-                { name: "eps", value: "any" },
-            ];
-            tabRuleList = otherTabRules
-                ?.map((rule) =>
-                    allRows?.find((row) => row?.rule === rule?.name),
-                )
-                ?.filter(Boolean);
-
-            // Use preloaded data if available and fresh
-            if (preloaded && Date.now() - preloaded.timestamp < 300000) {
-                handleScreenerMessage({
-                    data: { stockScreenerData: preloaded.data },
-                });
-                return;
-            }
-            await updateStockScreenerData();
-        }
-    }
-    /*
-  async function handleMouseOver() {
-    if (displayTableTab !== "performance") {
-      hoverStatus = true;
-      otherTabRules = [
-        { name: "marketCap", value: "any" },
-        { name: "change1W", value: "any" },
-        { name: "change1M", value: "any" },
-        { name: "change3M", value: "any" },
-        { name: "change1Y", value: "any" },
-      ];
-      tabRuleList = otherTabRules
-        ?.map((rule) => allRows.find((row) => row.rule === rule.name))
-        ?.filter(Boolean);
-
-      await updateStockScreenerData();
-    } else if (displayTableTab !== "analysts") {
-      hoverStatus = true;
-      otherTabRules = [
-        { name: "marketCap", value: "any" },
-        { name: "analystRating", value: "any" },
-        { name: "analystCounter", value: "any" },
-        { name: "priceTarget", value: "any" },
-        { name: "upside", value: "any" },
-      ];
-      tabRuleList = otherTabRules
-        ?.map((rule) => allRows.find((row) => row.rule === rule.name))
-        ?.filter(Boolean);
-
-      await updateStockScreenerData();
-    }
-  }
-  */
 </script>
 
 <SEO
-    title="Free Stock Screener - Search, Filter and Analyze Stocks"
-    description={`A free stock screener to search, filter and analyze stocks by ${allRows?.length} different indicators and metrics. The screener data is updated once per minute.`}
+    title="Free Backtesting - Search, Filter and Analyze Stocks"
+    description={`A free backtesting to search, filter and analyze stocks by ${allRows?.length} different indicators and metrics. The screener data is updated once per minute.`}
 />
 
 <svelte:window on:scroll={handleScroll} />
@@ -1657,8 +1278,7 @@ const handleKeyDown = (event) => {
         <ul>
             <li><a href="/" class="text-muted dark:text-gray-300">Home</a></li>
             <li>
-                <span class="text-muted dark:text-gray-300">Stock Screener</span
-                >
+                <span class="text-muted dark:text-gray-300">Backtesting</span>
             </li>
         </ul>
     </div>
@@ -1667,12 +1287,7 @@ const handleKeyDown = (event) => {
     <div class="sm:rounded">
         <div class="flex flex-col md:flex-row items-start md:items-center mb-5">
             <div class="w-full flex flex-row items-center sm:mt-4">
-                <h1 class=" text-3xl font-semibold">Stock Screener</h1>
-                <span
-                    class="inline-block text-xs sm:text-sm font-semibold ml-2 mt-3"
-                >
-                    {filteredData?.length} Matches Found
-                </span>
+                <h1 class=" text-3xl font-semibold">Backtesting</h1>
             </div>
 
             <div class="flex flex-row items-center w-full mt-5">
@@ -1689,7 +1304,7 @@ const handleKeyDown = (event) => {
                             <DropdownMenu.Trigger asChild let:builder>
                                 <Button
                                     builders={[builder]}
-                                    class="w-full  border-gray-300 dark:border-gray-600 border text-white bg-black sm:hover:bg-default dark:bg-default dark:sm:hover:bg-primary ease-out flex flex-row justify-between items-center px-3 py-2  rounded truncate"
+                                    class="w-full  border-gray-300 dark:border-gray-800 border text-white bg-black sm:hover:bg-default dark:bg-default dark:sm:hover:bg-primary ease-out flex flex-row justify-between items-center px-3 py-2  rounded truncate"
                                 >
                                     <span class="truncate"
                                         >{selectedPopularStrategy?.length !== 0
@@ -1753,7 +1368,7 @@ const handleKeyDown = (event) => {
                             <DropdownMenu.Trigger asChild let:builder>
                                 <Button
                                     builders={[builder]}
-                                    class="min-w-[110px]  w-full border-gray-300 dark:border-gray-600 border text-white bg-black sm:hover:bg-default dark:bg-default  dark:sm:hover:bg-primary ease-out flex flex-row justify-between items-center px-3 py-2  rounded truncate"
+                                    class="min-w-[110px]  w-full border-gray-300 dark:border-gray-800 border text-white bg-black sm:hover:bg-default dark:bg-default  dark:sm:hover:bg-primary ease-out flex flex-row justify-between items-center px-3 py-2  rounded truncate"
                                 >
                                     <span class="truncate max-w-48"
                                         >{selectedStrategy?.length !== 0
@@ -1869,12 +1484,10 @@ const handleKeyDown = (event) => {
 
     <!-- Strategy Configuration Tabs -->
     <div
-        class="mt-8 bg-white dark:bg-gray-800 rounded shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+        class="mt-8 bg-white dark:bg-default rounded shadow-lg border border-gray-300 dark:border-gray-800 overflow-hidden"
     >
         <!-- Tab Header with Enhanced Design -->
-        <div
-            class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border-b border-gray-200 dark:border-gray-600"
-        >
+        <div class="border-b border-gray-300 dark:border-gray-800">
             <div class="flex items-center justify-between px-6 py-4">
                 <h2
                     class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2"
@@ -1887,13 +1500,13 @@ const handleKeyDown = (event) => {
         <Tabs.Root bind:value={activeTab} class="w-full">
             <!-- Enhanced Tab List -->
             <div
-                class="flex border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50"
+                class="flex border-b border-gray-300 dark:border-gray-800 bg-gray-50 dark:bg-default"
             >
                 <button
-                    class="flex-1 px-6 py-4 text-sm font-medium transition-all duration-200 border-b-2 {activeTab ===
+                    class="flex-1 px-6 py-4 text-sm sm:text-[1rem] font-medium border-b-2 {activeTab ===
                     'buy'
-                        ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50'}"
+                        ? 'bg-default  dark:bg-white text-white dark:text-muted'
+                        : '   '}"
                     on:click={() => (activeTab = "buy")}
                 >
                     <div class="flex items-center justify-center gap-2">
@@ -1915,10 +1528,10 @@ const handleKeyDown = (event) => {
                 </button>
 
                 <button
-                    class="flex-1 px-6 py-4 text-sm font-medium transition-all duration-200 border-b-2 {activeTab ===
+                    class="flex-1 px-6 py-4 text-sm sm:text-[1rem] font-medium border-b-2 {activeTab ===
                     'sell'
-                        ? 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50'}"
+                        ? 'bg-default  dark:bg-white text-white dark:text-muted'
+                        : '   '}"
                     on:click={() => (activeTab = "sell")}
                 >
                     <div class="flex items-center justify-center gap-2">
@@ -1940,10 +1553,10 @@ const handleKeyDown = (event) => {
                 </button>
 
                 <button
-                    class="flex-1 px-6 py-4 text-sm font-medium transition-all duration-200 border-b-2 {activeTab ===
+                    class="flex-1 px-6 py-4 text-sm sm:text-[1rem] font-medium border-b-2 {activeTab ===
                     'risk'
-                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400'
-                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50'}"
+                        ? 'bg-default  dark:bg-white text-white dark:text-muted'
+                        : '   '}"
                     on:click={() => (activeTab = "risk")}
                 >
                     <div class="flex items-center justify-center gap-2">
@@ -1961,6 +1574,31 @@ const handleKeyDown = (event) => {
                             />
                         </svg>
                         Risk Management
+                    </div>
+                </button>
+
+                <button
+                    class="flex-1 px-6 py-4 text-sm sm:text-[1rem] font-medium border-b-2 {activeTab ===
+                    'backtest'
+                        ? 'bg-default  dark:bg-white text-white dark:text-muted'
+                        : '   '}"
+                    on:click={() => (activeTab = "backtest")}
+                >
+                    <div class="flex items-center justify-center gap-2">
+                        <svg
+                            class="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                            />
+                        </svg>
+                        Backtesting
                     </div>
                 </button>
             </div>
@@ -2076,7 +1714,7 @@ const handleKeyDown = (event) => {
                                             class="sr-only peer"
                                         />
                                         <div
-                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-500"
+                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after: dark:border-gray-800 peer-checked:bg-red-500"
                                         ></div>
                                     </label>
                                 </div>
@@ -2171,7 +1809,7 @@ const handleKeyDown = (event) => {
                                             class="sr-only peer"
                                         />
                                         <div
-                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-500"
+                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after: dark:border-gray-800 peer-checked:bg-green-500"
                                         ></div>
                                     </label>
                                 </div>
@@ -2312,6 +1950,497 @@ const handleKeyDown = (event) => {
                         </div>
                     </div>
                 </Tabs.Content>
+
+                <!-- Backtesting Tab Content -->
+                <Tabs.Content value="backtest" class="outline-none">
+                    <div class="space-y-6">
+                        <div>
+                            <h3
+                                class="text-lg font-semibold text-blue-700 dark:text-blue-400 mb-2"
+                            >
+                                Backtest Your Strategy
+                            </h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Test your strategy against historical data
+                            </p>
+                        </div>
+
+                        <!-- Backtest Configuration -->
+                        <div
+                            class="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-6 border border-gray-300 dark:border-gray-800"
+                        >
+                            <h4
+                                class="font-semibold text-gray-900 dark:text-white mb-4"
+                            >
+                                Configuration
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                        >Ticker Symbol</label
+                                    >
+                                    <input
+                                        type="text"
+                                        bind:value={selectedTicker}
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm uppercase"
+                                        placeholder="AAPL"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                        >Start Date</label
+                                    >
+                                    <input
+                                        type="date"
+                                        bind:value={startDate}
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                        >End Date</label
+                                    >
+                                    <input
+                                        type="date"
+                                        bind:value={endDate}
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                        >Initial Capital</label
+                                    >
+                                    <input
+                                        type="number"
+                                        bind:value={initialCapital}
+                                        min="1000"
+                                        step="1000"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    />
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button
+                                    on:click={runBacktest}
+                                    disabled={isBacktesting}
+                                    class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-medium transition-colors"
+                                >
+                                    {#if isBacktesting}
+                                        <svg
+                                            class="w-4 h-4 animate-spin"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                            />
+                                        </svg>
+                                        Running Backtest...
+                                    {:else}
+                                        <svg
+                                            class="w-4 h-4"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M13 10V3L4 14h7v7l9-11h-7z"
+                                            />
+                                        </svg>
+                                        Run Backtest
+                                    {/if}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Error Display -->
+                        {#if backtestError}
+                            <div
+                                class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4"
+                            >
+                                <div class="flex items-start gap-3">
+                                    <svg
+                                        class="w-5 h-5 text-red-500 mt-0.5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        />
+                                    </svg>
+                                    <p
+                                        class="text-red-700 dark:text-red-400 text-sm"
+                                    >
+                                        {backtestError}
+                                    </p>
+                                </div>
+                            </div>
+                        {/if}
+
+                        <!-- Results Display -->
+                        {#if backtestResults}
+                            <!-- Performance Summary Cards -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <!-- Strategy Performance -->
+                                <div
+                                    class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10 rounded-xl p-6 border border-blue-200 dark:border-blue-800/30"
+                                >
+                                    <div
+                                        class="flex items-center justify-between mb-4"
+                                    >
+                                        <h4
+                                            class="font-semibold text-blue-700 dark:text-blue-400"
+                                        >
+                                            Your Strategy
+                                        </h4>
+                                        <div
+                                            class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg"
+                                        >
+                                            <svg
+                                                class="w-4 h-4 text-blue-600 dark:text-blue-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                                                />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div
+                                            class="flex justify-between items-center"
+                                        >
+                                            <span
+                                                class="text-sm text-blue-600 dark:text-blue-300"
+                                                >Total Return</span
+                                            >
+                                            <span
+                                                class="font-semibold text-blue-700 dark:text-blue-400"
+                                                >{backtestResults.strategy
+                                                    .totalReturn}%</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="flex justify-between items-center"
+                                        >
+                                            <span
+                                                class="text-sm text-blue-600 dark:text-blue-300"
+                                                >Sharpe Ratio</span
+                                            >
+                                            <span
+                                                class="font-semibold text-blue-700 dark:text-blue-400"
+                                                >{backtestResults.strategy
+                                                    .sharpeRatio}</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="flex justify-between items-center"
+                                        >
+                                            <span
+                                                class="text-sm text-blue-600 dark:text-blue-300"
+                                                >Max Drawdown</span
+                                            >
+                                            <span
+                                                class="font-semibold text-red-600 dark:text-red-400"
+                                                >{backtestResults.strategy
+                                                    .maxDrawdown}%</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="flex justify-between items-center"
+                                        >
+                                            <span
+                                                class="text-sm text-blue-600 dark:text-blue-300"
+                                                >Win Rate</span
+                                            >
+                                            <span
+                                                class="font-semibold text-blue-700 dark:text-blue-400"
+                                                >{backtestResults.strategy
+                                                    .winRate}%</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Benchmark Performance -->
+                                <div
+                                    class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800/50 dark:to-gray-700/30 rounded-xl p-6 border border-gray-300 dark:border-gray-800"
+                                >
+                                    <div
+                                        class="flex items-center justify-between mb-4"
+                                    >
+                                        <h4
+                                            class="font-semibold text-gray-700 dark:text-gray-300"
+                                        >
+                                            SPY Benchmark
+                                        </h4>
+                                        <div
+                                            class="p-2 bg-gray-100 dark:bg-gray-700/50 rounded-lg"
+                                        >
+                                            <svg
+                                                class="w-4 h-4 text-gray-600 dark:text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"
+                                                />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div
+                                            class="flex justify-between items-center"
+                                        >
+                                            <span
+                                                class="text-sm text-gray-600 dark:text-gray-400"
+                                                >Total Return</span
+                                            >
+                                            <span
+                                                class="font-semibold text-gray-700 dark:text-gray-300"
+                                                >{backtestResults.benchmark
+                                                    .totalReturn}%</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="flex justify-between items-center"
+                                        >
+                                            <span
+                                                class="text-sm text-gray-600 dark:text-gray-400"
+                                                >Sharpe Ratio</span
+                                            >
+                                            <span
+                                                class="font-semibold text-gray-700 dark:text-gray-300"
+                                                >{backtestResults.benchmark
+                                                    .sharpeRatio}</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="flex justify-between items-center"
+                                        >
+                                            <span
+                                                class="text-sm text-gray-600 dark:text-gray-400"
+                                                >Max Drawdown</span
+                                            >
+                                            <span
+                                                class="font-semibold text-red-600 dark:text-red-400"
+                                                >{backtestResults.benchmark
+                                                    .maxDrawdown}%</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="flex justify-between items-center"
+                                        >
+                                            <span
+                                                class="text-sm text-gray-600 dark:text-gray-400"
+                                                >Final Value</span
+                                            >
+                                            <span
+                                                class="font-semibold text-gray-700 dark:text-gray-300"
+                                                >${backtestResults.benchmark.finalValue.toLocaleString()}</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Alpha/Outperformance -->
+                                <div
+                                    class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/10 rounded-xl p-6 border border-green-200 dark:border-green-800/30"
+                                >
+                                    <div
+                                        class="flex items-center justify-between mb-4"
+                                    >
+                                        <h4
+                                            class="font-semibold text-green-700 dark:text-green-400"
+                                        >
+                                            Outperformance
+                                        </h4>
+                                        <div
+                                            class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg"
+                                        >
+                                            <svg
+                                                class="w-4 h-4 text-green-600 dark:text-green-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                                                />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div
+                                            class="flex justify-between items-center"
+                                        >
+                                            <span
+                                                class="text-sm text-green-600 dark:text-green-300"
+                                                >Alpha</span
+                                            >
+                                            <span
+                                                class="font-semibold text-green-700 dark:text-green-400"
+                                                >+{(
+                                                    backtestResults.strategy
+                                                        .totalReturn -
+                                                    backtestResults.benchmark
+                                                        .totalReturn
+                                                ).toFixed(1)}%</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="flex justify-between items-center"
+                                        >
+                                            <span
+                                                class="text-sm text-green-600 dark:text-green-300"
+                                                >Total Trades</span
+                                            >
+                                            <span
+                                                class="font-semibold text-green-700 dark:text-green-400"
+                                                >{backtestResults.strategy
+                                                    .totalTrades}</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="flex justify-between items-center"
+                                        >
+                                            <span
+                                                class="text-sm text-green-600 dark:text-green-300"
+                                                >Final Value</span
+                                            >
+                                            <span
+                                                class="font-semibold text-green-700 dark:text-green-400"
+                                                >${backtestResults.strategy.finalValue.toLocaleString()}</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="flex justify-between items-center"
+                                        >
+                                            <span
+                                                class="text-sm text-green-600 dark:text-green-300"
+                                                >Profit</span
+                                            >
+                                            <span
+                                                class="font-semibold text-green-700 dark:text-green-400"
+                                                >+${(
+                                                    backtestResults.strategy
+                                                        .finalValue -
+                                                    backtestResults.benchmark
+                                                        .finalValue
+                                                ).toLocaleString()}</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Performance Chart -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-300 dark:border-gray-800"
+                            >
+                                <div
+                                    class="flex items-center justify-between mb-6"
+                                >
+                                    <h4
+                                        class="font-semibold text-gray-900 dark:text-white"
+                                    >
+                                        Cumulative Returns
+                                    </h4>
+                                    <div
+                                        class="flex items-center gap-4 text-sm"
+                                    >
+                                        <div class="flex items-center gap-2">
+                                            <div
+                                                class="w-3 h-3 bg-blue-500 rounded-full"
+                                            ></div>
+                                            <span
+                                                class="text-gray-600 dark:text-gray-400"
+                                                >Your Strategy</span
+                                            >
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <div
+                                                class="w-3 h-3 bg-gray-400 rounded-full"
+                                            ></div>
+                                            <span
+                                                class="text-gray-600 dark:text-gray-400"
+                                                >SPY Benchmark</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Simplified Chart Display -->
+                                <div
+                                    class="h-64 bg-gray-50 dark:bg-gray-900/50 rounded-lg flex items-center justify-center border border-gray-300 dark:border-gray-800"
+                                >
+                                    <div class="text-center dark:text-gray-400">
+                                        <svg
+                                            class="w-16 h-16 mx-auto mb-4"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                                            />
+                                        </svg>
+                                        <p class="text-lg font-medium mb-2">
+                                            Performance Chart
+                                        </p>
+                                        <p class="text-sm">
+                                            Chart showing strategy vs SPY
+                                            benchmark over time
+                                        </p>
+                                        <p class="text-xs mt-2">
+                                            Strategy Return: <span
+                                                class="text-blue-600 font-semibold"
+                                                >{backtestResults.strategy
+                                                    .totalReturn}%</span
+                                            >
+                                            | SPY Return:
+                                            <span
+                                                class="text-gray-600 font-semibold"
+                                                >{backtestResults.benchmark
+                                                    .totalReturn}%</span
+                                            >
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        {/if}
+                    </div>
+                </Tabs.Content>
             </div>
 
             <!-- Strategy Summary in Plain English -->
@@ -2427,308 +2556,6 @@ const handleKeyDown = (event) => {
     </label> 
   </div>
 -->
-
-<!--Start Choose Rule Modal-->
-<input type="checkbox" id="ruleModal" class="modal-toggle" />
-<dialog id="ruleModal" class="modal p-2 lg:p-0">
-    <label
-        id="ruleModal"
-        for="ruleModal"
-        on:click={() => (searchTerm = "")}
-        class="cursor-pointer modal-backdrop bg-[#000]/40"
-    ></label>
-
-    <div
-        class="modal-box relative bg-white dark:bg-primary z-20 mx-2 min-h-[30vh] h-[800px] rounded bg-default opacity-100 border border-gray-300 dark:border-gray-600 bp:mx-3 sm:mx-4 w-full max-w-6xl overflow-y-auto"
-    >
-        <div class="relative flex flex-col w-full">
-            <!-- Sticky Header -->
-
-            <div
-                class="fixed w-full h-fit sticky -top-6 z-40 bg-white dark:bg-primary opacity-100 pb-6 pt-5 border-gray-300 dark:border-gray-600 border-b"
-            >
-                <div class="flex flex-row items-center justify-between mb-2">
-                    <h2 class=" text-[1rem] sm:text-xl font-semibold">
-                        Select screener filters ({allRows?.length} total)
-                    </h2>
-                    <label
-                        for="ruleModal"
-                        class="inline-block cursor-pointer absolute right-0 top-3 text-[1.3rem] sm:text-[1.8rem]"
-                    >
-                        <svg
-                            class="w-6 h-6 sm:w-8 sm:h-8"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            ><path
-                                fill="currentColor"
-                                d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6z"
-                            /></svg
-                        >
-                    </label>
-                </div>
-
-                <!-- Start Search bar -->
-                <form
-                    class="w-full h-8"
-                    on:keydown={(e) =>
-                        e?.key === "Enter" ? e.preventDefault() : ""}
-                >
-                    <label for="search" class="sr-only">Search</label>
-                    <div class="relative w-full max-w-sm">
-                        <div
-                            class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
-                        >
-                            <svg
-                                class="w-4 h-4 text-gray-600 dark:text-gray-300"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    stroke="currentColor"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                                />
-                            </svg>
-                        </div>
-
-                        <div
-                            class="absolute inset-y-0 right-0 flex items-center pr-2 {searchTerm?.length >
-                            0
-                                ? ''
-                                : 'hidden'}"
-                        >
-                            <button
-                                on:click={() => (searchTerm = "")}
-                                class="cursor-pointer text-gray-600 dark:text-gray-300"
-                                tabindex="0"
-                                ><svg
-                                    class="w-5 h-5"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                    style="max-width:40px"
-                                    ><path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    ></path></svg
-                                ></button
-                            >
-                        </div>
-
-                        <input
-                            autocomplete="off"
-                            id="search"
-                            class="focus:outline-none placeholder-gray-800 dark:placeholder-gray-300 block w-full p-2 ps-10 text-sm border border-gray-300 dark:border-gray-600 rounded bg-gray-100 dark:bg-secondary border border-blue-500"
-                            placeholder="Search..."
-                            bind:value={searchTerm}
-                        />
-                    </div>
-                </form>
-                <!-- End Search bar -->
-            </div>
-
-            <!-- Content -->
-            <div class="">
-                {#each searchTerm?.length !== 0 ? Object?.entries(filteredGroupedRules) : Object?.entries(groupedRules) as [category, rules]}
-                    <h4 class="mb-1 font-semibold text-lg mt-5">{category}</h4>
-                    <div class="flex flex-wrap">
-                        {#each rules as row}
-                            <div
-                                class="flex w-full items-center space-x-1.5 py-1.5 md:w-1/2 lg:w-1/3 lg:py-1"
-                            >
-                                {#if onlySubscriberRules?.includes(row?.rule) && !["Pro", "Plus"]?.includes(data?.user?.tier)}
-                                    <label
-                                        id={row?.rule}
-                                        on:click={() => changeRule(row?.rule)}
-                                        class="flex flex-row items-center"
-                                    >
-                                        <svg
-                                            class="w-4 h-4 mr-1 inline-block cursor-pointer"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            ><path
-                                                fill="currentColor"
-                                                d="M17 9V7c0-2.8-2.2-5-5-5S7 4.2 7 7v2c-1.7 0-3 1.3-3 3v7c0 1.7 1.3 3 3 3h10c1.7 0 3-1.3 3-3v-7c0-1.7-1.3-3-3-3M9 7c0-1.7 1.3-3 3-3s3 1.3 3 3v2H9z"
-                                            /></svg
-                                        >
-                                        <div class="">
-                                            <label
-                                                for={row?.rule}
-                                                class="cursor-pointer text-[1rem]"
-                                                >{row?.label}</label
-                                            >
-                                        </div>
-                                    </label>
-                                {:else}
-                                    <input
-                                        on:click={() => changeRule(row?.rule)}
-                                        id={row?.rule}
-                                        type="checkbox"
-                                        checked={ruleOfList?.find(
-                                            (rule) => rule?.name === row?.rule,
-                                        )}
-                                        class="h-[18px] w-[18px] rounded-sm ring-offset-0 lg:h-4 lg:w-4"
-                                    />
-                                    <div class="-mt-0.5">
-                                        <label
-                                            for={row?.rule}
-                                            class="cursor-pointer text-[1rem]"
-                                            >{row?.label}</label
-                                        >
-                                    </div>
-                                {/if}
-                            </div>
-                        {/each}
-                    </div>
-                {/each}
-                {#if searchTerm?.length > 0 && Object?.entries(filteredGroupedRules)?.length === 0}
-                    <div class=" mt-5 font-semibold text-[1rem] sm:text-lg">
-                        Nothing found
-                    </div>
-                {/if}
-            </div>
-        </div>
-    </div>
-</dialog>
-
-<!--End Choose Rule Modal-->
-
-<!--Start Add Strategy Modal-->
-<input type="checkbox" id="addStrategy" class="modal-toggle" />
-
-<dialog id="addStrategy" class="modal modal-bottom sm:modal-middle">
-    <label for="addStrategy" class="cursor-pointer modal-backdrop bg-[#000]/40"
-    ></label>
-
-    <div
-        class="modal-box w-full p-6 rounded border
-        bg-white dark:bg-secondary border border-gray-300 dark:border-gray-800"
-    >
-        <h1 class="text-2xl font-bold">New Screener</h1>
-
-        <form
-            on:submit={createStrategy}
-            method="POST"
-            class="space-y-2 pt-5 pb-10 sm:pb-5"
-        >
-            <Input
-                id="title"
-                type="text"
-                errors=""
-                label="Screener Name"
-                required={true}
-            />
-
-            <button
-                type="submit"
-                class="cursor-pointer mt-2 py-2.5 bg-black dark:bg-[#fff] dark:sm:hover:bg-gray-300 duration-100 w-full rounded m-auto text-white dark:text-black font-semibold text-md"
-            >
-                Create Screener
-            </button>
-        </form>
-    </div>
-</dialog>
-
-<!--End Add Strategy Modal-->
-
-<!--Start Delete Strategy Modal-->
-<input type="checkbox" id="deleteStrategy" class="modal-toggle" />
-
-<dialog id="deleteStrategy" class="modal modal-bottom sm:modal-middle">
-    <label
-        for="deleteStrategy"
-        class="cursor-pointer modal-backdrop bg-[#000]/40"
-    ></label>
-
-    <div
-        class="modal-box w-full p-6 rounded border
-        bg-white dark:bg-secondary border border-gray-300 dark:border-gray-800"
-    >
-        <h3 class="text-lg font-medium mb-2">Delete Screener</h3>
-        <p class="text-sm mb-6">
-            Are you sure you want to delete this screener? This action cannot be
-            undone.
-        </p>
-        <div class="flex justify-end space-x-3">
-            <label
-                for="deleteStrategy"
-                class="cursor-pointer px-4 py-2 rounded text-sm font-medium
-            transition-colors duration-100
-            bg-gray-600 text-white dark:bg-white dark:text-black"
-                tabindex="0">Cancel</label
-            ><label
-                for="deleteStrategy"
-                on:click={handleDeleteStrategy}
-                class="cursor-pointer px-4 py-2 rounded text-sm font-medium
-            transition-colors duration-100 flex items-center
-            bg-red-600 text-white sm:hover:bg-red-700
-            "
-                tabindex="0"
-                ><svg
-                    stroke="currentColor"
-                    fill="none"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="w-4 h-4 mr-2"
-                    height="1em"
-                    width="1em"
-                    xmlns="http://www.w3.org/2000/svg"
-                    ><polyline points="3 6 5 6 21 6"></polyline><path
-                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                    ></path><line x1="10" y1="11" x2="10" y2="17"></line><line
-                        x1="14"
-                        y1="11"
-                        x2="14"
-                        y2="17"
-                    ></line></svg
-                >Delete Screener</label
-            >
-        </div>
-    </div>
-</dialog>
-
-<!--End Delete Strategy Modal-->
-
-<input type="checkbox" id="mobileTooltip" class="modal-toggle" />
-
-<dialog id="mobileTooltip" class="modal p-3">
-    <label for="mobileTooltip" class="cursor-pointer modal-backdrop"></label>
-
-    <!-- Desktop modal content -->
-    <div
-        class="modal-box rounded border border-gray-300 dark:border-gray-600 w-full bg-white dark:bg-secondary flex flex-col items-center"
-    >
-        <div class=" mb-5 text-center">
-            <h3 class="font-bold text-2xl mb-5">{tooltipTitle}</h3>
-            <span class=" text-[1rem] font-normal"
-                >{infoText?.text ?? "n/a"}</span
-            >
-            {#if infoText?.equation !== undefined}
-                <div class="w-5/6 m-auto mt-5"></div>
-                <div class="text-[1rem] w-full pt-3 pb-3 m-auto">
-                    {infoText?.equation}
-                </div>
-            {/if}
-        </div>
-
-        <div class="border-t border-gray-300 dark:border-gray-600 mt-2 w-full">
-            <label
-                for="mobileTooltip"
-                class="cursor-pointer mt-4 font-semibold text-xl m-auto flex justify-center"
-            >
-                Close
-            </label>
-        </div>
-    </div>
-</dialog>
 
 <!--Start Login Modal-->
 {#if LoginPopup}

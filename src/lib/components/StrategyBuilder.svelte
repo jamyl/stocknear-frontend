@@ -405,7 +405,7 @@
                             class="flex-1 h-px bg-gray-300 dark:bg-gray-600"
                         ></div>
                         <button
-                            class="flex items-center gap-1 px-3 py-1.5 mx-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full text-xs font-semibold text-gray-600 dark:text-gray-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
+                            class="flex items-center gap-1 px-3 py-1.5 mx-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
                             on:click={() => {
                                 const newOp =
                                     block.logicOperator === LOGIC_OPERATORS.AND
