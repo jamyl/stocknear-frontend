@@ -6,7 +6,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
   const postData = { strategyData: data?.strategyData };
 
-  console.log(data)
   const response = await fetch(apiURL + "/backtesting", {
     method: "POST",
     headers: {
