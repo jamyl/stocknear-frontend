@@ -184,7 +184,7 @@
 
 <div class="">
     <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold capitalize text-white">
+        <h3 class="text-lg font-semibold capitalize">
             Define {mode} conditions
         </h3>
         <div class="relative">

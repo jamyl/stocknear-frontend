@@ -552,8 +552,13 @@
             buyConditionBlocks.length === 0 ||
             sellConditionBlocks.length === 0
         ) {
-            backtestError =
-                "Please set up both buy and sell conditions before running backtest";
+            toast?.error(
+                "Please set up both buy and sell conditions before running backtest",
+                {
+                    style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+                },
+            );
+
             return;
         }
 
@@ -1214,23 +1219,18 @@
                 <!-- Backtesting Tab Content -->
                 <Tabs.Content value="backtest" class="outline-none">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold capitalize text-white">
+                        <h3 class="text-lg font-semibold capitalize">
                             Define Backtesting Settings
                         </h3>
                     </div>
 
                     <div class="space-y-6">
                         <!-- Backtest Configuration -->
-                        <div class="bg-gray-50 dark:bg-default">
-                            <h4
-                                class="font-semibold text-gray-900 dark:text-white mb-4"
-                            >
-                                Configuration
-                            </h4>
+                        <div class="bg-gray-100 dark:bg-default p-3">
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div>
                                     <label
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                        class="block text-sm font-medium mb-2"
                                         >Ticker Symbol</label
                                     >
                                     <input
@@ -1242,7 +1242,7 @@
                                 </div>
                                 <div>
                                     <label
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                        class="block text-sm font-medium mb-2"
                                         >Start Date</label
                                     >
                                     <input
@@ -1253,7 +1253,7 @@
                                 </div>
                                 <div>
                                     <label
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                        class="block text-sm font-medium mb-2"
                                         >End Date</label
                                     >
                                     <input
@@ -1264,7 +1264,7 @@
                                 </div>
                                 <div>
                                     <label
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                        class="block text-sm font-medium mb-2"
                                         >Initial Capital</label
                                     >
                                     <input
@@ -1442,9 +1442,7 @@
                                     <div
                                         class="flex items-center justify-between mb-4"
                                     >
-                                        <h4
-                                            class="font-semibold text-gray-700 dark:text-gray-300"
-                                        >
+                                        <h4 class="font-semibold">
                                             SPY Benchmark
                                         </h4>
                                         <div
@@ -1473,8 +1471,7 @@
                                                 class="text-sm text-gray-600 dark:text-gray-400"
                                                 >Total Return</span
                                             >
-                                            <span
-                                                class="font-semibold text-gray-700 dark:text-gray-300"
+                                            <span class="font-semibold"
                                                 >{backtestResults.benchmark
                                                     .totalReturn}%</span
                                             >
@@ -1486,8 +1483,7 @@
                                                 class="text-sm text-gray-600 dark:text-gray-400"
                                                 >Sharpe Ratio</span
                                             >
-                                            <span
-                                                class="font-semibold text-gray-700 dark:text-gray-300"
+                                            <span class="font-semibold"
                                                 >{backtestResults.benchmark
                                                     .sharpeRatio}</span
                                             >
@@ -1512,8 +1508,7 @@
                                                 class="text-sm text-gray-600 dark:text-gray-400"
                                                 >Final Value</span
                                             >
-                                            <span
-                                                class="font-semibold text-gray-700 dark:text-gray-300"
+                                            <span class="font-semibold"
                                                 >${backtestResults.benchmark.finalValue.toLocaleString()}</span
                                             >
                                         </div>
@@ -1709,19 +1704,13 @@
                                     <span
                                         class="inline-block w-2 h-2 bg-green-500 rounded-full mt-1.5 flex-shrink-0"
                                     ></span>
-                                    <span
-                                        class="text-gray-700 dark:text-gray-300"
-                                        >{buyExplanation}</span
-                                    >
+                                    <span class="">{buyExplanation}</span>
                                 </div>
                                 <div class="flex items-start gap-2">
                                     <span
                                         class="inline-block w-2 h-2 bg-red-500 rounded-full mt-1.5 flex-shrink-0"
                                     ></span>
-                                    <span
-                                        class="text-gray-700 dark:text-gray-300"
-                                        >{sellExplanation}</span
-                                    >
+                                    <span class="">{sellExplanation}</span>
                                 </div>
                                 <!--
                                 {#if riskManagement.stopLoss.enabled || riskManagement.takeProfit.enabled}
@@ -1730,7 +1719,7 @@
                                             class="inline-block w-2 h-2 bg-purple-500 rounded-full mt-1.5 flex-shrink-0"
                                         ></span>
                                         <span
-                                            class="text-gray-700 dark:text-gray-300"
+                                            class=""
                                         >
                                             Risk controls:
                                             {#if riskManagement.stopLoss.enabled}
