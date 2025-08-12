@@ -382,9 +382,12 @@
                     <div
                       class="flex h-9 w-9 items-center justify-center rounded text-muted dark:text-white md:h-8 md:w-8"
                     >
-                      <Home class="h-5.5 w-5.5" />
+                      <Home
+                        class="h-5.5 w-5.5 mr-3 text-muted dark:text-white ml-1"
+                      />
                     </div>
-                    <span class="ml-3 text-muted dark:text-white text-[1rem]"
+                    <span
+                      class="ml-1 mr-auot text-muted dark:text-white text-[1rem]"
                       >Home</span
                     >
                   </a>
@@ -921,9 +924,12 @@
                       <div
                         class="flex h-9 w-9 items-center justify-center rounded text-muted dark:text-white sm:hover:text-muted dark:text-white md:h-8 md:w-8"
                       >
-                        <Boxes class="h-5.5 w-5.5" />
+                        <Boxes
+                          class="h-5.5 w-5.5 mr-3 text-muted dark:text-white ml-1"
+                        />
                       </div>
-                      <span class="ml-3 text-muted dark:text-white text-[1rem]"
+                      <span
+                        class="ml-1 mr-auot text-muted dark:text-white text-[1rem]"
                         >Hedge Funds</span
                       >
                     </div>
@@ -945,9 +951,12 @@
                       <div
                         class="flex h-9 w-9 items-center justify-center rounded text-muted dark:text-white hover:text-muted dark:text-white md:h-8 md:w-8"
                       >
-                        <Newspaper class="h-5.5 w-5.5" />
+                        <Newspaper
+                          class="h-5.5 w-5.5 mr-3 text-muted dark:text-white ml-1"
+                        />
                       </div>
-                      <span class="ml-3 text-muted dark:text-white text-[1rem]"
+                      <span
+                        class="ml-1 mr-auot text-muted dark:text-white text-[1rem]"
                         >News</span
                       >
                     </div>
