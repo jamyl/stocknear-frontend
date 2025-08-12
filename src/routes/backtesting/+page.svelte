@@ -22,6 +22,7 @@
     import Infobox from "$lib/components/Infobox.svelte";
     import Input from "$lib/components/Input.svelte";
     import SEO from "$lib/components/SEO.svelte";
+    import StrategyBuilder from "$lib/components/StrategyBuilder.svelte";
 
     //const userConfirmation = confirm('Unsaved changes detected. Leaving now will discard your strategy. Continue?');
 
@@ -154,7 +155,56 @@
             min: 0,
             max: 100,
         },
+        sma: {
+            label: "Simple Moving Average",
+            category: "Technical Analysis",
+            operators: ["above", "below", "equals"],
+            defaultOperator: "above",
+            defaultValue: 20,
+            min: 1,
+            max: 200,
+        },
+        ema: {
+            label: "Exponential Moving Average",
+            category: "Technical Analysis",
+            operators: ["above", "below", "equals"],
+            defaultOperator: "above",
+            defaultValue: 20,
+            min: 1,
+            max: 200,
+        },
+        macd: {
+            label: "MACD",
+            category: "Technical Analysis",
+            operators: ["above", "below", "equals"],
+            defaultOperator: "above",
+            defaultValue: 0,
+            min: -10,
+            max: 10,
+        },
+        volume: {
+            label: "Volume",
+            category: "Volume",
+            operators: ["above", "below", "equals"],
+            defaultOperator: "above",
+            defaultValue: 1000000,
+            min: 0,
+            max: 999999999,
+        },
+        price: {
+            label: "Price",
+            category: "Price",
+            operators: ["above", "below", "equals"],
+            defaultOperator: "above",
+            defaultValue: 10,
+            min: 0,
+            max: 10000,
+        }
     };
+
+    // Strategy blocks for the new block-based UI
+    let buyConditionBlocks = [];
+    let sellConditionBlocks = [];
 
     // Define all possible rules and their properties (keeping for compatibility)
     const allRules = {
@@ -717,6 +767,28 @@
             );
             displayResults = [...displayResults, ...filteredNewResults];
         }
+    }
+
+    // Strategy block handlers for the new block-based UI
+    function handleBuyConditionChange(event) {
+        buyConditionBlocks = event.detail.blocks;
+        // Convert blocks back to legacy format for compatibility
+        buyConditions = convertBlocksToConditions(buyConditionBlocks);
+    }
+
+    function handleSellConditionChange(event) {
+        sellConditionBlocks = event.detail.blocks;
+        // Convert blocks back to legacy format for compatibility
+        sellConditions = convertBlocksToConditions(sellConditionBlocks);
+    }
+
+    function convertBlocksToConditions(blocks) {
+        return blocks.map(block => ({
+            indicator: block.indicator,
+            operator: block.operator,
+            value: block.value,
+            logic: block.logicOperator ? block.logicOperator.toLowerCase() : undefined
+        }));
     }
 
     /*
@@ -1991,173 +2063,22 @@ const handleKeyDown = (event) => {
 
             <!-- Buy Conditions Tab Content -->
             <Tabs.Content value="buy">
-                <div class="space-y-4 mt-5 rounded-md w-full">
-                    <div class="flex items-center justify-between">
-                        <h2 class="font-medium text-lg">Buy Conditions</h2>
-                        <button
-                            on:click={() =>
-                                (buyConditions = [
-                                    ...buyConditions,
-                                    {
-                                        indicator: "rsi",
-                                        operator:
-                                            availableIndicators.rsi
-                                                .defaultOperator,
-                                        value: availableIndicators.rsi
-                                            .defaultValue,
-                                    },
-                                ])}
-                            class="bg-black dark:bg-white text-white dark:text-black px-3 py-1 rounded hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
-                        >
-                            + Add Condition
-                        </button>
-                    </div>
-
-                    {#each buyConditions as condition, i}
-                        <div
-                            class="flex items-center space-x-2 w-full bg-gray-50 dark:bg-gray-800 p-3 rounded-lg"
-                        >
-                            <!-- Indicator dropdown -->
-                            <select
-                                bind:value={condition.indicator}
-                                class="bg-white dark:bg-primary border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                {#each Object.entries(availableIndicators) as [key, indicator]}
-                                    <option value={key}
-                                        >{indicator.label}</option
-                                    >
-                                {/each}
-                            </select>
-
-                            <!-- Operator dropdown -->
-                            <select
-                                bind:value={condition.operator}
-                                class="bg-white dark:bg-primary border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                {#each availableIndicators[condition.indicator].operators as op}
-                                    <option value={op}>{op}</option>
-                                {/each}
-                            </select>
-
-                            <!-- Value input -->
-                            <input
-                                type="number"
-                                bind:value={condition.value}
-                                min={availableIndicators[condition.indicator]
-                                    .min || 0}
-                                max={availableIndicators[condition.indicator]
-                                    .max || 999999}
-                                class="bg-white dark:bg-primary border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-
-                            <!-- Logic operator -->
-                            {#if i < buyConditions.length - 1}
-                                <select
-                                    bind:value={condition.logic}
-                                    class="bg-white dark:bg-primary border border-gray-300 dark:border-gray-600 rounded px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="and">AND</option>
-                                    <option value="or">OR</option>
-                                </select>
-                            {/if}
-
-                            <!-- Remove button -->
-                            <button
-                                class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded transition-colors"
-                                on:click={() =>
-                                    (buyConditions = buyConditions.filter(
-                                        (_, idx) => idx !== i,
-                                    ))}
-                            >
-                                ✕
-                            </button>
-                        </div>
-                    {/each}
-                </div>
+                <StrategyBuilder 
+                    bind:strategyBlocks={buyConditionBlocks}
+                    {availableIndicators}
+                    mode="buy"
+                    on:change={handleBuyConditionChange}
+                />
             </Tabs.Content>
 
             <!-- Sell Conditions Tab Content -->
             <Tabs.Content value="sell">
-                <div class="space-y-4 mt-5 rounded-md w-full">
-                    <div class="flex items-center justify-between">
-                        <h2 class="font-medium text-lg">Sell Conditions</h2>
-                        <button
-                            on:click={() =>
-                                (sellConditions = [
-                                    ...sellConditions,
-                                    {
-                                        indicator: "rsi",
-                                        operator: "above",
-                                        value: 70,
-                                    },
-                                ])}
-                            class="bg-black dark:bg-white text-white dark:text-black px-3 py-1 rounded hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
-                        >
-                            + Add Condition
-                        </button>
-                    </div>
-
-                    {#each sellConditions as condition, i}
-                        <div
-                            class="flex items-center space-x-2 w-full bg-gray-50 dark:bg-gray-800 p-3 rounded-lg"
-                        >
-                            <!-- Indicator dropdown -->
-                            <select
-                                bind:value={condition.indicator}
-                                class="bg-white dark:bg-primary border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                {#each Object.entries(availableIndicators) as [key, indicator]}
-                                    <option value={key}
-                                        >{indicator.label}</option
-                                    >
-                                {/each}
-                            </select>
-
-                            <!-- Operator dropdown -->
-                            <select
-                                bind:value={condition.operator}
-                                class="bg-white dark:bg-primary border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                {#each availableIndicators[condition.indicator].operators as op}
-                                    <option value={op}>{op}</option>
-                                {/each}
-                            </select>
-
-                            <!-- Value input -->
-                            <input
-                                type="number"
-                                bind:value={condition.value}
-                                min={availableIndicators[condition.indicator]
-                                    .min || 0}
-                                max={availableIndicators[condition.indicator]
-                                    .max || 999999}
-                                class="bg-white dark:bg-primary border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-
-                            <!-- Logic operator -->
-                            {#if i < sellConditions.length - 1}
-                                <select
-                                    bind:value={condition.logic}
-                                    class="bg-white dark:bg-primary border border-gray-300 dark:border-gray-600 rounded px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="and">AND</option>
-                                    <option value="or">OR</option>
-                                </select>
-                            {/if}
-
-                            <!-- Remove button -->
-                            <button
-                                class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded transition-colors"
-                                on:click={() =>
-                                    (sellConditions = sellConditions.filter(
-                                        (_, idx) => idx !== i,
-                                    ))}
-                            >
-                                ✕
-                            </button>
-                        </div>
-                    {/each}
-                </div>
+                <StrategyBuilder 
+                    bind:strategyBlocks={sellConditionBlocks}
+                    {availableIndicators}
+                    mode="sell"
+                    on:change={handleSellConditionChange}
+                />
             </Tabs.Content>
 
             <!-- Risk Management Tab Content -->
