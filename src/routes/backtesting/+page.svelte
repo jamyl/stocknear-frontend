@@ -9,12 +9,12 @@
     import SEO from "$lib/components/SEO.svelte";
     import StrategyBuilder from "$lib/components/StrategyBuilder.svelte";
     import { onMount } from "svelte";
-
-    //const userConfirmation = confirm('Unsaved changes detected. Leaving now will discard your strategy. Continue?');
+    import highcharts from "$lib/highcharts.ts";
 
     export let data;
     export let form;
 
+    let config = null;
     let activeTab = "buy";
     const popularStrategyList = [
         { key: "rsiOversold", label: "RSI Oversold" },
@@ -755,6 +755,7 @@
             const output = await response.json();
             if (output?.success) {
                 backtestResults = output;
+                config = plotData();
             } else {
                 backtestResults = {};
             }
@@ -766,6 +767,173 @@
     }
 
     let LoginPopup;
+
+    function plotData() {
+        const dates =
+            backtestResults?.plot_data?.strategy?.map((item) => item.date) ||
+            [];
+        const values =
+            backtestResults?.plot_data?.strategy?.map(
+                (item) => item.return_pct,
+            ) || [];
+
+        const benchmarkValues =
+            backtestResults?.plot_data?.spy_benchmark?.map(
+                (item) => item.return_pct,
+            ) || [];
+        const fillColorStart = "rgb(70, 129, 244,0.5)";
+        const fillColorEnd = "rgb(70, 129, 244,0.001)";
+
+        const options = {
+            credits: {
+                enabled: false,
+            },
+            chart: {
+                backgroundColor: $mode === "light" ? "#fff" : "#09090B",
+                plotBackgroundColor: $mode === "light" ? "#fff" : "#09090B",
+                height: 360,
+            },
+            title: {
+                text: null,
+                style: {
+                    color: $mode === "light" ? "black" : "white",
+                    // Using inline CSS for margin-top and margin-bottom
+                },
+                useHTML: true, // Enable HTML to apply custom class styling
+            },
+            xAxis: {
+                type: "datetime",
+                endOnTick: false,
+                categories: dates,
+                crosshair: {
+                    color: $mode === "light" ? "black" : "white", // Set the color of the crosshair line
+                    width: 1, // Adjust the line width as needed
+                    dashStyle: "Solid",
+                },
+                labels: {
+                    style: {
+                        color: $mode === "light" ? "#545454" : "white",
+                    },
+                    distance: 10, // Increases space between label and axis
+                    formatter: function () {
+                        const date = new Date(this.value);
+                        return date.toLocaleDateString("en-US", {
+                            month: "short",
+                            year: "numeric",
+                        });
+                    },
+                },
+                tickPositioner: function () {
+                    // Create custom tick positions with wider spacing
+                    const positions = [];
+                    const info = this.getExtremes();
+                    const tickCount = 5; // Reduce number of ticks displayed
+                    const interval = Math.floor(
+                        (info.max - info.min) / tickCount,
+                    );
+
+                    for (let i = 0; i <= tickCount; i++) {
+                        positions.push(info.min + i * interval);
+                    }
+                    return positions;
+                },
+            },
+            yAxis: {
+                gridLineWidth: 1,
+                gridLineColor: $mode === "light" ? "#e5e7eb" : "#111827",
+                labels: {
+                    style: { color: $mode === "light" ? "#545454" : "white" },
+                },
+                title: { text: null },
+                opposite: true,
+            },
+            tooltip: {
+                shared: true,
+                useHTML: true,
+                backgroundColor: "rgba(0, 0, 0, 0.8)", // Semi-transparent black
+                borderColor: "rgba(255, 255, 255, 0.2)", // Slightly visible white border
+                borderWidth: 1,
+                style: {
+                    color: "#fff",
+                    fontSize: "16px",
+                    padding: "10px",
+                },
+                borderRadius: 4,
+                formatter: function () {
+                    // Format the x value to display time in a custom format
+                    let tooltipContent = `<span class="m-auto text-[1rem] font-[501]">${new Date(
+                        this?.x,
+                    ).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                    })}</span><br>`;
+
+                    // Loop through each point in the shared tooltip
+                    this.points.forEach((point) => {
+                        tooltipContent += `
+        <span class="font-semibold text-sm">${point.series.name}:</span> 
+        <span class="font-normal text-sm">${point.y?.toLocaleString("en-US")}%</span><br>`;
+                    });
+
+                    return tooltipContent;
+                },
+            },
+
+            plotOptions: {
+                series: {
+                    color: "white",
+                    animation: false, // Disable series animation
+                    states: {
+                        hover: {
+                            enabled: false, // Disable hover effect globally
+                        },
+                    },
+                },
+            },
+            legend: {
+                enabled: false,
+            },
+            series: [
+                {
+                    name: "Cumulative Returns",
+                    type: "area",
+                    data: values,
+                    color: "#4681f4",
+                    lineWidth: 1.2,
+                    marker: {
+                        enabled: false,
+                    },
+                    fillColor: {
+                        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                        stops: [
+                            [0, fillColorStart],
+                            [1, fillColorEnd],
+                        ],
+                    },
+                },
+                {
+                    name: "SPY Returns",
+                    type: "area",
+                    data: benchmarkValues,
+                    color: "#ff4d4d", // solid red for the line
+                    lineWidth: 1.2,
+                    marker: {
+                        enabled: false,
+                    },
+                    fillColor: {
+                        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                        stops: [
+                            [0, "rgba(255, 77, 77, 0.5)"], // soft red start
+                            [1, "rgba(255, 77, 77, 0.001)"], // fade to transparent
+                        ],
+                    },
+                },
+            ],
+        };
+
+        return options;
+    }
 
     onMount(() => {
         handleStrategySelection("rsiOversold");
@@ -1319,7 +1487,7 @@
                                     class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded"
                                 >
                                     <svg
-                                        class="w-5 h-5 text-blue-600 dark:text-blue-400"
+                                        class="w-5 h-5"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -1528,158 +1696,178 @@
                         {/if}
 
                         <!-- Results Display -->
-                        {#if Object?.keys(backtestResults)?.length > 0}
-                            <!-- Performance Summary Cards -->
-                            <div class="w-full">
-                                <!-- Strategy Performance -->
-                                <p>
-                                    Period between {backtestResults?.period}
+                        <!-- Performance Summary Cards -->
+                        <div class="w-full">
+                            <!-- Strategy Performance -->
+                            {#if backtestResults?.period}
+                                <p class="mb-2">
+                                    Trading Period between {backtestResults?.period}
                                 </p>
-                                <div
-                                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4"
+                            {/if}
+                            <div
+                                class="grid grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-6 p-3"
+                            >
+                                <div class="">
+                                    <h4 class="font-semibold mb-2">
+                                        Total Returns
+                                    </h4>
+                                    <p
+                                        class="text-[1rem] sm:text-lg font-semibold"
+                                    >
+                                        {backtestResults?.total_return
+                                            ? backtestResults?.total_return +
+                                              "%"
+                                            : "n/a"}
+                                    </p>
+                                </div>
+
+                                <div class="">
+                                    <h4 class="font-semibold mb-2">
+                                        Benchmark Returns
+                                    </h4>
+                                    <p
+                                        class="text-[1rem] sm:text-lg font-semibold"
+                                    >
+                                        {backtestResults?.spy_benchmark
+                                            ?.spy_return
+                                            ? backtestResults?.spy_benchmark
+                                                  ?.spy_return + "%"
+                                            : "n/a"}
+                                    </p>
+                                </div>
+
+                                <div class="">
+                                    <h4 class="font-semibold mb-2">
+                                        Sharpe Ratio
+                                    </h4>
+                                    <p
+                                        class="text-[1rem] sm:text-lg font-semibold"
+                                    >
+                                        {backtestResults?.sharpe_ratio ?? "n/a"}
+                                    </p>
+                                </div>
+                                <div class="">
+                                    <h4 class="font-semibold mb-2">Alpha</h4>
+                                    <p
+                                        class="text-[1rem] sm:text-lg font-semibold"
+                                    >
+                                        {backtestResults?.alpha ?? "n/a"}
+                                    </p>
+                                </div>
+                                <div class="">
+                                    <h4 class="font-semibold mb-2">Beta</h4>
+                                    <p
+                                        class="text-[1rem] sm:text-lg font-semibold"
+                                    >
+                                        {backtestResults?.beta ?? "n/a"}
+                                    </p>
+                                </div>
+
+                                <div class="">
+                                    <h4 class="font-semibold mb-2">Sortino</h4>
+                                    <p
+                                        class="text-[1rem] sm:text-lg font-semibold"
+                                    >
+                                        {backtestResults?.sortino_ratio ??
+                                            "n/a"}
+                                    </p>
+                                </div>
+
+                                <div class="">
+                                    <h4 class="font-semibold mb-2">
+                                        Max Drawdown
+                                    </h4>
+                                    <p
+                                        class="text-[1rem] sm:text-lg font-semibold"
+                                    >
+                                        {backtestResults?.max_drawdown
+                                            ? backtestResults?.max_drawdown +
+                                              "%"
+                                            : "n/a"}
+                                    </p>
+                                </div>
+
+                                <div class="">
+                                    <h4 class="font-semibold mb-2">
+                                        Volatility
+                                    </h4>
+                                    <p
+                                        class="text-[1rem] sm:text-lg font-semibold"
+                                    >
+                                        {backtestResults?.volatility
+                                            ? backtestResults?.volatility + "%"
+                                            : "n/a"}
+                                    </p>
+                                </div>
+                                <div class="">
+                                    <h4 class="font-semibold mb-2">Win Rate</h4>
+                                    <p
+                                        class="text-[1rem] sm:text-lg font-semibold"
+                                    >
+                                        {backtestResults?.win_rate
+                                            ? backtestResults?.win_rate + "%"
+                                            : "n/a"}
+                                    </p>
+                                </div>
+                                <div class="">
+                                    <h4 class="font-semibold mb-2">
+                                        Profit Factor
+                                    </h4>
+                                    <p
+                                        class="text-[1rem] sm:text-lg font-semibold"
+                                    >
+                                        {backtestResults?.profit_factor ??
+                                            "n/a"}
+                                    </p>
+                                </div>
+                                <div class="">
+                                    <h4 class="font-semibold mb-2">
+                                        Total Trades
+                                    </h4>
+                                    <p
+                                        class="text-[1rem] sm:text-lg font-semibold"
+                                    >
+                                        {backtestResults?.total_trades ?? "n/a"}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Performance Chart -->
+                        <div class="">
+                            <div
+                                class="flex flex-col sm:flex-row items-center justify-between mb-6"
+                            >
+                                <h4
+                                    class="text-sm sm:text-[1rem] font-semibold mb-2 sm:mb-0"
                                 >
-                                    <div
-                                        class="bg-white dark:bg-gray-800 rounded p-6 border border-gray-300 dark:border-gray-800"
-                                    >
-                                        <h4
-                                            class="font-semibold text-gray-900 dark:text-white mb-2"
-                                        >
-                                            Total Return
-                                        </h4>
-                                        <p
-                                            class="text-lg font-bold text-blue-600 dark:text-blue-400"
-                                        >
-                                            {backtestResults?.total_return}%
-                                        </p>
+                                    Cumulative Returns
+                                </h4>
+                                <div class="flex items-center gap-4 text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="w-3 h-3 bg-blue-500 rounded-full"
+                                        ></div>
+                                        <span class="">Your Strategy</span>
                                     </div>
-                                    <div
-                                        class="bg-white dark:bg-gray-800 rounded p-6 border border-gray-300 dark:border-gray-800"
-                                    >
-                                        <h4
-                                            class="font-semibold text-gray-900 dark:text-white mb-2"
-                                        >
-                                            Annualized Return
-                                        </h4>
-                                        <p
-                                            class="text-lg font-bold text-blue-600 dark:text-blue-400"
-                                        >
-                                            {backtestResults?.annual_return}%
-                                        </p>
-                                    </div>
-                                    <div
-                                        class="bg-white dark:bg-gray-800 rounded p-6 border border-gray-300 dark:border-gray-800"
-                                    >
-                                        <h4
-                                            class="font-semibold text-gray-900 dark:text-white mb-2"
-                                        >
-                                            Sharpe Ratio
-                                        </h4>
-                                        <p
-                                            class="text-lg font-bold text-blue-600 dark:text-blue-400"
-                                        >
-                                            {backtestResults?.sharpe_ratio}
-                                        </p>
-                                    </div>
-                                    <div
-                                        class="bg-white dark:bg-gray-800 rounded p-6 border border-gray-300 dark:border-gray-800"
-                                    >
-                                        <h4
-                                            class="font-semibold text-gray-900 dark:text-white mb-2"
-                                        >
-                                            Alpha
-                                        </h4>
-                                        <p
-                                            class="text-lg font-bold text-blue-600 dark:text-blue-400"
-                                        >
-                                            {backtestResults?.alpha}
-                                        </p>
-                                    </div>
-                                    <div
-                                        class="bg-white dark:bg-gray-800 rounded p-6 border border-gray-300 dark:border-gray-800"
-                                    >
-                                        <h4
-                                            class="font-semibold text-gray-900 dark:text-white mb-2"
-                                        >
-                                            Beta
-                                        </h4>
-                                        <p
-                                            class="text-lg font-bold text-blue-600 dark:text-blue-400"
-                                        >
-                                            {backtestResults?.beta}
-                                        </p>
-                                    </div>
-                                    <div
-                                        class="bg-white dark:bg-gray-800 rounded p-6 border border-gray-300 dark:border-gray-800"
-                                    >
-                                        <h4
-                                            class="font-semibold text-gray-900 dark:text-white mb-2"
-                                        >
-                                            Benchmark Return
-                                        </h4>
-                                        <p
-                                            class="text-lg font-bold text-blue-600 dark:text-blue-400"
-                                        >
-                                            {backtestResults?.spy_benchmark
-                                                ?.spy_return}%
-                                        </p>
-                                    </div>
-                                    <div
-                                        class="bg-white dark:bg-gray-800 rounded p-6 border border-gray-300 dark:border-gray-800"
-                                    >
-                                        <h4
-                                            class="font-semibold text-gray-900 dark:text-white mb-2"
-                                        >
-                                            Benchmark Annual Return
-                                        </h4>
-                                        <p
-                                            class="text-lg font-bold text-blue-600 dark:text-blue-400"
-                                        >
-                                            {backtestResults?.spy_benchmark
-                                                ?.spy_annual_return}%
-                                        </p>
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="w-3 h-3 bg-[#ff4d4d] rounded-full"
+                                        ></div>
+                                        <span class="">SPY Benchmark</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Performance Chart -->
-                            <div
-                                class="bg-white dark:bg-gray-800 rounded p-6 border border-gray-300 dark:border-gray-800"
-                            >
+                            <!-- Simplified Chart Display -->
+                            {#if config}
                                 <div
-                                    class="flex items-center justify-between mb-6"
-                                >
-                                    <h4
-                                        class="font-semibold text-gray-900 dark:text-white"
-                                    >
-                                        Cumulative Returns
-                                    </h4>
-                                    <div
-                                        class="flex items-center gap-4 text-sm"
-                                    >
-                                        <div class="flex items-center gap-2">
-                                            <div
-                                                class="w-3 h-3 bg-blue-500 rounded-full"
-                                            ></div>
-                                            <span
-                                                class="text-gray-600 dark:text-gray-400"
-                                                >Your Strategy</span
-                                            >
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <div
-                                                class="w-3 h-3 bg-gray-400 rounded-full"
-                                            ></div>
-                                            <span
-                                                class="text-gray-600 dark:text-gray-400"
-                                                >SPY Benchmark</span
-                                            >
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Simplified Chart Display -->
+                                    class="chart-driver border border-gray-300 shadow-xs dark:border-gray-800 rounded"
+                                    use:highcharts={config}
+                                ></div>
+                            {:else}
                                 <div
-                                    class="h-64 bg-gray-50 dark:bg-gray-900/50 rounded flex items-center justify-center border border-gray-300 dark:border-gray-800"
+                                    class="h-64 bg-gray-50 dark:bg-default rounded flex items-center justify-center border border-gray-300 dark:border-gray-800"
                                 >
                                     <div class="text-center">
                                         <svg
@@ -1691,7 +1879,7 @@
                                             <path
                                                 stroke-linecap="round"
                                                 stroke-linejoin="round"
-                                                stroke-width="2"
+                                                stroke-width="1.5"
                                                 d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                                             />
                                         </svg>
@@ -1699,24 +1887,14 @@
                                             Performance Chart
                                         </p>
                                         <p class="text-sm">
-                                            Chart showing strategy vs SPY
-                                            benchmark over time
+                                            Your Strategy vs SPY benchmark over
+                                            time
                                         </p>
-                                        <p class="text-xs mt-2">
-                                            Strategy Return: <span
-                                                class="text-blue-600 font-semibold"
-                                                >{backtestResults?.totalReturn}%</span
-                                            >
-                                            | SPY Return:
-                                            <span
-                                                class="text-gray-600 font-semibold"
-                                                >{backtestResults?.totalReturn}%</span
-                                            >
-                                        </p>
+                                        <p class="text-xs mt-2"></p>
                                     </div>
                                 </div>
-                            </div>
-                        {/if}
+                            {/if}
+                        </div>
                     </div>
                 </Tabs.Content>
             </div>
