@@ -304,21 +304,10 @@
 </script>
 
 <div class="">
-    <div class="flex justify-between items-center mb-5">
+    <div class="flex justify-between items-center">
         <h3 class="text-lg font-semibold capitalize text-white">
             {mode} Conditions
         </h3>
-        <div class="relative">
-            <button
-                class="cursor-pointer flex items-center gap-1.5 px-3 py-2 bg-black dark:bg-white sm:hover:bg-default text-white dark:text-black rounded text-sm font-medium transition-colors"
-                on:click={() => {
-                    addBlock(BLOCK_TYPES.CONDITION);
-                }}
-            >
-                <Plus size={16} />
-                Add Block
-            </button>
-        </div>
     </div>
 
     <div
@@ -504,7 +493,11 @@
                             </td>
 
                             <!-- Value Selection/Input -->
-                            <td class="px-4 py-2">
+                            <td
+                                class="px-4 py-2"
+                                on:dragstart|preventDefault
+                                on:mousedown|stopPropagation
+                            >
                                 {#if Array.isArray(getIndicatorConfig(block.indicator).defaultValue)}
                                     <DropdownMenu.Root>
                                         <DropdownMenu.Trigger
@@ -572,6 +565,10 @@
                                                     e.target.value,
                                                 ),
                                             })}
+                                        on:mousedown|stopPropagation
+                                        on:click|stopPropagation
+                                        on:dragstart|preventDefault
+                                        on:selectstart|stopPropagation
                                     />
                                 {/if}
                             </td>
@@ -603,11 +600,11 @@
                             <!-- Delete Button -->
                             <td class="px-4 py-2">
                                 <button
-                                    class="p-1.5"
+                                    class="p-1.5 cursor-pointer"
                                     on:click={() => removeBlock(block.id)}
                                     title="Remove condition"
                                 >
-                                    <Trash2 size={14} />
+                                    <Trash2 size={16} />
                                 </button>
                             </td>
                         </tr>
@@ -619,13 +616,30 @@
 
     {#if strategyBlocks.length === 0}
         <div
-            class="border border-gray-300 dark:border-gray-600 rounded bg-[#F8F9FA] dark:bg-secondary p-10"
+            class="border border-gray-300 dark:border-gray-600 rounded bg-[#F8F9FA] dark:bg-secondary p-10 mt-4"
         >
             <div class="text-center">
-                <p class="text-gray-500 dark:text-gray-400 mb-4">
+                <p class="text-gray-800 dark:text-gray-400">
                     No conditions added yet
                 </p>
             </div>
         </div>
     {/if}
+
+    <div class="flex justify-between items-center mt-4">
+        <h3 class="text-lg font-semibold capitalize text-white">
+            {mode} Conditions
+        </h3>
+        <div class="relative">
+            <button
+                class="cursor-pointer flex items-center gap-1.5 px-3 py-2 bg-black dark:bg-white sm:hover:bg-default text-white dark:text-black rounded text-sm font-medium transition-colors"
+                on:click={() => {
+                    addBlock(BLOCK_TYPES.CONDITION);
+                }}
+            >
+                <Plus size={16} />
+                Add Block
+            </button>
+        </div>
+    </div>
 </div>

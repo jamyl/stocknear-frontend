@@ -72,7 +72,7 @@
     function formatConditionsForBacktesting(conditions) {
         return conditions.map((condition, index) => {
             const formattedCondition = {
-                name: mapIndicatorName(condition.indicator),
+                name: condition.indicator,
                 value: condition.value,
                 operator: condition.operator,
             };
@@ -117,21 +117,7 @@
 
     // Map frontend indicator names to backend format
     function mapIndicatorName(indicator) {
-        const mapping = {
-            rsi: "rsi",
-            sma20: "sma20", // 20-day Simple Moving Average
-            sma50: "sma50", // 50-day Simple Moving Average
-            sma100: "sma100", // 100-day Simple Moving Average
-            sma200: "sma200", // 200-day Simple Moving Average
-            ema20: "ema20", // 20-day Exponential Moving Average
-            ema50: "ema50", // 50-day Exponential Moving Average
-            ema100: "ema100", // 100-day Exponential Moving Average
-            ema200: "ema200", // 200-day Exponential Moving Average
-            macd: "macd",
-            volume: "volume",
-            price: "price",
-        };
-        return mapping[indicator] || indicator;
+        return indicator;
     }
 
     // Sync selectedTicker with selectedTickers array
@@ -809,27 +795,16 @@
     <div
         class="mt-8 bg-white dark:bg-default rounded shadow-lg border border-gray-300 dark:border-gray-800 overflow-hidden"
     >
-        <!-- Tab Header with Enhanced Design -->
-        <div class="border-b border-gray-300 dark:border-gray-800">
-            <div class="flex items-center justify-between px-6 py-4">
-                <h2
-                    class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2"
-                >
-                    Strategy Builder
-                </h2>
-            </div>
-        </div>
-
         <Tabs.Root bind:value={activeTab} class="w-full">
             <!-- Enhanced Tab List -->
             <div
                 class="flex border-b border-gray-300 dark:border-gray-800 bg-gray-50 dark:bg-default"
             >
                 <button
-                    class="flex-1 px-6 py-4 text-sm sm:text-[1rem] font-medium border-b-2 {activeTab ===
+                    class="cursor-pointer flex-1 px-4 py-2 text-sm sm:text-[1rem] font-medium border-b-2 {activeTab ===
                     'buy'
-                        ? 'bg-default  dark:bg-white text-white dark:text-muted'
-                        : '   '}"
+                        ? 'text-muted dark:text-white bg-[#EEEEEE] dark:bg-primary/90 font-semibold'
+                        : 'text-gray-600 dark:text-gray-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:bg-[#EEEEEE] dark:sm:hover:bg-primary/90'}"
                     on:click={() => (activeTab = "buy")}
                 >
                     <div class="flex items-center justify-center gap-2">
@@ -851,10 +826,10 @@
                 </button>
 
                 <button
-                    class="flex-1 px-6 py-4 text-sm sm:text-[1rem] font-medium border-b-2 {activeTab ===
+                    class="cursor-pointer flex-1 px-6 py-4 text-sm sm:text-[1rem] font-medium border-b-2 {activeTab ===
                     'sell'
-                        ? 'bg-default  dark:bg-white text-white dark:text-muted'
-                        : '   '}"
+                        ? 'text-muted dark:text-white bg-[#EEEEEE] dark:bg-primary/90 font-semibold'
+                        : 'text-gray-600 dark:text-gray-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:bg-[#EEEEEE] dark:sm:hover:bg-primary/90'}"
                     on:click={() => (activeTab = "sell")}
                 >
                     <div class="flex items-center justify-center gap-2">
@@ -874,12 +849,12 @@
                         Sell Conditions
                     </div>
                 </button>
-
+                <!--
                 <button
-                    class="flex-1 px-6 py-4 text-sm sm:text-[1rem] font-medium border-b-2 {activeTab ===
+                    class="cursor-pointer flex-1 px-6 py-4 text-sm sm:text-[1rem] font-medium border-b-2 {activeTab ===
                     'risk'
-                        ? 'bg-default  dark:bg-white text-white dark:text-muted'
-                        : '   '}"
+                        ? 'text-muted dark:text-white bg-[#EEEEEE] dark:bg-primary/90 font-semibold'
+                        : 'text-gray-600 dark:text-gray-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:bg-[#EEEEEE] dark:sm:hover:bg-primary/90'}"
                     on:click={() => (activeTab = "risk")}
                 >
                     <div class="flex items-center justify-center gap-2">
@@ -899,12 +874,13 @@
                         Risk Management
                     </div>
                 </button>
+                -->
 
                 <button
-                    class="flex-1 px-6 py-4 text-sm sm:text-[1rem] font-medium border-b-2 {activeTab ===
+                    class="cursor-pointer flex-1 px-6 py-4 text-sm sm:text-[1rem] font-medium border-b-2 {activeTab ===
                     'backtest'
-                        ? 'bg-default  dark:bg-white text-white dark:text-muted'
-                        : '   '}"
+                        ? 'text-muted dark:text-white bg-[#EEEEEE] dark:bg-primary/90 font-semibold'
+                        : 'text-gray-600 dark:text-gray-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:bg-[#EEEEEE] dark:sm:hover:bg-primary/90'}"
                     on:click={() => (activeTab = "backtest")}
                 >
                     <div class="flex items-center justify-center gap-2">
@@ -1300,7 +1276,7 @@
                                 <button
                                     on:click={runBacktest}
                                     disabled={isBacktesting}
-                                    class="inline-flex items-center gap-2 px-3 py-2 bg-black sm:hover:bg-default disabled:bg-black/80 text-white dark:text-muted bg-white sm:hover:bg-gray-100 dark:disabled:bg-white/80 rounded font-medium transition-colors"
+                                    class="cursor-pointer inline-flex items-center text-sm gap-1 px-3 py-2 bg-black sm:hover:bg-default disabled:bg-black/80 text-white dark:text-muted dark:bg-white dark:sm:hover:bg-gray-100 dark:disabled:bg-white/80 rounded font-medium transition-colors"
                                 >
                                     {#if isBacktesting}
                                         <svg
@@ -1743,6 +1719,7 @@
                                         >{sellExplanation}</span
                                     >
                                 </div>
+                                <!--
                                 {#if riskManagement.stopLoss.enabled || riskManagement.takeProfit.enabled}
                                     <div class="flex items-start gap-2 pt-1">
                                         <span
@@ -1782,6 +1759,7 @@
                                         </span>
                                     </div>
                                 {/if}
+                            -->
                             </div>
                         </div>
                     </div>
