@@ -18,11 +18,9 @@
     let activeTab = "buy";
     const popularStrategyList = [
         { key: "rsiOversold", label: "RSI Oversold" },
-        { key: "rsiOverbought", label: "RSI Overbought" },
         { key: "macdBullish", label: "MACD Bullish Crossover" },
-        { key: "macdBearish", label: "MACD Bearish Crossover" },
         { key: "goldenCross", label: "Golden Cross (50/200 SMA)" },
-        { key: "deathCross", label: "Death Cross (50/200 SMA)" },
+
         { key: "movingAverageBounce", label: "Moving Average Bounce" },
     ];
 
@@ -42,24 +40,6 @@
                     indicator: "rsi",
                     operator: "above",
                     value: 70,
-                    logicOperator: null,
-                },
-            ],
-        },
-        rsiOverbought: {
-            buy: [
-                {
-                    indicator: "rsi",
-                    operator: "above",
-                    value: 70,
-                    logicOperator: null,
-                },
-            ],
-            sell: [
-                {
-                    indicator: "rsi",
-                    operator: "below",
-                    value: 30,
                     logicOperator: null,
                 },
             ],
@@ -88,30 +68,7 @@
                 },
             ],
         },
-        macdBearish: {
-            buy: [
-                {
-                    indicator: "macd",
-                    operator: "below",
-                    value: "macd_signal",
-                    logicOperator: "AND",
-                },
-                {
-                    indicator: "macd",
-                    operator: "below",
-                    value: 0,
-                    logicOperator: null,
-                },
-            ],
-            sell: [
-                {
-                    indicator: "macd",
-                    operator: "above",
-                    value: "macd_signal",
-                    logicOperator: null,
-                },
-            ],
-        },
+
         goldenCross: {
             buy: [
                 {
@@ -136,30 +93,7 @@
                 },
             ],
         },
-        deathCross: {
-            buy: [
-                {
-                    indicator: "sma_50",
-                    operator: "below",
-                    value: "sma_200",
-                    logicOperator: "AND",
-                },
-                {
-                    indicator: "price",
-                    operator: "below",
-                    value: "sma_50",
-                    logicOperator: null,
-                },
-            ],
-            sell: [
-                {
-                    indicator: "sma_50",
-                    operator: "above",
-                    value: "sma_200",
-                    logicOperator: null,
-                },
-            ],
-        },
+
         movingAverageBounce: {
             buy: [
                 {
@@ -288,12 +222,12 @@
                 // If the value is a string like "price", "sma_50", etc., keep it as is
                 // If it's a number, convert appropriately
                 if (typeof condition.value === "string") {
-                    // Map the comparison target (e.g., "sma_50" -> "ma_50")
+                    // Map the comparison target (e.g., "sma_200" -> "sma_200")
                     if (
                         condition.value.startsWith("sma") ||
                         condition.value.startsWith("ema")
                     ) {
-                        formattedCondition.value = `ma_${condition.value.slice(3)}`;
+                        formattedCondition.value = condition.value;
                     } else if (condition.value === "price") {
                         formattedCondition.value = "price";
                     } else {
