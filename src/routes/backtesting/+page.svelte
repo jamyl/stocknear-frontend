@@ -1297,7 +1297,7 @@ const handleKeyDown = (event) => {
                     <div
                         class="hidden text-sm sm:text-[1rem] font-semibold md:block sm:mb-1"
                     >
-                        Popular Screens
+                        Popular Strategies
                     </div>
                     <div class="relative inline-block text-left grow">
                         <DropdownMenu.Root>
@@ -1309,7 +1309,7 @@ const handleKeyDown = (event) => {
                                     <span class="truncate"
                                         >{selectedPopularStrategy?.length !== 0
                                             ? selectedPopularStrategy
-                                            : "Select popular"}</span
+                                            : "Select Popular"}</span
                                     >
                                     <svg
                                         class="-mr-1 ml-1 h-5 w-5 xs:ml-2 inline-block"
@@ -1361,7 +1361,7 @@ const handleKeyDown = (event) => {
                     <div
                         class="hidden text-sm sm:text-[1rem] font-semibold md:block sm:mb-1"
                     >
-                        Saved Screens
+                        Saved Strategies
                     </div>
                     <div class="relative inline-block text-left grow">
                         <DropdownMenu.Root>
@@ -1377,7 +1377,7 @@ const handleKeyDown = (event) => {
                                                       item.id ===
                                                       selectedStrategy,
                                               )?.title
-                                            : "Select screen"}</span
+                                            : "Select Strategy"}</span
                                     >
                                     <svg
                                         class="-mr-1 ml-1 h-5 w-5 xs:ml-2 inline-block"
@@ -1674,14 +1674,14 @@ const handleKeyDown = (event) => {
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <!-- Stop Loss Card -->
                             <div
-                                class="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/10 rounded-xl p-6 border border-red-200 dark:border-red-800/30"
+                                class="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/10 rounded p-6 border border-red-200 dark:border-red-800/30"
                             >
                                 <div
                                     class="flex items-center justify-between mb-4"
                                 >
                                     <div class="flex items-center gap-2">
                                         <div
-                                            class="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg"
+                                            class="p-2 bg-red-100 dark:bg-red-900/30 rounded"
                                         >
                                             <svg
                                                 class="w-5 h-5 text-red-600 dark:text-red-400"
@@ -1724,7 +1724,7 @@ const handleKeyDown = (event) => {
                                             bind:value={
                                                 riskManagement.stopLoss.type
                                             }
-                                            class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-red-300 dark:border-red-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                            class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-red-300 dark:border-red-600 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
                                         >
                                             <option value="percentage"
                                                 >Percentage Loss</option
@@ -1747,11 +1747,11 @@ const handleKeyDown = (event) => {
                                                 }
                                                 min="0"
                                                 step="0.1"
-                                                class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-red-300 dark:border-red-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                                class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-red-300 dark:border-red-600 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
                                                 placeholder="Enter value"
                                             />
                                             <span
-                                                class="px-3 py-2 bg-red-100 dark:bg-red-800/30 text-red-700 dark:text-red-400 rounded-lg text-sm font-medium min-w-[40px] text-center"
+                                                class="px-3 py-2 bg-red-100 dark:bg-red-800/30 text-red-700 dark:text-red-400 rounded text-sm font-medium min-w-[40px] text-center"
                                             >
                                                 {riskManagement.stopLoss
                                                     .type === "percentage"
@@ -1768,14 +1768,14 @@ const handleKeyDown = (event) => {
 
                             <!-- Take Profit Card -->
                             <div
-                                class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/10 rounded-xl p-6 border border-green-200 dark:border-green-800/30"
+                                class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/10 rounded p-6 border border-green-200 dark:border-green-800/30"
                             >
                                 <div
                                     class="flex items-center justify-between mb-4"
                                 >
                                     <div class="flex items-center gap-2">
                                         <div
-                                            class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg"
+                                            class="p-2 bg-green-100 dark:bg-green-900/30 rounded"
                                         >
                                             <svg
                                                 class="w-5 h-5 text-green-600 dark:text-green-400"
@@ -1819,7 +1819,7 @@ const handleKeyDown = (event) => {
                                             bind:value={
                                                 riskManagement.takeProfit.type
                                             }
-                                            class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-green-300 dark:border-green-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                                            class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-green-300 dark:border-green-600 rounded focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                                         >
                                             <option value="percentage"
                                                 >Percentage Gain</option
@@ -1842,11 +1842,11 @@ const handleKeyDown = (event) => {
                                                 }
                                                 min="0"
                                                 step="0.1"
-                                                class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-green-300 dark:border-green-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                                                class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-green-300 dark:border-green-600 rounded focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                                                 placeholder="Enter value"
                                             />
                                             <span
-                                                class="px-3 py-2 bg-green-100 dark:bg-green-800/30 text-green-700 dark:text-green-400 rounded-lg text-sm font-medium min-w-[40px] text-center"
+                                                class="px-3 py-2 bg-green-100 dark:bg-green-800/30 text-green-700 dark:text-green-400 rounded text-sm font-medium min-w-[40px] text-center"
                                             >
                                                 {riskManagement.takeProfit
                                                     .type === "percentage"
@@ -1865,11 +1865,11 @@ const handleKeyDown = (event) => {
 
                         <!-- Position Sizing Card -->
                         <div
-                            class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10 rounded-xl p-6 border border-blue-200 dark:border-blue-800/30"
+                            class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10 rounded p-6 border border-blue-200 dark:border-blue-800/30"
                         >
                             <div class="flex items-center gap-2 mb-4">
                                 <div
-                                    class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg"
+                                    class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded"
                                 >
                                     <svg
                                         class="w-5 h-5 text-blue-600 dark:text-blue-400"
@@ -1901,7 +1901,7 @@ const handleKeyDown = (event) => {
                                         bind:value={
                                             riskManagement.positionSize.type
                                         }
-                                        class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-blue-300 dark:border-blue-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-blue-300 dark:border-blue-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                     >
                                         <option value="fixed"
                                             >Fixed Amount</option
@@ -1931,11 +1931,11 @@ const handleKeyDown = (event) => {
                                             }
                                             min="0"
                                             step="0.1"
-                                            class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-blue-300 dark:border-blue-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                            class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-blue-300 dark:border-blue-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                             placeholder="Enter amount"
                                         />
                                         <span
-                                            class="px-3 py-2 bg-blue-100 dark:bg-blue-800/30 text-blue-700 dark:text-blue-400 rounded-lg text-sm font-medium min-w-[40px] text-center"
+                                            class="px-3 py-2 bg-blue-100 dark:bg-blue-800/30 text-blue-700 dark:text-blue-400 rounded text-sm font-medium min-w-[40px] text-center"
                                         >
                                             {riskManagement.positionSize
                                                 .type === "percentage" ||
@@ -1967,7 +1967,7 @@ const handleKeyDown = (event) => {
 
                         <!-- Backtest Configuration -->
                         <div
-                            class="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-6 border border-gray-300 dark:border-gray-800"
+                            class="bg-gray-50 dark:bg-gray-900/50 rounded p-6 border border-gray-300 dark:border-gray-800"
                         >
                             <h4
                                 class="font-semibold text-gray-900 dark:text-white mb-4"
@@ -1983,7 +1983,7 @@ const handleKeyDown = (event) => {
                                     <input
                                         type="text"
                                         bind:value={selectedTicker}
-                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm uppercase"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm uppercase"
                                         placeholder="AAPL"
                                     />
                                 </div>
@@ -1995,7 +1995,7 @@ const handleKeyDown = (event) => {
                                     <input
                                         type="date"
                                         bind:value={startDate}
-                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                     />
                                 </div>
                                 <div>
@@ -2006,7 +2006,7 @@ const handleKeyDown = (event) => {
                                     <input
                                         type="date"
                                         bind:value={endDate}
-                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                     />
                                 </div>
                                 <div>
@@ -2019,7 +2019,7 @@ const handleKeyDown = (event) => {
                                         bind:value={initialCapital}
                                         min="1000"
                                         step="1000"
-                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                     />
                                 </div>
                             </div>
@@ -2027,7 +2027,7 @@ const handleKeyDown = (event) => {
                                 <button
                                     on:click={runBacktest}
                                     disabled={isBacktesting}
-                                    class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-medium transition-colors"
+                                    class="inline-flex items-center gap-2 px-3 py-2 bg-black sm:hover:bg-default disabled:bg-black/80 text-white rounded font-medium transition-colors"
                                 >
                                     {#if isBacktesting}
                                         <svg
@@ -2067,7 +2067,7 @@ const handleKeyDown = (event) => {
                         <!-- Error Display -->
                         {#if backtestError}
                             <div
-                                class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4"
+                                class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded p-4"
                             >
                                 <div class="flex items-start gap-3">
                                     <svg
@@ -2098,7 +2098,7 @@ const handleKeyDown = (event) => {
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <!-- Strategy Performance -->
                                 <div
-                                    class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10 rounded-xl p-6 border border-blue-200 dark:border-blue-800/30"
+                                    class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10 rounded p-6 border border-blue-200 dark:border-blue-800/30"
                                 >
                                     <div
                                         class="flex items-center justify-between mb-4"
@@ -2109,7 +2109,7 @@ const handleKeyDown = (event) => {
                                             Your Strategy
                                         </h4>
                                         <div
-                                            class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg"
+                                            class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded"
                                         >
                                             <svg
                                                 class="w-4 h-4 text-blue-600 dark:text-blue-400"
@@ -2184,7 +2184,7 @@ const handleKeyDown = (event) => {
 
                                 <!-- Benchmark Performance -->
                                 <div
-                                    class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800/50 dark:to-gray-700/30 rounded-xl p-6 border border-gray-300 dark:border-gray-800"
+                                    class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800/50 dark:to-gray-700/30 rounded p-6 border border-gray-300 dark:border-gray-800"
                                 >
                                     <div
                                         class="flex items-center justify-between mb-4"
@@ -2195,7 +2195,7 @@ const handleKeyDown = (event) => {
                                             SPY Benchmark
                                         </h4>
                                         <div
-                                            class="p-2 bg-gray-100 dark:bg-gray-700/50 rounded-lg"
+                                            class="p-2 bg-gray-100 dark:bg-gray-700/50 rounded"
                                         >
                                             <svg
                                                 class="w-4 h-4 text-gray-600 dark:text-gray-400"
@@ -2269,7 +2269,7 @@ const handleKeyDown = (event) => {
 
                                 <!-- Alpha/Outperformance -->
                                 <div
-                                    class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/10 rounded-xl p-6 border border-green-200 dark:border-green-800/30"
+                                    class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/10 rounded p-6 border border-green-200 dark:border-green-800/30"
                                 >
                                     <div
                                         class="flex items-center justify-between mb-4"
@@ -2280,7 +2280,7 @@ const handleKeyDown = (event) => {
                                             Outperformance
                                         </h4>
                                         <div
-                                            class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg"
+                                            class="p-2 bg-green-100 dark:bg-green-900/30 rounded"
                                         >
                                             <svg
                                                 class="w-4 h-4 text-green-600 dark:text-green-400"
@@ -2363,7 +2363,7 @@ const handleKeyDown = (event) => {
 
                             <!-- Performance Chart -->
                             <div
-                                class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-300 dark:border-gray-800"
+                                class="bg-white dark:bg-gray-800 rounded p-6 border border-gray-300 dark:border-gray-800"
                             >
                                 <div
                                     class="flex items-center justify-between mb-6"
@@ -2399,7 +2399,7 @@ const handleKeyDown = (event) => {
 
                                 <!-- Simplified Chart Display -->
                                 <div
-                                    class="h-64 bg-gray-50 dark:bg-gray-900/50 rounded-lg flex items-center justify-center border border-gray-300 dark:border-gray-800"
+                                    class="h-64 bg-gray-50 dark:bg-gray-900/50 rounded flex items-center justify-center border border-gray-300 dark:border-gray-800"
                                 >
                                     <div class="text-center dark:text-gray-400">
                                         <svg
@@ -2446,26 +2446,9 @@ const handleKeyDown = (event) => {
             <!-- Strategy Summary in Plain English -->
             <div class="px-6 pb-6">
                 <div
-                    class="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-6 border border-indigo-200 dark:border-indigo-800/30"
+                    class="rounded p-6 border border-indigo-200 dark:border-indigo-800/30"
                 >
                     <div class="flex items-start gap-3">
-                        <div
-                            class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex-shrink-0"
-                        >
-                            <svg
-                                class="w-5 h-5 text-indigo-600 dark:text-indigo-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                            </svg>
-                        </div>
                         <div class="flex-1">
                             <h4
                                 class="font-semibold text-indigo-700 dark:text-indigo-400 mb-2"

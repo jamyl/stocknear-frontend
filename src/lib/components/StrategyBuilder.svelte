@@ -159,6 +159,17 @@
         );
     }
 
+    function normalizeLogicOperators() {
+        // Ensure last block has no connector and non-last blocks have a default if missing
+        strategyBlocks.forEach((b, i) => {
+            if (i === strategyBlocks.length - 1) {
+                b.logicOperator = null;
+            } else if (!b.logicOperator) {
+                b.logicOperator = LOGIC_OPERATORS.AND;
+            }
+        });
+    }
+
     function handleDrop(event, targetBlock) {
         if (event.stopPropagation) {
             event.stopPropagation();
@@ -170,27 +181,45 @@
             "dark:bg-blue-900/20",
         );
 
-        if (draggedBlock && targetBlock && draggedBlock.id !== targetBlock.id) {
-            const draggedIndex = strategyBlocks.findIndex(
-                (b) => b.id === draggedBlock.id,
-            );
-            const targetIndex = strategyBlocks.findIndex(
-                (b) => b.id === targetBlock.id,
-            );
-
-            if (draggedIndex > -1 && targetIndex > -1) {
-                // Remove dragged block from array
-                const [removed] = strategyBlocks.splice(draggedIndex, 1);
-
-                // Insert at new position
-                const insertIndex =
-                    draggedIndex < targetIndex ? targetIndex : targetIndex;
-                strategyBlocks.splice(insertIndex, 0, removed);
-
-                strategyBlocks = [...strategyBlocks];
-                dispatch("change", { blocks: strategyBlocks });
-            }
+        if (
+            !draggedBlock ||
+            !targetBlock ||
+            draggedBlock.id === targetBlock.id
+        ) {
+            // nothing to do
+            return false;
         }
+
+        const draggedIndex = strategyBlocks.findIndex(
+            (b) => b.id === draggedBlock.id,
+        );
+        const targetIndex = strategyBlocks.findIndex(
+            (b) => b.id === targetBlock.id,
+        );
+
+        if (draggedIndex === -1 || targetIndex === -1) {
+            return false;
+        }
+
+        // Remove dragged block
+        const [removed] = strategyBlocks.splice(draggedIndex, 1);
+
+        let insertIndex =
+            draggedIndex < targetIndex ? targetIndex : targetIndex + 1;
+
+        // Clamp to valid bounds
+        if (insertIndex < 0) insertIndex = 0;
+        if (insertIndex > strategyBlocks.length)
+            insertIndex = strategyBlocks.length;
+
+        // Insert in new position
+        strategyBlocks.splice(insertIndex, 0, removed);
+
+        // Normalize logic operators so last block has null and non-last blocks have sensible defaults
+        normalizeLogicOperators();
+
+        strategyBlocks = [...strategyBlocks];
+        dispatch("change", { blocks: strategyBlocks });
 
         return false;
     }
@@ -262,42 +291,17 @@
         <div class="relative">
             <button
                 class="flex items-center gap-1.5 px-3 py-2 bg-black sm:hover:bg-default text-white rounded text-sm font-medium transition-colors"
-                on:click={() => (showIndicatorMenu = !showIndicatorMenu)}
+                on:click={() => {
+                    addBlock(BLOCK_TYPES.CONDITION);
+                }}
             >
                 <Plus size={16} />
                 Add Block
-                <ChevronDown size={14} />
             </button>
-
-            {#if showIndicatorMenu}
-                <div
-                    class="absolute top-full right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg z-10 min-w-[150px]"
-                    transition:fade={{ duration: 200 }}
-                >
-                    <button
-                        class="block w-full px-4 py-2.5 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded-t-lg"
-                        on:click={() => {
-                            addBlock(BLOCK_TYPES.CONDITION);
-                            showIndicatorMenu = false;
-                        }}
-                    >
-                        Add Condition
-                    </button>
-                    <button
-                        class="block w-full px-4 py-2.5 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded-b-lg"
-                        on:click={() => {
-                            addBlock(BLOCK_TYPES.GROUP);
-                            showIndicatorMenu = false;
-                        }}
-                    >
-                        Add Group
-                    </button>
-                </div>
-            {/if}
         </div>
     </div>
 
-    <div class="min-h-[200px]">
+    <div class="h-auto">
         {#each strategyBlocks as block, index (block.id)}
             <div class="mb-3" transition:fly={{ y: 20, duration: 300 }}>
                 {#if block.type === BLOCK_TYPES.CONDITION}
