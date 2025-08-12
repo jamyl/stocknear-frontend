@@ -199,7 +199,7 @@
             defaultValue: 10,
             min: 0,
             max: 10000,
-        }
+        },
     };
 
     // Strategy blocks for the new block-based UI
@@ -783,13 +783,68 @@
     }
 
     function convertBlocksToConditions(blocks) {
-        return blocks.map(block => ({
+        return blocks.map((block) => ({
             indicator: block.indicator,
             operator: block.operator,
             value: block.value,
-            logic: block.logicOperator ? block.logicOperator.toLowerCase() : undefined
+            logic: block.logicOperator
+                ? block.logicOperator.toLowerCase()
+                : undefined,
         }));
     }
+
+    // Generate plain English explanations
+    function generatePlainEnglishExplanation(blocks, mode) {
+        if (!blocks || blocks.length === 0) {
+            return `No ${mode} conditions set.`;
+        }
+
+        const conditionTexts = blocks.map((block, index) => {
+            let text = "";
+
+            // Get readable indicator name
+            const indicatorName =
+                availableIndicators[block.indicator]?.label || block.indicator;
+
+            // Convert operator to readable text
+            let operatorText = "";
+            switch (block.operator) {
+                case "above":
+                    operatorText = "is above";
+                    break;
+                case "below":
+                    operatorText = "is below";
+                    break;
+                case "equals":
+                    operatorText = "equals";
+                    break;
+                default:
+                    operatorText = block.operator;
+            }
+
+            text = `${indicatorName} ${operatorText} ${block.value}`;
+
+            // Add logic connector for next condition
+            if (block.logicOperator && index < blocks.length - 1) {
+                text += ` ${block.logicOperator.toLowerCase()}`;
+            }
+
+            return text;
+        });
+
+        const action = mode === "buy" ? "Buy" : "Sell";
+        return `${action} when ${conditionTexts.join(" ")}.`;
+    }
+
+    // Reactive statements for plain English explanations
+    $: buyExplanation = generatePlainEnglishExplanation(
+        buyConditionBlocks,
+        "buy",
+    );
+    $: sellExplanation = generatePlainEnglishExplanation(
+        sellConditionBlocks,
+        "sell",
+    );
 
     /*
 const handleKeyDown = (event) => {
@@ -1809,109 +1864,377 @@ const handleKeyDown = (event) => {
             </div>
         </div>
 
+        <!--End Adding Rules-->
+    </div>
+
+    <!-- Strategy Configuration Tabs -->
+    <div
+        class="mt-8 bg-white dark:bg-gray-800 rounded shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+    >
+        <!-- Tab Header with Enhanced Design -->
         <div
-            class="rounded border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-primary p-2"
+            class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border-b border-gray-200 dark:border-gray-600"
         >
-            <div
-                class="items-end border-b border-gray-300 dark:border-gray-600"
-            >
-                <div
-                    class="mr-1 flex items-center justify-between lg:mr-2 pb-1.5 border-b border-gray-300 dark:border-gray-600 mt-1.5"
+            <div class="flex items-center justify-between px-6 py-4">
+                <h2
+                    class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2"
                 >
-                    <button
-                        on:click={() => (showFilters = !showFilters)}
-                        class="flex cursor-pointer items-center text-lg font-semibold"
-                        title="Hide Filter Area"
-                    >
-                        <svg
-                            class="-mb-0.5 h-5 w-5 {showFilters
-                                ? ''
-                                : '-rotate-90'} "
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                            style="max-width:40px"
-                        >
-                            <path
-                                fill-rule="evenodd"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clip-rule="evenodd"
-                            ></path>
-                        </svg>
-                        Buy Conditions Filters
-                    </button>
-                </div>
+                    Strategy Builder
+                </h2>
             </div>
-            {#if showFilters}
-                <div
-                    class="mt-3 flex flex-col gap-y-2.5 sm:flex-row lg:gap-y-2"
+        </div>
+
+        <Tabs.Root bind:value={activeTab} class="w-full">
+            <!-- Enhanced Tab List -->
+            <div
+                class="flex border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50"
+            >
+                <button
+                    class="flex-1 px-6 py-4 text-sm font-medium transition-all duration-200 border-b-2 {activeTab ===
+                    'buy'
+                        ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50'}"
+                    on:click={() => (activeTab = "buy")}
                 >
-                    <label
-                        for="ruleModal"
-                        class="text-[0.95rem] text-white inline-flex cursor-pointer items-center justify-center space-x-1 whitespace-nowrap rounded border border-gray-300 dark:border-none bg-blue-brand_light py-2 pl-3 pr-4 font-semibold bg-black text-white dark:bg-[#000] dark:sm:hover:bg-default/60 ease-out focus:outline-hidden"
-                    >
+                    <div class="flex items-center justify-center gap-2">
                         <svg
-                            class="h-5 w-5"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                            style="max-width:40px"
-                            aria-hidden="true"
+                            class="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
                         >
                             <path
-                                fill-rule="evenodd"
-                                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                                clip-rule="evenodd"
-                            ></path>
-                        </svg>
-                        <div>Add Filters</div>
-                    </label>
-
-                    <!-- Quick Search Input -->
-                    <div class="relative sm:ml-3">
-                        <div class="relative">
-                            <div
-                                class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-                            >
-                                <svg
-                                    class="w-4 h-4 text-muted dark:text-gray-200"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 20 20"
-                                >
-                                    <path
-                                        stroke="currentColor"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                                    />
-                                </svg>
-                            </div>
-                            <input
-                                type="text"
-                                placeholder={`Search ${allRows?.length} filters...`}
-                                bind:value={quickSearchTerm}
-                                on:input={handleQuickSearchInput}
-                                on:keydown={handleQuickSearchKeydown}
-                                on:focus={() =>
-                                    updateQuickSearchResults(quickSearchTerm)}
-                                on:blur={closeQuickSearchDropdown}
-                                class="block w-full sm:w-64 py-2.5 shadow-xs bg-white placeholder:text-muted pl-10 text-[1rem] border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 dark:bg-[#2A2E39] dark:border-gray-800 dark:placeholder-gray-200 dark:text-white dark:focus:outline-none dark:focus:border-none"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
                             />
+                        </svg>
+                        Buy Conditions
+                    </div>
+                </button>
 
-                            <!-- Clear button -->
-                            {#if quickSearchTerm.length > 0}
-                                <button
-                                    type="button"
-                                    on:click={() => {
-                                        quickSearchTerm = "";
-                                        quickSearchResults = [];
-                                        showQuickSearchDropdown = false;
-                                    }}
-                                    class="absolute inset-y-0 right-0 flex items-center pr-3"
+                <button
+                    class="flex-1 px-6 py-4 text-sm font-medium transition-all duration-200 border-b-2 {activeTab ===
+                    'sell'
+                        ? 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50'}"
+                    on:click={() => (activeTab = "sell")}
+                >
+                    <div class="flex items-center justify-center gap-2">
+                        <svg
+                            class="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
+                            />
+                        </svg>
+                        Sell Conditions
+                    </div>
+                </button>
+
+                <button
+                    class="flex-1 px-6 py-4 text-sm font-medium transition-all duration-200 border-b-2 {activeTab ===
+                    'risk'
+                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400'
+                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50'}"
+                    on:click={() => (activeTab = "risk")}
+                >
+                    <div class="flex items-center justify-center gap-2">
+                        <svg
+                            class="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                            />
+                        </svg>
+                        Risk Management
+                    </div>
+                </button>
+            </div>
+
+            <!-- Tab Content with Enhanced Styling -->
+            <div class="p-6">
+                <!-- Buy Conditions Tab Content -->
+                <Tabs.Content value="buy" class="outline-none">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3
+                                    class="text-lg font-semibold text-green-700 dark:text-green-400"
+                                >
+                                    Buy Signal Conditions
+                                </h3>
+                                <p
+                                    class="text-sm text-gray-600 dark:text-gray-400 mt-1"
+                                >
+                                    Define when to enter long positions
+                                </p>
+                            </div>
+                        </div>
+                        <StrategyBuilder
+                            bind:strategyBlocks={buyConditionBlocks}
+                            {availableIndicators}
+                            mode="buy"
+                            on:change={handleBuyConditionChange}
+                        />
+                    </div>
+                </Tabs.Content>
+
+                <!-- Sell Conditions Tab Content -->
+                <Tabs.Content value="sell" class="outline-none">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3
+                                    class="text-lg font-semibold text-red-700 dark:text-red-400"
+                                >
+                                    Sell Signal Conditions
+                                </h3>
+                                <p
+                                    class="text-sm text-gray-600 dark:text-gray-400 mt-1"
+                                >
+                                    Define when to exit positions
+                                </p>
+                            </div>
+                        </div>
+                        <StrategyBuilder
+                            bind:strategyBlocks={sellConditionBlocks}
+                            {availableIndicators}
+                            mode="sell"
+                            on:change={handleSellConditionChange}
+                        />
+                    </div>
+                </Tabs.Content>
+
+                <!-- Risk Management Tab Content -->
+                <Tabs.Content value="risk" class="outline-none">
+                    <div class="space-y-6">
+                        <div>
+                            <h3
+                                class="text-lg font-semibold text-purple-700 dark:text-purple-400 mb-2"
+                            >
+                                Risk Management Settings
+                            </h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Configure position sizing and risk controls
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Stop Loss Card -->
+                            <div
+                                class="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/10 rounded-xl p-6 border border-red-200 dark:border-red-800/30"
+                            >
+                                <div
+                                    class="flex items-center justify-between mb-4"
+                                >
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg"
+                                        >
+                                            <svg
+                                                class="w-5 h-5 text-red-600 dark:text-red-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <h4
+                                            class="font-semibold text-red-700 dark:text-red-400"
+                                        >
+                                            Stop Loss
+                                        </h4>
+                                    </div>
+                                    <label
+                                        class="relative inline-flex items-center cursor-pointer"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            bind:checked={
+                                                riskManagement.stopLoss.enabled
+                                            }
+                                            class="sr-only peer"
+                                        />
+                                        <div
+                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-500"
+                                        ></div>
+                                    </label>
+                                </div>
+                                {#if riskManagement.stopLoss.enabled}
+                                    <div class="space-y-3">
+                                        <select
+                                            bind:value={
+                                                riskManagement.stopLoss.type
+                                            }
+                                            class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-red-300 dark:border-red-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                        >
+                                            <option value="percentage"
+                                                >Percentage Loss</option
+                                            >
+                                            <option value="fixed"
+                                                >Fixed Amount</option
+                                            >
+                                            <option value="atr"
+                                                >ATR Multiple</option
+                                            >
+                                        </select>
+                                        <div
+                                            class="flex items-center space-x-2"
+                                        >
+                                            <input
+                                                type="number"
+                                                bind:value={
+                                                    riskManagement.stopLoss
+                                                        .value
+                                                }
+                                                min="0"
+                                                step="0.1"
+                                                class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-red-300 dark:border-red-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                                placeholder="Enter value"
+                                            />
+                                            <span
+                                                class="px-3 py-2 bg-red-100 dark:bg-red-800/30 text-red-700 dark:text-red-400 rounded-lg text-sm font-medium min-w-[40px] text-center"
+                                            >
+                                                {riskManagement.stopLoss
+                                                    .type === "percentage"
+                                                    ? "%"
+                                                    : riskManagement.stopLoss
+                                                            .type === "atr"
+                                                      ? "×"
+                                                      : "$"}
+                                            </span>
+                                        </div>
+                                    </div>
+                                {/if}
+                            </div>
+
+                            <!-- Take Profit Card -->
+                            <div
+                                class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/10 rounded-xl p-6 border border-green-200 dark:border-green-800/30"
+                            >
+                                <div
+                                    class="flex items-center justify-between mb-4"
+                                >
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg"
+                                        >
+                                            <svg
+                                                class="w-5 h-5 text-green-600 dark:text-green-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <h4
+                                            class="font-semibold text-green-700 dark:text-green-400"
+                                        >
+                                            Take Profit
+                                        </h4>
+                                    </div>
+                                    <label
+                                        class="relative inline-flex items-center cursor-pointer"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            bind:checked={
+                                                riskManagement.takeProfit
+                                                    .enabled
+                                            }
+                                            class="sr-only peer"
+                                        />
+                                        <div
+                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-500"
+                                        ></div>
+                                    </label>
+                                </div>
+                                {#if riskManagement.takeProfit.enabled}
+                                    <div class="space-y-3">
+                                        <select
+                                            bind:value={
+                                                riskManagement.takeProfit.type
+                                            }
+                                            class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-green-300 dark:border-green-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                                        >
+                                            <option value="percentage"
+                                                >Percentage Gain</option
+                                            >
+                                            <option value="fixed"
+                                                >Fixed Amount</option
+                                            >
+                                            <option value="riskReward"
+                                                >Risk/Reward Ratio</option
+                                            >
+                                        </select>
+                                        <div
+                                            class="flex items-center space-x-2"
+                                        >
+                                            <input
+                                                type="number"
+                                                bind:value={
+                                                    riskManagement.takeProfit
+                                                        .value
+                                                }
+                                                min="0"
+                                                step="0.1"
+                                                class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-green-300 dark:border-green-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                                                placeholder="Enter value"
+                                            />
+                                            <span
+                                                class="px-3 py-2 bg-green-100 dark:bg-green-800/30 text-green-700 dark:text-green-400 rounded-lg text-sm font-medium min-w-[40px] text-center"
+                                            >
+                                                {riskManagement.takeProfit
+                                                    .type === "percentage"
+                                                    ? "%"
+                                                    : riskManagement.takeProfit
+                                                            .type ===
+                                                        "riskReward"
+                                                      ? ":1"
+                                                      : "$"}
+                                            </span>
+                                        </div>
+                                    </div>
+                                {/if}
+                            </div>
+                        </div>
+
+                        <!-- Position Sizing Card -->
+                        <div
+                            class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10 rounded-xl p-6 border border-blue-200 dark:border-blue-800/30"
+                        >
+                            <div class="flex items-center gap-2 mb-4">
+                                <div
+                                    class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg"
                                 >
                                     <svg
-                                        class="cursor-pointer w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                                        class="w-5 h-5 text-blue-600 dark:text-blue-400"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -1920,332 +2243,169 @@ const handleKeyDown = (event) => {
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
                                             stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12"
-                                        ></path>
+                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        />
                                     </svg>
-                                </button>
-                            {/if}
-                        </div>
-
-                        <!-- Quick Search Dropdown -->
-                        {#if showQuickSearchDropdown && quickSearchResults.length > 0}
-                            <div
-                                class="absolute z-50 w-full mt-1 bg-white dark:bg-[#2A2E39] border border-gray-300 dark:border-gray-800 rounded-md shadow-lg max-h-64 overflow-y-auto"
-                            >
-                                {#each quickSearchResults as result, index}
-                                    <button
-                                        class="cursor-pointer w-full px-2 py-2 flex flex-row items-center sm:hover:bg-gray-100 dark:sm:hover:bg-gray-600 {index ===
-                                        selectedQuickSearchIndex
-                                            ? 'bg-gray-100 dark:bg-gray-600'
-                                            : ''}"
-                                        type="button"
-                                        on:click={() =>
-                                            selectQuickSearchRule(result)}
+                                </div>
+                                <h4
+                                    class="font-semibold text-blue-700 dark:text-blue-400"
+                                >
+                                    Position Sizing
+                                </h4>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <label
+                                        class="block text-sm font-medium text-blue-700 dark:text-blue-400"
+                                        >Sizing Method</label
                                     >
-                                        {#if onlySubscriberRules?.includes(result?.rule) && !["Plus", "Pro"]?.includes(data?.user?.tier)}
-                                            <svg
-                                                class="w-4 h-4 text-icon inline-block ml-1 mr-2"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 24 24"
-                                                ><path
-                                                    fill="currentColor"
-                                                    d="M17 9V7c0-2.8-2.2-5-5-5S7 4.2 7 7v2c-1.7 0-3 1.3-3 3v7c0 1.7 1.3 3 3 3h10c1.7 0 3-1.3 3-3v-7c0-1.7-1.3-3-3-3M9 7c0-1.7 1.3-3 3-3s3 1.3 3 3v2H9z"
-                                                /></svg
-                                            >
-                                        {:else}
-                                            <svg
-                                                class="w-4 h-4 text-icon inline-block ml-1 mr-2"
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                                style="max-width:40px"
-                                                ><path
-                                                    fill-rule="evenodd"
-                                                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                                                    clip-rule="evenodd"
-                                                ></path></svg
-                                            >
-                                        {/if}
-
-                                        <label
-                                            class="text-left text-sm sm:text-[0.9rem]"
+                                    <select
+                                        bind:value={
+                                            riskManagement.positionSize.type
+                                        }
+                                        class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-blue-300 dark:border-blue-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    >
+                                        <option value="fixed"
+                                            >Fixed Amount</option
                                         >
-                                            <div
-                                                class="font-medium text-gray-900 dark:text-white"
-                                            >
-                                                {result.label}
-                                            </div>
-                                        </label>
-                                    </button>
-                                {/each}
+                                        <option value="percentage"
+                                            >% of Portfolio</option
+                                        >
+                                        <option value="kellycriterion"
+                                            >Kelly Criterion</option
+                                        >
+                                        <option value="riskbased"
+                                            >Risk-Based</option
+                                        >
+                                    </select>
+                                </div>
+                                <div class="space-y-2">
+                                    <label
+                                        class="block text-sm font-medium text-blue-700 dark:text-blue-400"
+                                        >Value</label
+                                    >
+                                    <div class="flex items-center space-x-2">
+                                        <input
+                                            type="number"
+                                            bind:value={
+                                                riskManagement.positionSize
+                                                    .value
+                                            }
+                                            min="0"
+                                            step="0.1"
+                                            class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-blue-300 dark:border-blue-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                            placeholder="Enter amount"
+                                        />
+                                        <span
+                                            class="px-3 py-2 bg-blue-100 dark:bg-blue-800/30 text-blue-700 dark:text-blue-400 rounded-lg text-sm font-medium min-w-[40px] text-center"
+                                        >
+                                            {riskManagement.positionSize
+                                                .type === "percentage" ||
+                                            riskManagement.positionSize.type ===
+                                                "riskbased"
+                                                ? "%"
+                                                : "$"}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
-                        {/if}
-
-                        <!-- No results message -->
-                        {#if showQuickSearchDropdown && quickSearchTerm.length > 0 && quickSearchResults.length === 0}
-                            <div
-                                class="absolute z-50 w-full mt-1 bg-white dark:bg-[#2A2E39] border border-gray-300 dark:border-gray-600 rounded-md shadow-lg p-4 text-center text-sm text-gray-500 dark:text-gray-400"
-                            >
-                                No available filters found
-                            </div>
-                        {/if}
+                        </div>
                     </div>
+                </Tabs.Content>
+            </div>
 
-                    {#if data?.user}
-                        <label
-                            for={!data?.user ? "userLogin" : ""}
-                            on:click={() => handleSave(true)}
-                            class="text-[0.95rem] sm:ml-3 cursor-pointer inline-flex items-center justify-center space-x-1 whitespace-nowrap rounded border border-gray-300 dark:border-none bg-blue-brand_light py-2 pl-3 pr-4 font-semibold text-white bg-black sm:hover:bg-default dark:bg-[#000] dark:sm:hover:bg-default/60 ease-out focus:outline-hidden"
+            <!-- Strategy Summary in Plain English -->
+            <div class="px-6 pb-6">
+                <div
+                    class="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-6 border border-indigo-200 dark:border-indigo-800/30"
+                >
+                    <div class="flex items-start gap-3">
+                        <div
+                            class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex-shrink-0"
                         >
                             <svg
-                                class="h-5 w-5"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 32 32"
-                                ><path
-                                    fill="currentColor"
-                                    d="M5 5v22h22V9.594l-.281-.313l-4-4L22.406 5zm2 2h3v6h12V7.437l3 3V25h-2v-9H9v9H7zm5 0h4v2h2V7h2v4h-8zm-1 11h10v7H11z"
-                                /></svg
+                                class="w-5 h-5 text-indigo-600 dark:text-indigo-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
                             >
-                            <div>Save</div>
-                        </label>
-
-                        {#if strategyList?.length > 0}
-                            <label
-                                for={!data?.user ? "userLogin" : ""}
-                                on:click={() => {
-                                    handleCreateStrategy();
-                                }}
-                                class="text-[0.95rem] sm:ml-3 cursor-pointer inline-flex items-center justify-center space-x-1 whitespace-nowrap rounded border border-gray-300 dark:border-none bg-blue-brand_light py-2 pl-3 pr-4 font-semibold text-white bg-black sm:hover:bg-default dark:bg-[#000] dark:sm:hover:bg-default/60 ease-out focus:outline-hidden"
-                            >
-                                <Copy class="w-4 h-4 inline-block mr-2" />
-                                <div>Save as New</div>
-                            </label>
-                        {/if}
-                    {/if}
-
-                    {#if ruleOfList?.length !== 0}
-                        <label
-                            on:click={handleResetAll}
-                            class="text-[0.95rem] sm:ml-3 cursor-pointer inline-flex items-center justify-center space-x-1 whitespace-nowrap rounded border border-gray-300 dark:border-none bg-blue-brand_light py-2 pl-3 pr-4 font-semibold text-white bg-black sm:hover:bg-default dark:bg-[#000] dark:sm:hover:text-red-500 ease-out focus:outline-hidden"
-                        >
-                            <svg
-                                class="h-4 w-4"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 21 21"
-                                ><g
-                                    fill="none"
-                                    fill-rule="evenodd"
-                                    stroke="currentColor"
+                                <path
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
-                                    ><path
-                                        d="M3.578 6.487A8 8 0 1 1 2.5 10.5"
-                                    /><path d="M7.5 6.5h-4v-4" /></g
-                                ></svg
+                                    stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4
+                                class="font-semibold text-indigo-700 dark:text-indigo-400 mb-2"
                             >
-                            <div>Reset All</div>
-                        </label>
-                    {/if}
-                </div>
-            {/if}
-        </div>
-
-        <!--End Adding Rules-->
-    </div>
-
-    <!-- Strategy Configuration Tabs -->
-    <div class="mt-8">
-        <Tabs.Root bind:value={activeTab} class="w-full">
-            <Tabs.List class="grid w-full grid-cols-3">
-                <Tabs.Trigger value="buy">Buy Conditions</Tabs.Trigger>
-                <Tabs.Trigger value="sell">Sell Conditions</Tabs.Trigger>
-                <Tabs.Trigger value="risk">Risk Management</Tabs.Trigger>
-            </Tabs.List>
-
-            <!-- Buy Conditions Tab Content -->
-            <Tabs.Content value="buy">
-                <StrategyBuilder 
-                    bind:strategyBlocks={buyConditionBlocks}
-                    {availableIndicators}
-                    mode="buy"
-                    on:change={handleBuyConditionChange}
-                />
-            </Tabs.Content>
-
-            <!-- Sell Conditions Tab Content -->
-            <Tabs.Content value="sell">
-                <StrategyBuilder 
-                    bind:strategyBlocks={sellConditionBlocks}
-                    {availableIndicators}
-                    mode="sell"
-                    on:change={handleSellConditionChange}
-                />
-            </Tabs.Content>
-
-            <!-- Risk Management Tab Content -->
-            <Tabs.Content value="risk">
-                <div class="space-y-4 mt-5 rounded-md w-full">
-                    <h2 class="font-medium text-lg">Risk Management</h2>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Stop Loss -->
-                        <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                            <div class="flex items-center justify-between mb-3">
-                                <h3 class="font-medium">Stop Loss</h3>
-                                <input
-                                    type="checkbox"
-                                    bind:checked={
-                                        riskManagement.stopLoss.enabled
-                                    }
-                                    class="h-5 w-5 rounded border-gray-300 focus:ring-blue-500"
-                                />
-                            </div>
-                            {#if riskManagement.stopLoss.enabled}
-                                <div class="space-y-2">
-                                    <select
-                                        bind:value={
-                                            riskManagement.stopLoss.type
-                                        }
-                                        class="bg-white dark:bg-primary border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        <option value="percentage"
-                                            >Percentage</option
-                                        >
-                                        <option value="fixed"
-                                            >Fixed Amount</option
-                                        >
-                                        <option value="atr">ATR Multiple</option
-                                        >
-                                    </select>
-                                    <div class="flex items-center space-x-2">
-                                        <input
-                                            type="number"
-                                            bind:value={
-                                                riskManagement.stopLoss.value
-                                            }
-                                            min="0"
-                                            step="0.1"
-                                            class="bg-white dark:bg-primary border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                        <span
-                                            class="text-gray-600 dark:text-gray-400"
-                                        >
-                                            {riskManagement.stopLoss.type ===
-                                            "percentage"
-                                                ? "%"
-                                                : riskManagement.stopLoss
-                                                        .type === "atr"
-                                                  ? "x"
-                                                  : "$"}
-                                        </span>
-                                    </div>
-                                </div>
-                            {/if}
-                        </div>
-
-                        <!-- Take Profit -->
-                        <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                            <div class="flex items-center justify-between mb-3">
-                                <h3 class="font-medium">Take Profit</h3>
-                                <input
-                                    type="checkbox"
-                                    bind:checked={
-                                        riskManagement.takeProfit.enabled
-                                    }
-                                    class="h-5 w-5 rounded border-gray-300 focus:ring-blue-500"
-                                />
-                            </div>
-                            {#if riskManagement.takeProfit.enabled}
-                                <div class="space-y-2">
-                                    <select
-                                        bind:value={
-                                            riskManagement.takeProfit.type
-                                        }
-                                        class="bg-white dark:bg-primary border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        <option value="percentage"
-                                            >Percentage</option
-                                        >
-                                        <option value="fixed"
-                                            >Fixed Amount</option
-                                        >
-                                        <option value="riskReward"
-                                            >Risk/Reward Ratio</option
-                                        >
-                                    </select>
-                                    <div class="flex items-center space-x-2">
-                                        <input
-                                            type="number"
-                                            bind:value={
-                                                riskManagement.takeProfit.value
-                                            }
-                                            min="0"
-                                            step="0.1"
-                                            class="bg-white dark:bg-primary border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                        <span
-                                            class="text-gray-600 dark:text-gray-400"
-                                        >
-                                            {riskManagement.takeProfit.type ===
-                                            "percentage"
-                                                ? "%"
-                                                : riskManagement.takeProfit
-                                                        .type === "riskReward"
-                                                  ? ":1"
-                                                  : "$"}
-                                        </span>
-                                    </div>
-                                </div>
-                            {/if}
-                        </div>
-
-                        <!-- Position Sizing -->
-                        <div
-                            class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg md:col-span-2"
-                        >
-                            <h3 class="font-medium mb-3">Position Sizing</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <select
-                                    bind:value={
-                                        riskManagement.positionSize.type
-                                    }
-                                    class="bg-white dark:bg-primary border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="fixed">Fixed Amount</option>
-                                    <option value="percentage"
-                                        >% of Portfolio</option
-                                    >
-                                    <option value="kellycriterion"
-                                        >Kelly Criterion</option
-                                    >
-                                    <option value="riskbased">Risk-Based</option
-                                    >
-                                </select>
-                                <div class="flex items-center space-x-2">
-                                    <input
-                                        type="number"
-                                        bind:value={
-                                            riskManagement.positionSize.value
-                                        }
-                                        min="0"
-                                        step="0.1"
-                                        class="bg-white dark:bg-primary border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
+                                Strategy Summary
+                            </h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex items-start gap-2">
                                     <span
-                                        class="text-gray-600 dark:text-gray-400"
+                                        class="inline-block w-2 h-2 bg-green-500 rounded-full mt-1.5 flex-shrink-0"
+                                    ></span>
+                                    <span
+                                        class="text-gray-700 dark:text-gray-300"
+                                        >{buyExplanation}</span
                                     >
-                                        {riskManagement.positionSize.type ===
-                                            "percentage" ||
-                                        riskManagement.positionSize.type ===
-                                            "riskbased"
-                                            ? "%"
-                                            : "$"}
-                                    </span>
                                 </div>
+                                <div class="flex items-start gap-2">
+                                    <span
+                                        class="inline-block w-2 h-2 bg-red-500 rounded-full mt-1.5 flex-shrink-0"
+                                    ></span>
+                                    <span
+                                        class="text-gray-700 dark:text-gray-300"
+                                        >{sellExplanation}</span
+                                    >
+                                </div>
+                                {#if riskManagement.stopLoss.enabled || riskManagement.takeProfit.enabled}
+                                    <div class="flex items-start gap-2 pt-1">
+                                        <span
+                                            class="inline-block w-2 h-2 bg-purple-500 rounded-full mt-1.5 flex-shrink-0"
+                                        ></span>
+                                        <span
+                                            class="text-gray-700 dark:text-gray-300"
+                                        >
+                                            Risk controls:
+                                            {#if riskManagement.stopLoss.enabled}
+                                                Stop loss at {riskManagement
+                                                    .stopLoss
+                                                    .value}{riskManagement
+                                                    .stopLoss.type ===
+                                                "percentage"
+                                                    ? "%"
+                                                    : riskManagement.stopLoss
+                                                            .type === "atr"
+                                                      ? "× ATR"
+                                                      : "$"}
+                                            {/if}
+                                            {#if riskManagement.stopLoss.enabled && riskManagement.takeProfit.enabled},
+                                            {/if}
+                                            {#if riskManagement.takeProfit.enabled}
+                                                Take profit at {riskManagement
+                                                    .takeProfit
+                                                    .value}{riskManagement
+                                                    .takeProfit.type ===
+                                                "percentage"
+                                                    ? "%"
+                                                    : riskManagement.takeProfit
+                                                            .type ===
+                                                        "riskReward"
+                                                      ? ":1 ratio"
+                                                      : "$"}
+                                            {/if}.
+                                        </span>
+                                    </div>
+                                {/if}
                             </div>
                         </div>
                     </div>
                 </div>
-            </Tabs.Content>
+            </div>
         </Tabs.Root>
     </div>
 
