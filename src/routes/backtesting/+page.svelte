@@ -16,14 +16,209 @@
 
     let activeTab = "buy";
     const popularStrategyList = [
-        { key: "dividendGrowth", label: "Dividend Growth" },
-        { key: "monthlyDividends", label: "Monthly Dividends" },
-        { key: "topGainers1Y", label: "Top Gainers 1Y" },
-        { key: "topShortedStocks", label: "Top Shorted Stocks" },
-        { key: "momentumTAStocks", label: "Momentum TA Stocks" },
-        { key: "underValuedStocks", label: "Undervalued Stocks" },
-        { key: "strongCashFlow", label: "Strong Cash Flow" },
+        { key: "rsiOversold", label: "RSI Oversold" },
+        { key: "rsiOverbought", label: "RSI Overbought" },
+        { key: "macdBullish", label: "MACD Bullish Crossover" },
+        { key: "macdBearish", label: "MACD Bearish Crossover" },
+        { key: "goldenCross", label: "Golden Cross (50/200 SMA)" },
+        { key: "deathCross", label: "Death Cross (50/200 SMA)" },
+        { key: "movingAverageBounce", label: "Moving Average Bounce" },
     ];
+
+    // Strategy definitions for popular strategies
+    const strategyDefinitions = {
+        rsiOversold: {
+            buy: [
+                {
+                    indicator: "rsi",
+                    operator: "below",
+                    value: 30,
+                    logicOperator: null,
+                },
+            ],
+            sell: [
+                {
+                    indicator: "rsi",
+                    operator: "above",
+                    value: 70,
+                    logicOperator: null,
+                },
+            ],
+        },
+        rsiOverbought: {
+            buy: [
+                {
+                    indicator: "rsi",
+                    operator: "above",
+                    value: 70,
+                    logicOperator: null,
+                },
+            ],
+            sell: [
+                {
+                    indicator: "rsi",
+                    operator: "below",
+                    value: 30,
+                    logicOperator: null,
+                },
+            ],
+        },
+        macdBullish: {
+            buy: [
+                {
+                    indicator: "macd",
+                    operator: "above",
+                    value: "macd_signal",
+                    logicOperator: "AND",
+                },
+                {
+                    indicator: "macd",
+                    operator: "above",
+                    value: 0,
+                    logicOperator: null,
+                },
+            ],
+            sell: [
+                {
+                    indicator: "macd",
+                    operator: "below",
+                    value: "macd_signal",
+                    logicOperator: null,
+                },
+            ],
+        },
+        macdBearish: {
+            buy: [
+                {
+                    indicator: "macd",
+                    operator: "below",
+                    value: "macd_signal",
+                    logicOperator: "AND",
+                },
+                {
+                    indicator: "macd",
+                    operator: "below",
+                    value: 0,
+                    logicOperator: null,
+                },
+            ],
+            sell: [
+                {
+                    indicator: "macd",
+                    operator: "above",
+                    value: "macd_signal",
+                    logicOperator: null,
+                },
+            ],
+        },
+        goldenCross: {
+            buy: [
+                {
+                    indicator: "sma50",
+                    operator: "above",
+                    value: "sma200",
+                    logicOperator: "AND",
+                },
+                {
+                    indicator: "price",
+                    operator: "above",
+                    value: "sma50",
+                    logicOperator: null,
+                },
+            ],
+            sell: [
+                {
+                    indicator: "sma50",
+                    operator: "below",
+                    value: "sma200",
+                    logicOperator: null,
+                },
+            ],
+        },
+        deathCross: {
+            buy: [
+                {
+                    indicator: "sma50",
+                    operator: "below",
+                    value: "sma200",
+                    logicOperator: "AND",
+                },
+                {
+                    indicator: "price",
+                    operator: "below",
+                    value: "sma50",
+                    logicOperator: null,
+                },
+            ],
+            sell: [
+                {
+                    indicator: "sma50",
+                    operator: "above",
+                    value: "sma200",
+                    logicOperator: null,
+                },
+            ],
+        },
+        movingAverageBounce: {
+            buy: [
+                {
+                    indicator: "price",
+                    operator: "above",
+                    value: "sma20",
+                    logicOperator: "AND",
+                },
+                {
+                    indicator: "sma20",
+                    operator: "above",
+                    value: "sma50",
+                    logicOperator: "AND",
+                },
+                {
+                    indicator: "rsi",
+                    operator: "above",
+                    value: 50,
+                    logicOperator: null,
+                },
+            ],
+            sell: [
+                {
+                    indicator: "price",
+                    operator: "below",
+                    value: "sma20",
+                    logicOperator: "OR",
+                },
+                {
+                    indicator: "rsi",
+                    operator: "below",
+                    value: 30,
+                    logicOperator: null,
+                },
+            ],
+        },
+    };
+
+    // Function to handle popular strategy selection
+    function handleStrategySelection(strategyKey) {
+        const strategy = strategyDefinitions[strategyKey];
+        if (strategy) {
+            // Generate unique IDs for each condition
+            buyConditionBlocks = strategy.buy.map((condition, index) => ({
+                ...condition,
+                id: `block_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 9)}`,
+                type: "condition",
+            }));
+
+            sellConditionBlocks = strategy.sell.map((condition, index) => ({
+                ...condition,
+                id: `block_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 9)}`,
+                type: "condition",
+            }));
+
+            // Also update the buyConditions and sellConditions for backward compatibility
+            buyConditions = buyConditionBlocks;
+            sellConditions = sellConditionBlocks;
+        }
+    }
 
     // Buy conditions
     let buyConditions = [];
@@ -65,6 +260,7 @@
             end_date: endDate,
             buy_condition: formatConditionsForBacktesting(buyConditions),
             sell_condition: formatConditionsForBacktesting(sellConditions),
+            initial_capital: initialCapital,
         };
     }
 
@@ -115,11 +311,6 @@
         });
     }
 
-    // Map frontend indicator names to backend format
-    function mapIndicatorName(indicator) {
-        return indicator;
-    }
-
     // Sync selectedTicker with selectedTickers array
     $: if (selectedTicker) {
         selectedTickers = [selectedTicker];
@@ -131,7 +322,8 @@
         sellConditions ||
         selectedTickers ||
         startDate ||
-        endDate
+        endDate ||
+        initialCapital
     ) {
         updateStrategyData();
     }
@@ -360,9 +552,11 @@
 
             operators: ["above", "below", "equals"],
             defaultOperator: "above",
-            defaultValue: 0,
-            min: -10,
-            max: 10,
+            defaultValue: ["macd_signal", 0],
+            valueLabels: {
+                macd_signal: "MACD Signal Line",
+                0: "Zero Line",
+            },
         },
         volume: {
             label: "Volume",
@@ -378,9 +572,26 @@
             category: "Price",
             operators: ["above", "below", "equals"],
             defaultOperator: "above",
-            defaultValue: 10,
-            min: 0,
-            max: 10000,
+            defaultValue: [
+                "sma20",
+                "sma50",
+                "sma100",
+                "sma200",
+                "ema20",
+                "ema50",
+                "ema100",
+                "ema200",
+            ],
+            valueLabels: {
+                sma20: "20-Day SMA",
+                sma50: "50-Day SMA",
+                sma100: "100-Day SMA",
+                sma200: "200-Day SMA",
+                ema20: "20-Day EMA",
+                ema50: "50-Day EMA",
+                ema100: "100-Day EMA",
+                ema200: "200-Day EMA",
+            },
         },
     };
 
@@ -570,19 +781,15 @@
             updateStrategyData();
 
             console.log("Strategy Data for Backtesting:", strategyData);
+            const postData = { strategyData: strategyData };
+            const response = await fetch("/api/backtesting", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(postData),
+            });
 
-            // Simulate API call delay
-            await new Promise((resolve) => setTimeout(resolve, 2000));
+            const output = await response.json();
 
-            // Here you would send strategyData to your backend API
-            // const response = await fetch('/api/backtest', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify(strategyData)
-            // });
-            // const results = await response.json();
-
-            // For now, use mock data - replace with actual API call
             backtestResults = mockBacktestResults;
         } catch (error) {
             backtestError = "Failed to run backtest: " + error.message;
@@ -669,6 +876,10 @@
                                     {#each popularStrategyList as item}
                                         <DropdownMenu.Item
                                             class="cursor-pointer sm:hover:bg-gray-300 dark:sm:hover:bg-primary"
+                                            on:click={() =>
+                                                handleStrategySelection(
+                                                    item.key,
+                                                )}
                                         >
                                             {item?.label}
                                         </DropdownMenu.Item>
@@ -1276,7 +1487,7 @@
                                     />
                                 </div>
                             </div>
-                            <div class="mt-4">
+                            <div class="mt-4 w-full ml-auto flex justify-end">
                                 <button
                                     on:click={runBacktest}
                                     disabled={isBacktesting}
