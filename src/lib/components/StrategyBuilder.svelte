@@ -7,6 +7,9 @@
     import ChevronDown from "lucide-svelte/icons/chevron-down";
     import Link2 from "lucide-svelte/icons/link-2";
 
+    import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
+    import { Button } from "$lib/components/shadcn/button/index.js";
+
     const dispatch = createEventDispatcher();
 
     export let strategyBlocks = [];
@@ -297,9 +300,7 @@
 
 <div class="">
     <div class="flex justify-between items-center mb-5">
-        <h3
-            class="text-lg font-semibold capitalize text-gray-900 dark:text-white"
-        >
+        <h3 class="text-lg font-semibold capitalize text-white">
             {mode} Conditions
         </h3>
         <div class="relative">
@@ -320,7 +321,7 @@
             <div class="mb-3" transition:fly={{ y: 20, duration: 300 }}>
                 {#if block.type === BLOCK_TYPES.CONDITION}
                     <div
-                        class="flex items-center gap-3 p-4 bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl transition-all duration-300 cursor-move"
+                        class="flex items-center gap-3 p-4 bg-white dark:bg-[#2A2E39] border-2 border-gray-300 dark:border-gray-800 rounded-xl transition-all duration-300 cursor-move"
                         class:opacity-50={isDragging &&
                             draggedBlock?.id === block.id}
                         draggable="true"
@@ -331,79 +332,182 @@
                         on:drop={(e) => handleDrop(e, block)}
                         on:dragend={handleDragEnd}
                     >
-                        <div
-                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-move"
-                        >
+                        <div class=" cursor-move">
                             <GripVertical size={16} />
                         </div>
 
                         <div class="flex-1 flex items-center gap-3 flex-wrap">
-                            <select
-                                class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-800 focus:outline-none focus:border-blue-500 min-w-[180px]"
-                                value={block.indicator}
-                                on:change={(e) => {
-                                    const newIndicator = e.target.value;
-                                    const config =
-                                        getIndicatorConfig(newIndicator);
-                                    let newValue;
+                            <DropdownMenu.Root>
+                                <DropdownMenu.Trigger asChild let:builder>
+                                    <Button
+                                        builders={[builder]}
+                                        class="min-w-[180px] justify-between border-gray-300 dark:border-gray-800 border text-white bg-black hover:bg-gray-50 dark:hover:bg-default px-3 py-2 text-sm"
+                                        variant="outline"
+                                    >
+                                        <span class="truncate"
+                                            >{getIndicatorConfig(
+                                                block.indicator,
+                                            ).label}</span
+                                        >
+                                        <ChevronDown
+                                            size={16}
+                                            class="ml-2 opacity-50"
+                                        />
+                                    </Button>
+                                </DropdownMenu.Trigger>
+                                <DropdownMenu.Content
+                                    side="bottom"
+                                    align="end"
+                                    sideOffset={10}
+                                    alignOffset={0}
+                                    class="w-56 h-fit max-h-72 overflow-y-auto scroller"
+                                >
+                                    <DropdownMenu.Group>
+                                        {#each Object.entries(availableIndicators) as [key, config]}
+                                            <DropdownMenu.Item
+                                                class="cursor-pointer {block.indicator ===
+                                                key
+                                                    ? 'bg-gray-100 dark:bg-gray-800'
+                                                    : ''}"
+                                                on:click={() => {
+                                                    const newIndicator = key;
+                                                    const newConfig =
+                                                        getIndicatorConfig(
+                                                            newIndicator,
+                                                        );
+                                                    let newValue;
 
-                                    // Set default value based on indicator type
-                                    if (Array.isArray(config.defaultValue)) {
-                                        newValue = config.defaultValue[0];
-                                    } else {
-                                        newValue = config.defaultValue;
-                                    }
+                                                    // Set default value based on indicator type
+                                                    if (
+                                                        Array.isArray(
+                                                            newConfig.defaultValue,
+                                                        )
+                                                    ) {
+                                                        newValue =
+                                                            newConfig
+                                                                .defaultValue[0];
+                                                    } else {
+                                                        newValue =
+                                                            newConfig.defaultValue;
+                                                    }
 
-                                    updateBlock(block.id, {
-                                        indicator: newIndicator,
-                                        operator:
-                                            config.defaultOperator || "equals",
-                                        value: newValue,
-                                    });
-                                }}
-                            >
-                                {#each Object.entries(availableIndicators) as [key, config]}
-                                    <option value={key}>{config.label}</option>
-                                {/each}
-                            </select>
+                                                    updateBlock(block.id, {
+                                                        indicator: newIndicator,
+                                                        operator:
+                                                            newConfig.defaultOperator ||
+                                                            "equals",
+                                                        value: newValue,
+                                                    });
+                                                }}
+                                            >
+                                                {config.label}
+                                            </DropdownMenu.Item>
+                                        {/each}
+                                    </DropdownMenu.Group>
+                                </DropdownMenu.Content>
+                            </DropdownMenu.Root>
 
-                            <select
-                                class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-800 focus:outline-none focus:border-blue-500 min-w-[100px]"
-                                value={block.operator}
-                                on:change={(e) =>
-                                    updateBlock(block.id, {
-                                        operator: e.target.value,
-                                    })}
-                            >
-                                {#each getIndicatorConfig(block.indicator).operators as op}
-                                    <option value={op}>{op}</option>
-                                {/each}
-                            </select>
+                            <DropdownMenu.Root>
+                                <DropdownMenu.Trigger asChild let:builder>
+                                    <Button
+                                        builders={[builder]}
+                                        class="min-w-[100px] justify-between border-gray-300 dark:border-gray-800 border text-white bg-black hover:bg-gray-50 dark:hover:bg-default px-3 py-2 text-sm"
+                                        variant="outline"
+                                    >
+                                        <span class="capitalize truncate"
+                                            >{block.operator}</span
+                                        >
+                                        <ChevronDown
+                                            size={16}
+                                            class="ml-2 opacity-50"
+                                        />
+                                    </Button>
+                                </DropdownMenu.Trigger>
+                                <DropdownMenu.Content
+                                    side="bottom"
+                                    align="end"
+                                    sideOffset={10}
+                                    alignOffset={0}
+                                    class="w-56 h-fit max-h-72 overflow-y-auto scroller"
+                                >
+                                    <DropdownMenu.Group>
+                                        {#each getIndicatorConfig(block.indicator).operators as op}
+                                            <DropdownMenu.Item
+                                                class="cursor-pointer sm:hover:bg-gray-100 dark:sm:hover:bg-gray-800 {block.operator ===
+                                                op
+                                                    ? 'bg-gray-100 dark:bg-gray-800'
+                                                    : ''}"
+                                                on:click={() => {
+                                                    updateBlock(block.id, {
+                                                        operator: op,
+                                                    });
+                                                }}
+                                            >
+                                                <span class="capitalize"
+                                                    >{op}</span
+                                                >
+                                            </DropdownMenu.Item>
+                                        {/each}
+                                    </DropdownMenu.Group>
+                                </DropdownMenu.Content>
+                            </DropdownMenu.Root>
 
                             <!-- Dynamic value input based on indicator type -->
                             {#if Array.isArray(getIndicatorConfig(block.indicator).defaultValue)}
                                 <!-- Dropdown for indicators with array defaultValue -->
-                                <select
-                                    class="w-[120px] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-800 focus:outline-none focus:border-blue-500"
-                                    value={block.value}
-                                    on:change={(e) =>
-                                        updateBlock(block.id, {
-                                            value: e.target.value,
-                                        })}
-                                >
-                                    {#each getIndicatorConfig(block.indicator).defaultValue as option}
-                                        <option value={option}>
-                                            {getIndicatorConfig(block.indicator)
-                                                .valueLabels?.[option] ||
-                                                option}
-                                        </option>
-                                    {/each}
-                                </select>
+                                <DropdownMenu.Root>
+                                    <DropdownMenu.Trigger asChild let:builder>
+                                        <Button
+                                            builders={[builder]}
+                                            class="w-[180px] justify-between border-gray-300 dark:border-gray-800 border text-white bg-black hover:bg-gray-50 dark:hover:bg-default px-3 py-2 text-sm"
+                                            variant="outline"
+                                        >
+                                            <span class="truncate">
+                                                {getIndicatorConfig(
+                                                    block.indicator,
+                                                ).valueLabels?.[block.value] ||
+                                                    block.value}
+                                            </span>
+                                            <ChevronDown
+                                                size={16}
+                                                class="ml-2 opacity-50"
+                                            />
+                                        </Button>
+                                    </DropdownMenu.Trigger>
+                                    <DropdownMenu.Content
+                                        side="bottom"
+                                        align="end"
+                                        sideOffset={10}
+                                        alignOffset={0}
+                                        class="w-56 h-fit max-h-72 overflow-y-auto scroller"
+                                    >
+                                        <DropdownMenu.Group>
+                                            {#each getIndicatorConfig(block.indicator).defaultValue as option}
+                                                <DropdownMenu.Item
+                                                    class="cursor-pointer {block.value ===
+                                                    option
+                                                        ? 'bg-gray-100 dark:bg-gray-800'
+                                                        : ''}"
+                                                    on:click={() => {
+                                                        updateBlock(block.id, {
+                                                            value: option,
+                                                        });
+                                                    }}
+                                                >
+                                                    {getIndicatorConfig(
+                                                        block.indicator,
+                                                    ).valueLabels?.[option] ||
+                                                        option}
+                                                </DropdownMenu.Item>
+                                            {/each}
+                                        </DropdownMenu.Group>
+                                    </DropdownMenu.Content>
+                                </DropdownMenu.Root>
                             {:else}
                                 <!-- Number input for indicators with numeric defaultValue -->
                                 <input
                                     type="number"
-                                    class="w-[100px] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-800 focus:outline-none focus:border-blue-500"
+                                    class="w-[100px] px-3 py-2 border border-gray-300 dark:border-gray-400 rounded text-sm bg-inherit focus:outline-none"
                                     value={block.value}
                                     min={getIndicatorConfig(block.indicator)
                                         .min}
@@ -429,7 +533,7 @@
 
                 {#if block.type === BLOCK_TYPES.GROUP}
                     <div
-                        class="p-5 bg-gray-50 dark:bg-gray-900/50 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl"
+                        class="p-5 bg-gray-50 dark:bg-gray-900/50 border-2 border-dashed border-gray-300 dark:border-gray-800 rounded-xl"
                     >
                         <div class="flex justify-between items-center mb-3">
                             <span
@@ -446,7 +550,7 @@
                         <div class="space-y-2">
                             {#each block.children as child}
                                 <div
-                                    class="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700"
+                                    class="p-3 bg-black rounded border border-gray-300 dark:border-gray-800"
                                 >
                                     <!-- Render child conditions here -->
                                 </div>
@@ -463,7 +567,7 @@
                             class="flex-1 h-px bg-gray-300 dark:bg-gray-600"
                         ></div>
                         <button
-                            class="flex items-center gap-1 px-3 py-1.5 mx-3 bg-black text-white dark:bg-white border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm font-semibold transition-all"
+                            class="flex items-center gap-1 px-3 py-1.5 mx-3 bg-black text-white dark:bg-white border border-gray-300 dark:border-gray-800 rounded-full text-xs sm:text-sm font-semibold transition-all"
                             on:click={() => {
                                 const newOp =
                                     block.logicOperator === LOGIC_OPERATORS.AND
@@ -489,7 +593,7 @@
                     No conditions added yet
                 </p>
                 <button
-                    class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded transition-all"
+                    class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-black border-2 border-dashed border-gray-300 dark:border-gray-800 rounded transition-all"
                     on:click={() => addBlock(BLOCK_TYPES.CONDITION)}
                 >
                     <Plus size={16} />
