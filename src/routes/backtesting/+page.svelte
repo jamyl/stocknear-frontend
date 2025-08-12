@@ -793,7 +793,7 @@
 
     <!-- Strategy Configuration Tabs -->
     <div
-        class="mt-8 bg-white dark:bg-default rounded shadow-lg border border-gray-300 dark:border-gray-800 overflow-hidden"
+        class=" bg-white dark:bg-default rounded shadow-lg border border-gray-300 dark:border-gray-800 overflow-hidden"
     >
         <Tabs.Root bind:value={activeTab} class="w-full">
             <!-- Enhanced Tab List -->
@@ -1213,11 +1213,15 @@
 
                 <!-- Backtesting Tab Content -->
                 <Tabs.Content value="backtest" class="outline-none">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold capitalize text-white">
+                            Define Backtesting Settings
+                        </h3>
+                    </div>
+
                     <div class="space-y-6">
                         <!-- Backtest Configuration -->
-                        <div
-                            class="bg-gray-50 dark:bg-gray-900/50 rounded p-6 border border-gray-300 dark:border-gray-800"
-                        >
+                        <div class="bg-gray-50 dark:bg-default">
                             <h4
                                 class="font-semibold text-gray-900 dark:text-white mb-4"
                             >
@@ -1276,7 +1280,7 @@
                                 <button
                                     on:click={runBacktest}
                                     disabled={isBacktesting}
-                                    class="cursor-pointer inline-flex items-center text-sm gap-1 px-3 py-2 bg-black sm:hover:bg-default disabled:bg-black/80 text-white dark:text-muted dark:bg-white dark:sm:hover:bg-gray-100 dark:disabled:bg-white/80 rounded font-medium transition-colors"
+                                    class="mt-3 cursor-pointer inline-flex items-center text-sm gap-1 px-3 py-2 bg-black sm:hover:bg-default disabled:bg-black/80 text-white dark:text-muted dark:bg-white dark:sm:hover:bg-gray-100 dark:disabled:bg-white/80 rounded font-medium transition-colors"
                                 >
                                     {#if isBacktesting}
                                         <svg
