@@ -1,11 +1,7 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import { goto } from "$app/navigation";
-    import { screenWidth } from "$lib/store";
     import { toast } from "svelte-sonner";
     import { mode } from "mode-watcher";
 
-    import { groupScreenerRules } from "$lib/utils";
     import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
     import { Button } from "$lib/components/shadcn/button/index.js";
     import * as Tabs from "$lib/components/shadcn/tabs/index.js";
@@ -17,18 +13,9 @@
 
     import { writable } from "svelte/store";
 
-    let shouldLoadWorker = writable(false);
     export let data;
     export let form;
-    let downloadWorker: Worker | undefined;
 
-    let removeList = false;
-
-    let strategyList = data?.getAllStrategies;
-    let selectedStrategy = strategyList?.at(0)?.id ?? "";
-    let ruleOfList = strategyList?.at(0)?.rules ?? [];
-
-    let selectedPopularStrategy = "";
     let activeTab = "buy";
     const popularStrategyList = [
         { key: "dividendGrowth", label: "Dividend Growth" },
@@ -39,12 +26,6 @@
         { key: "underValuedStocks", label: "Undervalued Stocks" },
         { key: "strongCashFlow", label: "Strong Cash Flow" },
     ];
-
-    let otherTabRules = [];
-
-    // Preloading system for tab data
-    let preloadedData = new Map(); // Cache for preloaded tab data
-    let hoverTimeout = null; // Debounce hover events
 
     // Buy conditions
     let buyConditions = [
@@ -85,7 +66,7 @@
     // Backtesting parameters
     let selectedTickers = ["AAPL"];
     let startDate = "2020-01-01";
-    let endDate = "2025-08-30";
+    let endDate = new Date().toISOString().split("T")[0];
 
     // Strategy data collection - this is the main object you requested
     let strategyData = {};
@@ -99,10 +80,6 @@
             buy_condition: formatConditionsForBacktesting(buyConditions),
             sell_condition: formatConditionsForBacktesting(sellConditions),
         };
-
-        console.log("Updated Strategy Data:", strategyData);
-        console.log("Raw Buy Conditions:", buyConditions);
-        console.log("Raw Sell Conditions:", sellConditions);
     }
 
     // Convert conditions to backtesting format
@@ -117,7 +94,13 @@
             // For moving averages comparing to other indicators, we need special handling
             if (
                 condition.indicator === "sma20" ||
-                condition.indicator === "ema20"
+                condition.indicator === "sma50" ||
+                condition.indicator === "sma100" ||
+                condition.indicator === "sma200" ||
+                condition.indicator === "ema20" ||
+                condition.indicator === "ema50" ||
+                condition.indicator === "ema100" ||
+                condition.indicator === "ema200"
             ) {
                 // If the value is a string like "price", "sma50", etc., keep it as is
                 // If it's a number, convert appropriately
@@ -150,8 +133,14 @@
     function mapIndicatorName(indicator) {
         const mapping = {
             rsi: "rsi",
-            sma20: "price", // 20-day SMA compared to price or other MAs
-            ema20: "price", // 20-day EMA compared to price or other MAs
+            sma20: "sma20", // 20-day Simple Moving Average
+            sma50: "sma50", // 50-day Simple Moving Average
+            sma100: "sma100", // 100-day Simple Moving Average
+            sma200: "sma200", // 200-day Simple Moving Average
+            ema20: "ema20", // 20-day Exponential Moving Average
+            ema50: "ema50", // 50-day Exponential Moving Average
+            ema100: "ema100", // 100-day Exponential Moving Average
+            ema200: "ema200", // 200-day Exponential Moving Average
             macd: "macd",
             volume: "volume",
             price: "price",
@@ -179,7 +168,7 @@
     const availableIndicators = {
         rsi: {
             label: "RSI (Relative Strength Index)",
-            category: "Technical Analysis",
+
             operators: ["above", "below", "equals"],
             defaultOperator: "below",
             defaultValue: 30,
@@ -188,37 +177,215 @@
         },
         sma20: {
             label: "20-Day Moving Average",
-            category: "Technical Analysis",
+
             operators: ["above", "below", "equals"],
             defaultOperator: "above",
-            defaultValue: ["price", "sma50", "sma100", "sma200"],
+            defaultValue: [
+                "price",
+                "sma50",
+                "sma100",
+                "sma200",
+                "ema20",
+                "ema50",
+                "ema100",
+                "ema200",
+            ],
             valueLabels: {
-                price: "Current Price",
-                sma50: "50-Day SMA",
+                price: "Stock Price",
+                sma50: "50-Day Moving Average",
+                sma100: "100-Day Moving Average",
+                sma200: "200-Day Moving Average",
+                ema20: "20-Day Exponential Moving Average",
+                ema50: "50-Day Exponential Moving Average",
+                ema100: "100-Day Exponential Moving Average",
+                ema200: "200-Day Exponential Moving Average",
+            },
+        },
+        sma50: {
+            label: "50-Day Moving Average",
+
+            operators: ["above", "below", "equals"],
+            defaultOperator: "above",
+            defaultValue: [
+                "price",
+                "sma20",
+                "sma100",
+                "sma200",
+                "ema20",
+                "ema50",
+                "ema100",
+                "ema200",
+            ],
+            valueLabels: {
+                price: "Stock Price",
+                sma20: "20-Day SMA",
                 sma100: "100-Day SMA",
                 sma200: "200-Day SMA",
-            },
-            min: 1,
-            max: 200,
-        },
-        ema20: {
-            label: "20-Day Exponential Moving Average",
-            category: "Technical Analysis",
-            operators: ["above", "below", "equals"],
-            defaultOperator: "above",
-            defaultValue: ["price", "ema50", "ema100", "ema200"],
-            valueLabels: {
-                price: "Current Price",
+                ema20: "20-Day EMA",
                 ema50: "50-Day EMA",
                 ema100: "100-Day EMA",
                 ema200: "200-Day EMA",
             },
-            min: 1,
-            max: 200,
+        },
+        sma100: {
+            label: "100-Day Moving Average",
+
+            operators: ["above", "below", "equals"],
+            defaultOperator: "above",
+            defaultValue: [
+                "price",
+                "sma20",
+                "sma50",
+                "sma200",
+                "ema20",
+                "ema50",
+                "ema100",
+                "ema200",
+            ],
+            valueLabels: {
+                price: "Stock Price",
+                sma20: "20-Day SMA",
+                sma50: "50-Day SMA",
+                sma200: "200-Day SMA",
+                ema20: "20-Day EMA",
+                ema50: "50-Day EMA",
+                ema100: "100-Day EMA",
+                ema200: "200-Day EMA",
+            },
+        },
+        sma200: {
+            label: "200-Day Moving Average",
+
+            operators: ["above", "below", "equals"],
+            defaultOperator: "above",
+            defaultValue: [
+                "price",
+                "sma20",
+                "sma50",
+                "sma100",
+                "ema20",
+                "ema50",
+                "ema100",
+                "ema200",
+            ],
+            valueLabels: {
+                price: "Stock Price",
+                sma20: "20-Day SMA",
+                sma50: "50-Day SMA",
+                sma100: "100-Day SMA",
+                ema20: "20-Day EMA",
+                ema50: "50-Day EMA",
+                ema100: "100-Day EMA",
+                ema200: "200-Day EMA",
+            },
+        },
+        ema20: {
+            label: "20-Day Exponential Moving Average",
+
+            operators: ["above", "below", "equals"],
+            defaultOperator: "above",
+            defaultValue: [
+                "price",
+                "sma20",
+                "sma50",
+                "sma100",
+                "sma200",
+                "ema50",
+                "ema100",
+                "ema200",
+            ],
+            valueLabels: {
+                price: "Stock Price",
+                sma20: "20-Day SMA",
+                sma50: "50-Day SMA",
+                sma100: "100-Day SMA",
+                sma200: "200-Day SMA",
+                ema50: "50-Day EMA",
+                ema100: "100-Day EMA",
+                ema200: "200-Day EMA",
+            },
+        },
+        ema50: {
+            label: "50-Day Exponential Moving Average",
+
+            operators: ["above", "below", "equals"],
+            defaultOperator: "above",
+            defaultValue: [
+                "price",
+                "sma20",
+                "sma50",
+                "sma100",
+                "sma200",
+                "ema20",
+                "ema100",
+                "ema200",
+            ],
+            valueLabels: {
+                price: "Stock Price",
+                sma20: "20-Day SMA",
+                sma50: "50-Day SMA",
+                sma100: "100-Day SMA",
+                sma200: "200-Day SMA",
+                ema20: "20-Day EMA",
+                ema100: "100-Day EMA",
+                ema200: "200-Day EMA",
+            },
+        },
+        ema100: {
+            label: "100-Day Exponential Moving Average",
+
+            operators: ["above", "below", "equals"],
+            defaultOperator: "above",
+            defaultValue: [
+                "price",
+                "sma20",
+                "sma50",
+                "sma100",
+                "sma200",
+                "ema20",
+                "ema50",
+                "ema200",
+            ],
+            valueLabels: {
+                price: "Stock Price",
+                sma20: "20-Day SMA",
+                sma50: "50-Day SMA",
+                sma100: "100-Day SMA",
+                sma200: "200-Day SMA",
+                ema20: "20-Day EMA",
+                ema50: "50-Day EMA",
+                ema200: "200-Day EMA",
+            },
+        },
+        ema200: {
+            label: "200-Day Exponential Moving Average",
+
+            operators: ["above", "below", "equals"],
+            defaultOperator: "above",
+            defaultValue: [
+                "price",
+                "sma20",
+                "sma50",
+                "sma100",
+                "sma200",
+                "ema20",
+                "ema50",
+                "ema100",
+            ],
+            valueLabels: {
+                price: "Stock Price",
+                sma20: "20-Day SMA",
+                sma50: "50-Day SMA",
+                sma100: "100-Day SMA",
+                sma200: "200-Day SMA",
+                ema20: "20-Day EMA",
+                ema50: "50-Day EMA",
+                ema100: "100-Day EMA",
+            },
         },
         macd: {
             label: "MACD",
-            category: "Technical Analysis",
+
             operators: ["above", "below", "equals"],
             defaultOperator: "above",
             defaultValue: 0,
@@ -254,7 +421,7 @@
         rsi: {
             label: "Relative Strength Index",
             step: [90, 80, 70, 60, 50, 40, 30, 20],
-            category: "Technical Analysis",
+
             defaultCondition: "over",
             defaultValue: "any",
         },
@@ -262,469 +429,6 @@
 
     let filteredData = [];
     let displayResults = [];
-
-    // Generate allRows from allRules
-    $: allRows = Object?.entries(allRules)
-        ?.sort(([, a], [, b]) => a.label.localeCompare(b.label)) // Sort by label
-        ?.map(([ruleName, ruleProps]) => ({
-            rule: ruleName,
-            ...ruleProps,
-        }));
-
-    let filteredGroupedRules;
-    let searchTerm = "";
-
-    let ruleName = "";
-
-    // Quick search functionality for unselected rules
-    let quickSearchTerm = "";
-    let quickSearchResults = [];
-    let showQuickSearchDropdown = false;
-    let selectedQuickSearchIndex = -1;
-
-    // Define your default values
-
-    let ruleCondition = {};
-    let valueMappings = {};
-
-    Object.keys(allRules).forEach((ruleName) => {
-        ruleCondition[ruleName] = allRules[ruleName].defaultCondition;
-
-        // Check if the default condition is "between"
-        if (allRules[ruleName].defaultCondition === "between") {
-            valueMappings[ruleName] = allRules[ruleName].defaultValue || [
-                null,
-                null,
-            ];
-        } else {
-            valueMappings[ruleName] = allRules[ruleName].defaultValue;
-        }
-    });
-
-    // Update ruleCondition and valueMappings based on existing rules
-    ruleOfList?.forEach((rule) => {
-        ruleCondition[rule.name] =
-            rule.condition || allRules[rule.name].defaultCondition;
-        valueMappings[rule.name] =
-            rule.value || allRules[rule.name].defaultValue;
-    });
-
-    async function handleCreateStrategy() {
-        if (["Pro", "Plus"]?.includes(data?.user?.tier)) {
-            const closePopup = document.getElementById("addStrategy");
-            closePopup?.dispatchEvent(new MouseEvent("click"));
-        } else {
-            toast.info("Available only to Plus or Pro Member", {
-                style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
-            });
-        }
-    }
-
-    async function handleDeleteStrategy() {
-        const deletePromise = (async () => {
-            const postData = {
-                strategyId: selectedStrategy,
-                type: "stocksScreener",
-            };
-
-            const response = await fetch("/api/delete-strategy", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(postData),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Network error: ${response.status}`);
-            }
-
-            const output = await response.json();
-            if (output !== "success") {
-                throw new Error("Server returned failure");
-            }
-
-            // ——— SUCCESS: run your state‐update logic ———
-            strategyList =
-                strategyList?.filter((item) => item.id !== selectedStrategy) ??
-                [];
-            selectedStrategy = strategyList?.at(0)?.id ?? "";
-            ruleOfList =
-                strategyList?.find((item) => item.id === selectedStrategy)
-                    ?.rules ?? [];
-
-            ruleOfList.forEach((rule) => {
-                ruleCondition[rule.name] =
-                    rule.condition || allRules[rule.name].defaultCondition;
-                valueMappings[rule.name] =
-                    rule.value || allRules[rule.name].defaultValue;
-            });
-
-            if (ruleOfList.length === 0) {
-                filteredData = [];
-                displayResults = [];
-            }
-
-            await updateStockScreenerData();
-
-            checkedItems = new Map(
-                ruleOfList
-                    ?.filter((rule) => checkedRules.includes(rule.name))
-                    ?.map((rule) => [rule.name, new Set(rule.value)]),
-            );
-
-            // return something if you need to chain further
-            return true;
-        })();
-
-        return toast?.promise(deletePromise, {
-            loading: "Deleting screener…",
-            success: "Screener deleted successfully!",
-            error: "Delete failed. Please try again.",
-            style: `
-        border-radius: 5px;
-        background: #fff;
-        color: #000;
-        border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"};
-        font-size: 15px;
-      `,
-        });
-    }
-
-    async function createStrategy(event) {
-        event.preventDefault();
-
-        const formData = new FormData(event.target);
-        formData.append("user", data?.user?.id);
-        formData.append("rules", "[]");
-        let title = formData.get("title");
-
-        if (!title || title.length === 0) {
-            title = "My Screener";
-        }
-
-        if (title?.length > 100) {
-            toast.error(
-                "Title is too long. Please keep it under 100 characters.",
-                {
-                    style: `
-        border-radius: 5px;
-        background: #fff;
-        color: #000;
-        border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"};
-        font-size: 15px;
-      `,
-                },
-            );
-            return;
-        }
-
-        // build postData object
-        const postData = { type: "stocksScreener" };
-        for (const [key, value] of formData.entries()) {
-            postData[key] = value;
-        }
-
-        // wrap the fetch + response check + state updates in a promise
-        const createPromise = (async () => {
-            const response = await fetch("/api/create-strategy", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(postData),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Network error: ${response.status}`);
-            }
-
-            const output = await response.json();
-            if (!output?.id) {
-                throw new Error("Server did not return a new strategy ID");
-            }
-
-            // ——— SUCCESS: run your existing post-create logic ———
-            toast.success("Screener created successfully!", {
-                style: `
-        border-radius: 5px;
-        background: #fff;
-        color: #000;
-        border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"};
-        font-size: 15px;
-      `,
-            });
-
-            // close modal
-            const closePopup = document.getElementById("addStrategy");
-            closePopup?.dispatchEvent(new MouseEvent("click"));
-
-            selectedStrategy = output.id;
-            strategyList?.unshift(output);
-            selectedPopularStrategy = "";
-
-            if (removeList) {
-                removeList = false;
-                ruleOfList = [];
-            }
-
-            // trigger a save without toasting again
-            await handleSave(false);
-
-            return output;
-        })();
-
-        // show loading / success / error around the whole operation
-        return toast.promise(createPromise, {
-            loading: "Creating screener…",
-            success: () => "", // we already show success inside the promise
-            error: "Something went wrong. Please try again later!",
-            style: `
-        border-radius: 5px;
-        background: #fff;
-        color: #000;
-        border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"};
-        font-size: 15px;
-      `,
-        });
-    }
-
-    async function switchStrategy(item) {
-        displayTableTab = "general";
-        ruleName = "";
-        selectedPopularStrategy = "";
-        selectedStrategy = item?.id ?? "";
-
-        ruleOfList =
-            strategyList?.find((item) => item.id === selectedStrategy)?.rules ??
-            [];
-
-        ruleOfList.forEach((rule) => {
-            ruleCondition[rule.name] =
-                rule.condition || allRules[rule.name].defaultCondition;
-            valueMappings[rule.name] =
-                rule.value || allRules[rule.name].defaultValue;
-        });
-
-        if (ruleOfList?.length === 0) {
-            filteredData = [];
-            displayResults = [];
-        }
-        await updateStockScreenerData();
-        checkedItems = new Map(
-            ruleOfList
-                ?.filter((rule) => checkedRules?.includes(rule.name)) // Only include specific rules
-                ?.map((rule) => [rule.name, new Set(rule.value)]), // Create Map from filtered rules
-        );
-    }
-
-    function changeRule(state: string) {
-        if (
-            !["Pro", "Plus"]?.includes(data?.user?.tier) &&
-            onlySubscriberRules?.includes(state)
-        ) {
-            goto("/pricing");
-        } else {
-            selectedPopularStrategy = "";
-            ruleName = state;
-            handleAddRule();
-        }
-    }
-
-    const handleMessage = (event) => {
-        displayRules = allRows?.filter((row) =>
-            ruleOfList?.some((rule) => rule.name === row.rule),
-        );
-
-        filteredData = event.data?.filteredData ?? [];
-        displayResults = filteredData?.slice(0, 50);
-    };
-
-    const handleScreenerMessage = (event) => {
-        stockScreenerData = event?.data?.stockScreenerData;
-        shouldLoadWorker.set(true);
-    };
-
-    const updateStockScreenerData = async () => {
-        downloadWorker.postMessage({
-            ruleOfList: [...ruleOfList, ...otherTabRules],
-        });
-    };
-
-    // Debounced hover handler
-    const handleTabHover = (tabName) => {
-        // Clear existing timeout
-        if (hoverTimeout) {
-            clearTimeout(hoverTimeout);
-        }
-
-        // Set new timeout for debouncing
-        hoverTimeout = setTimeout(() => {
-            preloadTabData(tabName);
-        }, 50);
-    };
-
-    // Clear hover timeout
-    const handleTabHoverLeave = () => {
-        if (hoverTimeout) {
-            clearTimeout(hoverTimeout);
-            hoverTimeout = null;
-        }
-    };
-
-    // Quick search functions
-    const updateQuickSearchResults = (searchQuery) => {
-        if (!searchQuery || searchQuery.trim().length === 0) {
-            quickSearchResults = [];
-            showQuickSearchDropdown = false;
-            return;
-        }
-
-        // Get currently selected rule names
-        const selectedRuleNames = new Set(ruleOfList.map((rule) => rule.name));
-
-        // Filter available rules that haven't been selected yet
-        quickSearchResults = allRows
-            .filter(
-                (row) =>
-                    !selectedRuleNames.has(row.rule) &&
-                    row.label.toLowerCase().includes(searchQuery.toLowerCase()),
-            )
-            .slice(0, 8); // Limit to 8 results for better UX
-
-        showQuickSearchDropdown = quickSearchResults.length > 0;
-        selectedQuickSearchIndex = -1;
-    };
-
-    const handleQuickSearchInput = (event) => {
-        quickSearchTerm = event.target.value;
-        updateQuickSearchResults(quickSearchTerm);
-    };
-
-    const handleQuickSearchKeydown = (event) => {
-        if (!showQuickSearchDropdown) return;
-
-        switch (event.key) {
-            case "ArrowDown":
-                event.preventDefault();
-                selectedQuickSearchIndex = Math.min(
-                    selectedQuickSearchIndex + 1,
-                    quickSearchResults.length - 1,
-                );
-                break;
-            case "ArrowUp":
-                event.preventDefault();
-                selectedQuickSearchIndex = Math.max(
-                    selectedQuickSearchIndex - 1,
-                    -1,
-                );
-                break;
-            case "Enter":
-                event.preventDefault();
-                if (
-                    selectedQuickSearchIndex >= 0 &&
-                    quickSearchResults[selectedQuickSearchIndex]
-                ) {
-                    selectQuickSearchRule(
-                        quickSearchResults[selectedQuickSearchIndex],
-                    );
-                }
-                break;
-            case "Escape":
-                showQuickSearchDropdown = false;
-                selectedQuickSearchIndex = -1;
-                break;
-        }
-    };
-
-    const selectQuickSearchRule = (rule) => {
-        changeRule(rule.rule);
-        quickSearchTerm = "";
-        quickSearchResults = [];
-        showQuickSearchDropdown = false;
-        selectedQuickSearchIndex = -1;
-    };
-
-    // Reactive statement to update search results when ruleOfList changes
-    $: if (quickSearchTerm) {
-        updateQuickSearchResults(quickSearchTerm);
-    }
-
-    const closeQuickSearchDropdown = () => {
-        setTimeout(() => {
-            showQuickSearchDropdown = false;
-            selectedQuickSearchIndex = -1;
-        }, 150); // Small delay to allow click events
-    };
-
-    function handleAddRule() {
-        if (ruleName === "") {
-            toast.error("Please select a rule", {
-                style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
-            });
-            return;
-        }
-
-        // Clear preloaded data when rules change
-        preloadedData.clear();
-
-        let newRule;
-
-        switch (ruleName) {
-            case "analystRating":
-            case "payoutFrequency":
-            case "topAnalystRating":
-            case "earningsTime":
-            case "earningsDate":
-            case "halalStocks":
-            case "score":
-            case "sector":
-            case "industry":
-            case "country":
-            case "ema20":
-            case "ema50":
-            case "ema100":
-            case "ema200":
-            case "sma20":
-            case "grahamNumber":
-            case "sma50":
-            case "sma100":
-            case "sma200":
-                newRule = {
-                    name: ruleName,
-                    value: Array.isArray(valueMappings[ruleName])
-                        ? valueMappings[ruleName]
-                        : [valueMappings[ruleName]],
-                }; // Ensure value is an array
-                break;
-            default:
-                newRule = {
-                    name: ruleName,
-                    condition: ruleCondition[ruleName],
-                    value: valueMappings[ruleName],
-                };
-                break;
-        }
-        handleRule(newRule);
-    }
-
-    async function handleRule(newRule) {
-        const existingRuleIndex = ruleOfList.findIndex(
-            (rule) => rule.name === newRule.name,
-        );
-
-        if (existingRuleIndex !== -1) {
-            const existingRule = ruleOfList[existingRuleIndex];
-            if (existingRule.name === newRule.name) {
-                // Remove the rule instead of showing an error
-                ruleOfList.splice(existingRuleIndex, 1);
-                ruleOfList = [...ruleOfList]; // Trigger reactivity
-            } else {
-                ruleOfList[existingRuleIndex] = newRule;
-                ruleOfList = [...ruleOfList]; // Trigger reactivity
-            }
-        } else {
-            ruleOfList = [...ruleOfList, newRule];
-
-            await updateStockScreenerData();
-        }
-    }
 
     async function handleScroll() {
         const scrollThreshold = document.body.offsetHeight * 0.8; // 80% of the website height
@@ -792,7 +496,19 @@
                     operatorText = block.operator;
             }
 
-            text = `${indicatorName} ${operatorText} ${block.value}`;
+            // Get readable value name (check if it should be translated using valueLabels)
+            let valueText = block.value;
+            if (
+                typeof block.value === "string" &&
+                availableIndicators[block.indicator]?.valueLabels
+            ) {
+                valueText =
+                    availableIndicators[block.indicator].valueLabels[
+                        block.value
+                    ] || block.value;
+            }
+
+            text = `${indicatorName} ${operatorText} ${valueText}`;
 
             // Add logic connector for next condition
             if (block.logicOperator && index < blocks.length - 1) {
@@ -898,442 +614,12 @@
         }
     }
 
-    /*
-const handleKeyDown = (event) => {
-    if (event.ctrlKey && event.key === 's') {
-      event.preventDefault(); // prevent the browser's default save action
-      handleSave();
-    }
-  };
-
-*/
-
     let LoginPopup;
-
-    async function handleSave(showMessage) {
-        if (!data?.user) return;
-
-        if (strategyList?.length === 0) {
-            handleCreateStrategy();
-        }
-
-        if (strategyList?.length > 0) {
-            // update local strategyList
-            strategyList.find((item) => item.id === selectedStrategy).rules =
-                ruleOfList;
-
-            const postData = {
-                strategyId: selectedStrategy,
-                rules: ruleOfList,
-                type: "stocksScreener",
-            };
-
-            const savePromise = (async () => {
-                const response = await fetch("/api/save-strategy", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(postData),
-                });
-                if (!response.ok) {
-                    throw new Error(`Server responded with ${response.status}`);
-                }
-                return response;
-            })();
-
-            if (showMessage) {
-                return toast.promise(savePromise, {
-                    loading: "Saving screener...",
-                    success: "Screener saved!",
-                    error: "Save failed. Please try again.",
-                    style: `
-            border-radius: 5px;
-            background: #fff;
-            color: #000;
-            border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"};
-            font-size: 15px;
-          `,
-                });
-            } else {
-                // just await without toast
-                await savePromise;
-            }
-        }
-    }
-
-    $: {
-        if (ruleOfList) {
-            const ruleToUpdate = ruleOfList?.find(
-                (rule) => rule.name === ruleName,
-            );
-            if (ruleToUpdate) {
-                ruleToUpdate.value = valueMappings[ruleToUpdate.name];
-                ruleToUpdate.condition = ruleCondition[ruleToUpdate.name];
-                ruleOfList = [...ruleOfList];
-            }
-            shouldLoadWorker.set(true);
-        }
-    }
-
-    $: {
-        if (searchTerm?.length > 0) {
-            // Filter rows by search term
-            const filteredRows = allRows?.filter((row) =>
-                row?.label?.toLowerCase()?.includes(searchTerm?.toLowerCase()),
-            );
-
-            // Group the filtered rows by category
-            filteredGroupedRules = groupScreenerRules(filteredRows);
-        } else {
-            // If no search term, return all rows grouped by category
-            filteredGroupedRules = groupScreenerRules(allRows);
-        }
-    }
-
-    $: charNumber = $screenWidth < 640 ? 20 : 40;
-
-    function changeRuleCondition(name: string, state: string) {
-        ruleName = name;
-        const newState = state?.toLowerCase();
-
-        // Initialize array for "between" condition
-        if (newState === "between") {
-            valueMappings[ruleName] = ["", ""];
-        } else if (
-            ruleCondition[ruleName] === "between" &&
-            ["over", "under", "exactly"].includes(newState)
-        ) {
-            valueMappings[ruleName] = "any";
-        }
-
-        ruleCondition[ruleName] = newState;
-    }
-
-    let checkedItems = new Map(
-        ruleOfList
-            ?.filter((rule) => checkedRules?.includes(rule.name)) // Only include specific rules
-            ?.map((rule) => [rule.name, new Set(rule.value)]), // Create Map from filtered rules
-    );
-
-    function isChecked(item, ruleName) {
-        return (
-            checkedItems?.has(ruleName) && checkedItems?.get(ruleName).has(item)
-        );
-    }
-
-    // Utility function to convert values to comparable numbers
-    function parseValue(val) {
-        if (typeof val === "string") {
-            // Handle percentage values
-            if (val.endsWith("%")) {
-                return parseFloat(val);
-            }
-
-            // Handle values with suffixes like K (thousand), M (million), B (billion)
-            const suffixMap = {
-                K: 1e3,
-                M: 1e6,
-                B: 1e9,
-            };
-
-            const suffix = val.slice(-1).toUpperCase();
-            const numberPart = parseFloat(val);
-
-            if (suffix in suffixMap) {
-                return numberPart * suffixMap[suffix];
-            }
-        }
-
-        return parseFloat(val);
-    }
-
-    // Custom sorting function
-    function customSort(a, b) {
-        return parseValue(a) - parseValue(b);
-    }
-
-    async function handleChangeValue(value, { shouldSort = true } = {}) {
-        // Add this check at the beginning of the function
-        if (ruleCondition[ruleName] === "between") {
-            // Ensure valueMappings[ruleName] is always an array for "between" condition
-            if (!Array.isArray(valueMappings[ruleName])) {
-                valueMappings[ruleName] = ["", ""];
-            }
-
-            // If value is a single value (from input), update only the specified index
-            if (!Array.isArray(value) && typeof currentIndex === "number") {
-                valueMappings[ruleName][currentIndex] = value;
-                value = valueMappings[ruleName];
-            } else if (Array.isArray(value)) {
-                // Only for preset ranges from dropdown
-                valueMappings[ruleName] = value;
-            }
-        }
-
-        if (checkedItems.has(ruleName)) {
-            const itemsSet = checkedItems.get(ruleName);
-
-            // Apply sorting only if shouldSort is true
-            const sortedValue =
-                shouldSort && Array.isArray(value)
-                    ? value.sort(customSort)
-                    : value;
-
-            const valueKey = Array.isArray(sortedValue)
-                ? sortedValue.join("-")
-                : sortedValue;
-
-            if (itemsSet?.has(valueKey)) {
-                itemsSet?.delete(valueKey);
-            } else {
-                itemsSet?.add(valueKey);
-            }
-        } else {
-            // Apply sorting only if shouldSort is true
-            const sortedValue =
-                shouldSort && Array.isArray(value)
-                    ? value.sort(customSort)
-                    : value;
-
-            const valueKey = Array.isArray(sortedValue)
-                ? sortedValue.join("-")
-                : sortedValue;
-
-            checkedItems?.set(ruleName, new Set([valueKey]));
-        }
-
-        if (checkedRules?.includes(ruleName)) {
-            searchQuery = "";
-            if (!Array.isArray(valueMappings[ruleName])) {
-                valueMappings[ruleName] = [];
-            }
-
-            // Apply sorting only if shouldSort is true
-            const sortedValue =
-                shouldSort && Array?.isArray(value)
-                    ? value?.sort(customSort)
-                    : value;
-
-            const valueKey = Array?.isArray(sortedValue)
-                ? sortedValue.join("-")
-                : sortedValue;
-
-            const index = valueMappings[ruleName].indexOf(valueKey);
-            if (index === -1) {
-                valueMappings[ruleName].push(valueKey);
-            } else {
-                valueMappings[ruleName].splice(index, 1);
-            }
-
-            if (valueMappings[ruleName].length === 0) {
-                valueMappings[ruleName] = "any";
-            }
-
-            await updateStockScreenerData();
-        } else if (ruleName in valueMappings) {
-            if (
-                ruleCondition[ruleName] === "between" &&
-                Array?.isArray(value)
-            ) {
-                // Apply sorting only if shouldSort is true
-                valueMappings[ruleName] = shouldSort
-                    ? value?.sort(customSort)
-                    : value;
-            } else {
-                valueMappings[ruleName] = value;
-            }
-        } else {
-            console.warn(`Unhandled rule: ${ruleName}`);
-        }
-
-        // Add this at the end of the function to ensure the filter is applied
-        if (
-            ruleCondition[ruleName] === "between" &&
-            value.some((v) => v !== "")
-        ) {
-            await updateStockScreenerData();
-        }
-    }
-
-    async function stepSizeValue(value, condition) {
-        if (value === "any") {
-            value = 0;
-        }
-        const match = value.toString().match(/^(-?[\d.]+)([KMB%]?)$/);
-        if (!match) return value;
-
-        let [_, number, suffix] = match;
-        number = parseFloat(number);
-
-        let step = 1;
-
-        number += condition === "add" ? step : -step;
-
-        // Round to 2 decimal places for consistency
-        number = parseFloat(number?.toFixed(2));
-        const newValue = suffix ? `${number}${suffix}` : Math?.round(number);
-        await handleChangeValue(newValue);
-    }
-
-    let currentIndex = null;
-
-    async function handleValueInput(event, ruleName, index = null) {
-        const newValue = event.target.value;
-
-        if (ruleCondition[ruleName] === "between") {
-            // Ensure valueMappings[ruleName] is initialized as an array
-            if (!Array.isArray(valueMappings[ruleName])) {
-                valueMappings[ruleName] = ["", ""];
-            }
-
-            // Store the current index being modified
-            currentIndex = index;
-
-            if (newValue?.length === 0) {
-                valueMappings[ruleName][index] = "";
-            }
-
-            await handleChangeValue(newValue, { shouldSort: false });
-
-            // Reset currentIndex after handling the value
-            currentIndex = null;
-        } else {
-            if (newValue?.length === 0) {
-                const ruleIndex = ruleOfList?.findIndex(
-                    (rule) => rule.name === ruleName,
-                );
-                if (ruleIndex !== -1) {
-                    ruleOfList[ruleIndex].value = "any";
-                }
-            }
-            await handleChangeValue(newValue);
-        }
-    }
-
-    async function popularStrategy(state: string) {
-        ruleOfList = [];
-        const strategies = {
-            dividendGrowth: {
-                name: "Dividend Growth",
-                rules: [
-                    { condition: "over", name: "dividendGrowth", value: "5%" },
-                    { condition: "over", name: "dividendYield", value: "1%" },
-                    { condition: "under", name: "payoutRatio", value: "60%" },
-                    { condition: "over", name: "growthRevenue", value: "5%" },
-                ],
-            },
-            monthlyDividends: {
-                name: "Monthly Dividends",
-                rules: [
-                    {
-                        condition: "",
-                        name: "payoutFrequency",
-                        value: "Monthly",
-                    },
-                    { condition: "over", name: "dividendYield", value: "0%" },
-                ],
-            },
-            topGainers1Y: {
-                name: "Top Gainers 1Y",
-                rules: [
-                    { condition: "over", name: "change1Y", value: "50%" },
-                    { condition: "over", name: "marketCap", value: "10B" },
-                    { condition: "over", name: "eps", value: 5 },
-                ],
-            },
-            topShortedStocks: {
-                name: "Top Shorted Stocks",
-                rules: [
-                    {
-                        condition: "over",
-                        name: "shortFloatPercent",
-                        value: "20%",
-                    },
-                    { condition: "over", name: "shortRatio", value: 1 },
-                    {
-                        condition: "over",
-                        name: "shortOutstandingPercent",
-                        value: "10%",
-                    },
-                    { condition: "over", name: "sharesShort", value: "20M" },
-                    { condition: "over", name: "marketCap", value: "100M" },
-                ],
-            },
-
-            momentumTAStocks: {
-                name: "Momentum TA Stocks",
-                rules: [
-                    { condition: "under", name: "rsi", value: 40 },
-                    { condition: "under", name: "stochRSI", value: 40 },
-                    { condition: "over", name: "marketCap", value: "1B" },
-                    { condition: "under", name: "mfi", value: 40 },
-                ],
-            },
-            underValuedStocks: {
-                name: "Undervalued Stocks",
-                rules: [
-                    {
-                        condition: "between",
-                        name: "marketCap",
-                        value: ["100M", "500M"],
-                    },
-                    { condition: "over", name: "debtToEquityRatio", value: 1 },
-                    {
-                        condition: "under",
-                        name: "priceToEarningsRatio",
-                        value: 15,
-                    },
-                    {
-                        condition: "under",
-                        name: "priceToSalesRatio",
-                        value: 1.5,
-                    },
-                    { condition: "under", name: "priceToBookRatio", value: 1 },
-                    { condition: "over", name: "eps", value: 0 },
-                ],
-            },
-            strongCashFlow: {
-                // New Strategy Added
-                name: "Strong Cash Flow",
-                rules: [
-                    { condition: "over", name: "marketCap", value: "300M" },
-                    { condition: "over", name: "freeCashFlow", value: "100M" },
-                    {
-                        condition: "over",
-                        name: "growthFreeCashFlow",
-                        value: "10%",
-                    },
-                    {
-                        condition: "over",
-                        name: "operatingCashFlow",
-                        value: "100M",
-                    },
-                    {
-                        condition: "over",
-                        name: "freeCashFlowMargin",
-                        value: "10%",
-                    },
-                ],
-            },
-        };
-
-        const strategy = strategies[state];
-        if (strategy) {
-            selectedPopularStrategy = strategy.name;
-            ruleOfList = strategy?.rules;
-            ruleOfList?.forEach((row) => {
-                ruleName = row?.name;
-                ruleCondition[ruleName] = row?.condition;
-                handleChangeValue(row?.value);
-            });
-
-            await updateStockScreenerData();
-        }
-    }
 </script>
 
 <SEO
     title="Free Backtesting - Search, Filter and Analyze Stocks"
-    description={`A free backtesting to search, filter and analyze stocks by ${allRows?.length} different indicators and metrics. The screener data is updated once per minute.`}
+    description={`A free backtesting to search, filter and analyze stocks  different indicators and metrics. The screener data is updated once per minute.`}
 />
 
 <svelte:window on:scroll={handleScroll} />
@@ -1373,11 +659,7 @@ const handleKeyDown = (event) => {
                                     builders={[builder]}
                                     class="w-full  border-gray-300 dark:border-gray-800 border text-white bg-black sm:hover:bg-default dark:bg-default dark:sm:hover:bg-primary ease-out flex flex-row justify-between items-center px-3 py-2  rounded truncate"
                                 >
-                                    <span class="truncate"
-                                        >{selectedPopularStrategy?.length !== 0
-                                            ? selectedPopularStrategy
-                                            : "Select Popular"}</span
-                                    >
+                                    <span class="truncate">Select Popular</span>
                                     <svg
                                         class="-mr-1 ml-1 h-5 w-5 xs:ml-2 inline-block"
                                         viewBox="0 0 20 20"
@@ -1409,8 +691,6 @@ const handleKeyDown = (event) => {
                                 <DropdownMenu.Group>
                                     {#each popularStrategyList as item}
                                         <DropdownMenu.Item
-                                            on:click={() =>
-                                                popularStrategy(item?.key)}
                                             class="cursor-pointer sm:hover:bg-gray-300 dark:sm:hover:bg-primary"
                                         >
                                             {item?.label}
@@ -1438,13 +718,7 @@ const handleKeyDown = (event) => {
                                     class="min-w-[110px]  w-full border-gray-300 dark:border-gray-800 border text-white bg-black sm:hover:bg-default dark:bg-default  dark:sm:hover:bg-primary ease-out flex flex-row justify-between items-center px-3 py-2  rounded truncate"
                                 >
                                     <span class="truncate max-w-48"
-                                        >{selectedStrategy?.length !== 0
-                                            ? strategyList?.find(
-                                                  (item) =>
-                                                      item.id ===
-                                                      selectedStrategy,
-                                              )?.title
-                                            : "Select Strategy"}</span
+                                        >{"Select Strategy"}</span
                                     >
                                     <svg
                                         class="-mr-1 ml-1 h-5 w-5 xs:ml-2 inline-block"
@@ -1503,10 +777,6 @@ const handleKeyDown = (event) => {
                                 <DropdownMenu.Group>
                                     {#each strategyList as item}
                                         <DropdownMenu.Item
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                switchStrategy(item);
-                                            }}
                                             class=" {item?.id ===
                                             selectedStrategy
                                                 ? 'bg-gray-300 dark:bg-primary'
@@ -1675,20 +945,6 @@ const handleKeyDown = (event) => {
                 <!-- Buy Conditions Tab Content -->
                 <Tabs.Content value="buy" class="outline-none">
                     <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3
-                                    class="text-lg font-semibold text-green-700 dark:text-green-400"
-                                >
-                                    Buy Signal Conditions
-                                </h3>
-                                <p
-                                    class="text-sm text-gray-600 dark:text-gray-400 mt-1"
-                                >
-                                    Define when to enter long positions
-                                </p>
-                            </div>
-                        </div>
                         <StrategyBuilder
                             bind:strategyBlocks={buyConditionBlocks}
                             {availableIndicators}
@@ -1701,20 +957,6 @@ const handleKeyDown = (event) => {
                 <!-- Sell Conditions Tab Content -->
                 <Tabs.Content value="sell" class="outline-none">
                     <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3
-                                    class="text-lg font-semibold text-red-700 dark:text-red-400"
-                                >
-                                    Sell Signal Conditions
-                                </h3>
-                                <p
-                                    class="text-sm text-gray-600 dark:text-gray-400 mt-1"
-                                >
-                                    Define when to exit positions
-                                </p>
-                            </div>
-                        </div>
                         <StrategyBuilder
                             bind:strategyBlocks={sellConditionBlocks}
                             {availableIndicators}
@@ -1727,17 +969,6 @@ const handleKeyDown = (event) => {
                 <!-- Risk Management Tab Content -->
                 <Tabs.Content value="risk" class="outline-none">
                     <div class="space-y-6">
-                        <div>
-                            <h3
-                                class="text-lg font-semibold text-purple-700 dark:text-purple-400 mb-2"
-                            >
-                                Risk Management Settings
-                            </h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                Configure position sizing and risk controls
-                            </p>
-                        </div>
-
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <!-- Stop Loss Card -->
                             <div
@@ -2021,17 +1252,6 @@ const handleKeyDown = (event) => {
                 <!-- Backtesting Tab Content -->
                 <Tabs.Content value="backtest" class="outline-none">
                     <div class="space-y-6">
-                        <div>
-                            <h3
-                                class="text-lg font-semibold text-blue-700 dark:text-blue-400 mb-2"
-                            >
-                                Backtest Your Strategy
-                            </h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                Test your strategy against historical data
-                            </p>
-                        </div>
-
                         <!-- Backtest Configuration -->
                         <div
                             class="bg-gray-50 dark:bg-gray-900/50 rounded p-6 border border-gray-300 dark:border-gray-800"
@@ -2517,11 +1737,7 @@ const handleKeyDown = (event) => {
                 >
                     <div class="flex items-start gap-3">
                         <div class="flex-1">
-                            <h4
-                                class="font-semibold text-indigo-700 dark:text-indigo-400 mb-2"
-                            >
-                                Strategy Summary
-                            </h4>
+                            <h4 class="font-semibold mb-2">Strategy Summary</h4>
                             <div class="space-y-2 text-sm">
                                 <div class="flex items-start gap-2">
                                     <span

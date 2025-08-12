@@ -295,9 +295,7 @@
     }
 </script>
 
-<div
-    class="bg-white dark:bg-gray-800 rounded-xl p-5 my-5 shadow-sm border border-gray-200 dark:border-gray-700"
->
+<div class="">
     <div class="flex justify-between items-center mb-5">
         <h3
             class="text-lg font-semibold capitalize text-gray-900 dark:text-white"
