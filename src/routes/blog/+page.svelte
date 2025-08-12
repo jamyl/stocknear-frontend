@@ -38,12 +38,12 @@
             {#if allBlogPosts?.length !== 0}
               {#each allBlogPosts as item}
                 <div
-                  class=" flex flex-col overflow-hidden rounded border border-gray-300 dark:border-gray-700"
+                  class="shadow-xl sm:hover:shadow-2xl flex flex-col overflow-hidden rounded-2xl border border-gray-300 dark:border-gray-700"
                 >
                   <div class="shrink-0">
                     <a href={"/blog/article/" + convertToSlug(item?.title)}
                       ><img
-                        class="h-48 w-full object-cover"
+                        class="h-56 w-full object-cover border-b border-gray-300 dark:border-gray-700"
                         src={getImageURL(
                           item?.collectionId,
                           item?.id,
@@ -72,9 +72,7 @@
                       >
                     </div>
                     <div class="mt-6 flex items-center">
-                      <div
-                        class="flex text-xs badge border border-gray-200 dark:border-gray-700 px-3 bg-white dark:bg-table rounded text-black dark:text-white"
-                      >
+                      <div class="flex text-sm">
                         Published: <time datetime={item?.created} class="">
                           {new Date(item?.created)?.toLocaleString("en-US", {
                             month: "short",
