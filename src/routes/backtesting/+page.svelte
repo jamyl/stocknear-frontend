@@ -115,23 +115,23 @@
         goldenCross: {
             buy: [
                 {
-                    indicator: "sma50",
+                    indicator: "sma_50",
                     operator: "above",
-                    value: "sma200",
+                    value: "sma_200",
                     logicOperator: "AND",
                 },
                 {
                     indicator: "price",
                     operator: "above",
-                    value: "sma50",
+                    value: "sma_50",
                     logicOperator: null,
                 },
             ],
             sell: [
                 {
-                    indicator: "sma50",
+                    indicator: "sma_50",
                     operator: "below",
-                    value: "sma200",
+                    value: "sma_200",
                     logicOperator: null,
                 },
             ],
@@ -139,23 +139,23 @@
         deathCross: {
             buy: [
                 {
-                    indicator: "sma50",
+                    indicator: "sma_50",
                     operator: "below",
-                    value: "sma200",
+                    value: "sma_200",
                     logicOperator: "AND",
                 },
                 {
                     indicator: "price",
                     operator: "below",
-                    value: "sma50",
+                    value: "sma_50",
                     logicOperator: null,
                 },
             ],
             sell: [
                 {
-                    indicator: "sma50",
+                    indicator: "sma_50",
                     operator: "above",
-                    value: "sma200",
+                    value: "sma_200",
                     logicOperator: null,
                 },
             ],
@@ -165,13 +165,13 @@
                 {
                     indicator: "price",
                     operator: "above",
-                    value: "sma20",
+                    value: "sma_20",
                     logicOperator: "AND",
                 },
                 {
-                    indicator: "sma20",
+                    indicator: "sma_20",
                     operator: "above",
-                    value: "sma50",
+                    value: "sma_50",
                     logicOperator: "AND",
                 },
                 {
@@ -185,7 +185,7 @@
                 {
                     indicator: "price",
                     operator: "below",
-                    value: "sma20",
+                    value: "sma_20",
                     logicOperator: "OR",
                 },
                 {
@@ -276,19 +276,19 @@
 
             // For moving averages comparing to other indicators, we need special handling
             if (
-                condition.indicator === "sma20" ||
-                condition.indicator === "sma50" ||
-                condition.indicator === "sma100" ||
-                condition.indicator === "sma200" ||
-                condition.indicator === "ema20" ||
-                condition.indicator === "ema50" ||
-                condition.indicator === "ema100" ||
-                condition.indicator === "ema200"
+                condition.indicator === "sma_20" ||
+                condition.indicator === "sma_50" ||
+                condition.indicator === "sma_100" ||
+                condition.indicator === "sma_200" ||
+                condition.indicator === "ema_20" ||
+                condition.indicator === "ema_50" ||
+                condition.indicator === "ema_100" ||
+                condition.indicator === "ema_200"
             ) {
-                // If the value is a string like "price", "sma50", etc., keep it as is
+                // If the value is a string like "price", "sma_50", etc., keep it as is
                 // If it's a number, convert appropriately
                 if (typeof condition.value === "string") {
-                    // Map the comparison target (e.g., "sma50" -> "ma_50")
+                    // Map the comparison target (e.g., "sma_50" -> "ma_50")
                     if (
                         condition.value.startsWith("sma") ||
                         condition.value.startsWith("ema")
@@ -334,224 +334,224 @@
         rsi: {
             label: "RSI (Relative Strength Index)",
 
-            operators: ["above", "below", "equals"],
+            operators: ["above", "below"],
             defaultOperator: "below",
             defaultValue: 30,
             min: 0,
             max: 100,
         },
-        sma20: {
+        sma_20: {
             label: "20-Day Moving Average",
 
-            operators: ["above", "below", "equals"],
+            operators: ["above", "below"],
             defaultOperator: "above",
             defaultValue: [
                 "price",
-                "sma50",
-                "sma100",
-                "sma200",
-                "ema20",
-                "ema50",
-                "ema100",
-                "ema200",
+                "sma_50",
+                "sma_100",
+                "sma_200",
+                "ema_20",
+                "ema_50",
+                "ema_100",
+                "ema_200",
             ],
             valueLabels: {
                 price: "Stock Price",
-                sma50: "50-Day Moving Average",
-                sma100: "100-Day Moving Average",
-                sma200: "200-Day Moving Average",
-                ema20: "20-Day Exponential Moving Average",
-                ema50: "50-Day Exponential Moving Average",
-                ema100: "100-Day Exponential Moving Average",
-                ema200: "200-Day Exponential Moving Average",
+                sma_50: "50-Day Moving Average",
+                sma_100: "100-Day Moving Average",
+                sma_200: "200-Day Moving Average",
+                ema_20: "20-Day Exponential Moving Average",
+                ema_50: "50-Day Exponential Moving Average",
+                ema_100: "100-Day Exponential Moving Average",
+                ema_200: "200-Day Exponential Moving Average",
             },
         },
-        sma50: {
+        sma_50: {
             label: "50-Day Moving Average",
 
-            operators: ["above", "below", "equals"],
+            operators: ["above", "below"],
             defaultOperator: "above",
             defaultValue: [
                 "price",
-                "sma20",
-                "sma100",
-                "sma200",
-                "ema20",
-                "ema50",
-                "ema100",
-                "ema200",
+                "sma_20",
+                "sma_100",
+                "sma_200",
+                "ema_20",
+                "ema_50",
+                "ema_100",
+                "ema_200",
             ],
             valueLabels: {
                 price: "Stock Price",
-                sma20: "20-Day SMA",
-                sma100: "100-Day SMA",
-                sma200: "200-Day SMA",
-                ema20: "20-Day EMA",
-                ema50: "50-Day EMA",
-                ema100: "100-Day EMA",
-                ema200: "200-Day EMA",
+                sma_20: "20-Day SMA",
+                sma_100: "100-Day SMA",
+                sma_200: "200-Day SMA",
+                ema_20: "20-Day EMA",
+                ema_50: "50-Day EMA",
+                ema_100: "100-Day EMA",
+                ema_200: "200-Day EMA",
             },
         },
-        sma100: {
+        sma_100: {
             label: "100-Day Moving Average",
 
-            operators: ["above", "below", "equals"],
+            operators: ["above", "below"],
             defaultOperator: "above",
             defaultValue: [
                 "price",
-                "sma20",
-                "sma50",
-                "sma200",
-                "ema20",
-                "ema50",
-                "ema100",
-                "ema200",
+                "sma_20",
+                "sma_50",
+                "sma_200",
+                "ema_20",
+                "ema_50",
+                "ema_100",
+                "ema_200",
             ],
             valueLabels: {
                 price: "Stock Price",
-                sma20: "20-Day SMA",
-                sma50: "50-Day SMA",
-                sma200: "200-Day SMA",
-                ema20: "20-Day EMA",
-                ema50: "50-Day EMA",
-                ema100: "100-Day EMA",
-                ema200: "200-Day EMA",
+                sma_20: "20-Day SMA",
+                sma_50: "50-Day SMA",
+                sma_200: "200-Day SMA",
+                ema_20: "20-Day EMA",
+                ema_50: "50-Day EMA",
+                ema_100: "100-Day EMA",
+                ema_200: "200-Day EMA",
             },
         },
-        sma200: {
+        sma_200: {
             label: "200-Day Moving Average",
 
-            operators: ["above", "below", "equals"],
+            operators: ["above", "below"],
             defaultOperator: "above",
             defaultValue: [
                 "price",
-                "sma20",
-                "sma50",
-                "sma100",
-                "ema20",
-                "ema50",
-                "ema100",
-                "ema200",
+                "sma_20",
+                "sma_50",
+                "sma_100",
+                "ema_20",
+                "ema_50",
+                "ema_100",
+                "ema_200",
             ],
             valueLabels: {
                 price: "Stock Price",
-                sma20: "20-Day SMA",
-                sma50: "50-Day SMA",
-                sma100: "100-Day SMA",
-                ema20: "20-Day EMA",
-                ema50: "50-Day EMA",
-                ema100: "100-Day EMA",
-                ema200: "200-Day EMA",
+                sma_20: "20-Day SMA",
+                sma_50: "50-Day SMA",
+                sma_100: "100-Day SMA",
+                ema_20: "20-Day EMA",
+                ema_50: "50-Day EMA",
+                ema_100: "100-Day EMA",
+                ema_200: "200-Day EMA",
             },
         },
-        ema20: {
+        ema_20: {
             label: "20-Day Exponential Moving Average",
 
-            operators: ["above", "below", "equals"],
+            operators: ["above", "below"],
             defaultOperator: "above",
             defaultValue: [
                 "price",
-                "sma20",
-                "sma50",
-                "sma100",
-                "sma200",
-                "ema50",
-                "ema100",
-                "ema200",
+                "sma_20",
+                "sma_50",
+                "sma_100",
+                "sma_200",
+                "ema_50",
+                "ema_100",
+                "ema_200",
             ],
             valueLabels: {
                 price: "Stock Price",
-                sma20: "20-Day SMA",
-                sma50: "50-Day SMA",
-                sma100: "100-Day SMA",
-                sma200: "200-Day SMA",
-                ema50: "50-Day EMA",
-                ema100: "100-Day EMA",
-                ema200: "200-Day EMA",
+                sma_20: "20-Day SMA",
+                sma_50: "50-Day SMA",
+                sma_100: "100-Day SMA",
+                sma_200: "200-Day SMA",
+                ema_50: "50-Day EMA",
+                ema_100: "100-Day EMA",
+                ema_200: "200-Day EMA",
             },
         },
-        ema50: {
+        ema_50: {
             label: "50-Day Exponential Moving Average",
 
-            operators: ["above", "below", "equals"],
+            operators: ["above", "below"],
             defaultOperator: "above",
             defaultValue: [
                 "price",
-                "sma20",
-                "sma50",
-                "sma100",
-                "sma200",
-                "ema20",
-                "ema100",
-                "ema200",
+                "sma_20",
+                "sma_50",
+                "sma_100",
+                "sma_200",
+                "ema_20",
+                "ema_100",
+                "ema_200",
             ],
             valueLabels: {
                 price: "Stock Price",
-                sma20: "20-Day SMA",
-                sma50: "50-Day SMA",
-                sma100: "100-Day SMA",
-                sma200: "200-Day SMA",
-                ema20: "20-Day EMA",
-                ema100: "100-Day EMA",
-                ema200: "200-Day EMA",
+                sma_20: "20-Day SMA",
+                sma_50: "50-Day SMA",
+                sma_100: "100-Day SMA",
+                sma_200: "200-Day SMA",
+                ema_20: "20-Day EMA",
+                ema_100: "100-Day EMA",
+                ema_200: "200-Day EMA",
             },
         },
-        ema100: {
+        ema_100: {
             label: "100-Day Exponential Moving Average",
 
-            operators: ["above", "below", "equals"],
+            operators: ["above", "below"],
             defaultOperator: "above",
             defaultValue: [
                 "price",
-                "sma20",
-                "sma50",
-                "sma100",
-                "sma200",
-                "ema20",
-                "ema50",
-                "ema200",
+                "sma_20",
+                "sma_50",
+                "sma_100",
+                "sma_200",
+                "ema_20",
+                "ema_50",
+                "ema_200",
             ],
             valueLabels: {
                 price: "Stock Price",
-                sma20: "20-Day SMA",
-                sma50: "50-Day SMA",
-                sma100: "100-Day SMA",
-                sma200: "200-Day SMA",
-                ema20: "20-Day EMA",
-                ema50: "50-Day EMA",
-                ema200: "200-Day EMA",
+                sma_20: "20-Day SMA",
+                sma_50: "50-Day SMA",
+                sma_100: "100-Day SMA",
+                sma_200: "200-Day SMA",
+                ema_20: "20-Day EMA",
+                ema_50: "50-Day EMA",
+                ema_200: "200-Day EMA",
             },
         },
-        ema200: {
+        ema_200: {
             label: "200-Day Exponential Moving Average",
 
-            operators: ["above", "below", "equals"],
+            operators: ["above", "below"],
             defaultOperator: "above",
             defaultValue: [
                 "price",
-                "sma20",
-                "sma50",
-                "sma100",
-                "sma200",
-                "ema20",
-                "ema50",
-                "ema100",
+                "sma_20",
+                "sma_50",
+                "sma_100",
+                "sma_200",
+                "ema_20",
+                "ema_50",
+                "ema_100",
             ],
             valueLabels: {
                 price: "Stock Price",
-                sma20: "20-Day SMA",
-                sma50: "50-Day SMA",
-                sma100: "100-Day SMA",
-                sma200: "200-Day SMA",
-                ema20: "20-Day EMA",
-                ema50: "50-Day EMA",
-                ema100: "100-Day EMA",
+                sma_20: "20-Day SMA",
+                sma_50: "50-Day SMA",
+                sma_100: "100-Day SMA",
+                sma_200: "200-Day SMA",
+                ema_20: "20-Day EMA",
+                ema_50: "50-Day EMA",
+                ema_100: "100-Day EMA",
             },
         },
         macd: {
             label: "MACD",
 
-            operators: ["above", "below", "equals"],
+            operators: ["above", "below"],
             defaultOperator: "above",
             defaultValue: ["macd_signal", 0],
             valueLabels: {
@@ -562,7 +562,7 @@
         volume: {
             label: "Volume",
             category: "Volume",
-            operators: ["above", "below", "equals"],
+            operators: ["above", "below"],
             defaultOperator: "above",
             defaultValue: 1000000,
             min: 0,
@@ -571,27 +571,27 @@
         price: {
             label: "Price",
             category: "Price",
-            operators: ["above", "below", "equals"],
+            operators: ["above", "below"],
             defaultOperator: "above",
             defaultValue: [
-                "sma20",
-                "sma50",
-                "sma100",
-                "sma200",
-                "ema20",
-                "ema50",
-                "ema100",
-                "ema200",
+                "sma_20",
+                "sma_50",
+                "sma_100",
+                "sma_200",
+                "ema_20",
+                "ema_50",
+                "ema_100",
+                "ema_200",
             ],
             valueLabels: {
-                sma20: "20-Day SMA",
-                sma50: "50-Day SMA",
-                sma100: "100-Day SMA",
-                sma200: "200-Day SMA",
-                ema20: "20-Day EMA",
-                ema50: "50-Day EMA",
-                ema100: "100-Day EMA",
-                ema200: "200-Day EMA",
+                sma_20: "20-Day SMA",
+                sma_50: "50-Day SMA",
+                sma_100: "100-Day SMA",
+                sma_200: "200-Day SMA",
+                ema_20: "20-Day EMA",
+                ema_50: "50-Day EMA",
+                ema_100: "100-Day EMA",
+                ema_200: "200-Day EMA",
             },
         },
     };
@@ -1581,13 +1581,13 @@
                                 <div>
                                     <label
                                         class="block text-sm font-medium mb-2"
-                                        >Ticker Symbol</label
+                                        >Symbol</label
                                     >
                                     <input
                                         type="text"
                                         bind:value={selectedTicker}
                                         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm uppercase"
-                                        placeholder="AAPL"
+                                        placeholder=""
                                     />
                                 </div>
                                 <div>
