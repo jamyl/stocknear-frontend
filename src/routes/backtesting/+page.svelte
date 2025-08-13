@@ -664,6 +664,26 @@
             return;
         }
 
+        // Validate date inputs
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            toast?.error("Please enter valid dates in YYYY-MM-DD format", {
+                style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+            });
+            return;
+        }
+
+        if (end < start) {
+            toast?.error("End date cannot be earlier than start date", {
+                style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+            });
+            backtestResults = {};
+            config = null;
+            return;
+        }
+
         isBacktesting = true;
         backtestError = null;
 
@@ -1460,9 +1480,10 @@
                                         >Start Date</label
                                     >
                                     <input
-                                        type="date"
+                                        type="text"
                                         bind:value={startDate}
                                         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        placeholder="YYYY-MM-DD"
                                     />
                                 </div>
                                 <div>
@@ -1471,9 +1492,10 @@
                                         >End Date</label
                                     >
                                     <input
-                                        type="date"
+                                        type="text"
                                         bind:value={endDate}
                                         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        placeholder="YYYY-MM-DD"
                                     />
                                 </div>
                                 <div>
