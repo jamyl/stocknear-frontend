@@ -1694,7 +1694,7 @@
                                         class=" flex flex-row items-center w-fit"
                                     >
                                         Total Returns <InfoModal
-                                            content={"test"}
+                                            content={"Cumulative percentage return of your strategy from start to end of the backtest period."}
                                         />
                                     </h4>
                                     <p
@@ -1708,8 +1708,12 @@
                                 </div>
 
                                 <div class="">
-                                    <h4 class="font-semibold mb-2">
-                                        Benchmark Returns
+                                    <h4
+                                        class=" flex flex-row items-center w-fit"
+                                    >
+                                        Benchmark Returns <InfoModal
+                                            content={"The SPY (S&P 500 ETF) return for the same period as your strategy, used as a market performance baseline."}
+                                        />
                                     </h4>
                                     <p
                                         class="text-[1rem] sm:text-lg font-semibold"
@@ -1723,8 +1727,12 @@
                                 </div>
 
                                 <div class="">
-                                    <h4 class="font-semibold mb-2">
-                                        Sharpe Ratio
+                                    <h4
+                                        class=" flex flex-row items-center w-fit"
+                                    >
+                                        Sharpe Ratio <InfoModal
+                                            content={"Risk-adjusted return metric. Values > 1 are good, > 2 are very good, > 3 are excellent. Measures return per unit of risk."}
+                                        />
                                     </h4>
                                     <p
                                         class="text-[1rem] sm:text-lg font-semibold"
@@ -1733,7 +1741,13 @@
                                     </p>
                                 </div>
                                 <div class="">
-                                    <h4 class="font-semibold mb-2">Alpha</h4>
+                                    <h4
+                                        class=" flex flex-row items-center w-fit"
+                                    >
+                                        Alpha <InfoModal
+                                            content={"Excess return above the benchmark. Positive alpha indicates outperformance relative to market risk."}
+                                        />
+                                    </h4>
                                     <p
                                         class="text-[1rem] sm:text-lg font-semibold"
                                     >
@@ -1741,7 +1755,13 @@
                                     </p>
                                 </div>
                                 <div class="">
-                                    <h4 class="font-semibold mb-2">Beta</h4>
+                                    <h4
+                                        class=" flex flex-row items-center w-fit"
+                                    >
+                                        Beta <InfoModal
+                                            content={"Volatility relative to the market. Beta = 1 moves with market, < 1 is less volatile, > 1 is more volatile."}
+                                        />
+                                    </h4>
                                     <p
                                         class="text-[1rem] sm:text-lg font-semibold"
                                     >
@@ -1750,7 +1770,13 @@
                                 </div>
 
                                 <div class="">
-                                    <h4 class="font-semibold mb-2">Sortino</h4>
+                                    <h4
+                                        class=" flex flex-row items-center w-fit"
+                                    >
+                                        Sortino <InfoModal
+                                            content={"Similar to Sharpe ratio but only considers downside volatility. Higher values indicate better risk-adjusted returns."}
+                                        />
+                                    </h4>
                                     <p
                                         class="text-[1rem] sm:text-lg font-semibold"
                                     >
@@ -1760,8 +1786,12 @@
                                 </div>
 
                                 <div class="">
-                                    <h4 class="font-semibold mb-2">
-                                        Max Drawdown
+                                    <h4
+                                        class=" flex flex-row items-center w-fit"
+                                    >
+                                        Max Drawdown <InfoModal
+                                            content={"Largest peak-to-trough decline in portfolio value. Lower values indicate better downside protection."}
+                                        />
                                     </h4>
                                     <p
                                         class="text-[1rem] sm:text-lg font-semibold"
@@ -1774,8 +1804,12 @@
                                 </div>
 
                                 <div class="">
-                                    <h4 class="font-semibold mb-2">
-                                        Volatility
+                                    <h4
+                                        class=" flex flex-row items-center w-fit"
+                                    >
+                                        Volatility <InfoModal
+                                            content={"Annualized standard deviation of returns. Measures the strategy's price fluctuation intensity."}
+                                        />
                                     </h4>
                                     <p
                                         class="text-[1rem] sm:text-lg font-semibold"
@@ -1786,7 +1820,13 @@
                                     </p>
                                 </div>
                                 <div class="">
-                                    <h4 class="font-semibold mb-2">Win Rate</h4>
+                                    <h4
+                                        class=" flex flex-row items-center w-fit"
+                                    >
+                                        Win Rate <InfoModal
+                                            content={"Percentage of profitable trades. Higher win rates indicate more consistent trading success."}
+                                        />
+                                    </h4>
                                     <p
                                         class="text-[1rem] sm:text-lg font-semibold"
                                     >
@@ -1796,8 +1836,12 @@
                                     </p>
                                 </div>
                                 <div class="">
-                                    <h4 class="font-semibold mb-2">
-                                        Profit Factor
+                                    <h4
+                                        class=" flex flex-row items-center w-fit"
+                                    >
+                                        Profit Factor <InfoModal
+                                            content={"Ratio of gross profits to gross losses. Values > 1 indicate profitable strategy, > 1.5 is good."}
+                                        />
                                     </h4>
                                     <p
                                         class="text-[1rem] sm:text-lg font-semibold"
@@ -1807,8 +1851,12 @@
                                     </p>
                                 </div>
                                 <div class="">
-                                    <h4 class="font-semibold mb-2">
-                                        Total Trades
+                                    <h4
+                                        class=" flex flex-row items-center w-fit"
+                                    >
+                                        Total Trades <InfoModal
+                                            content={"Total number of completed buy and sell transactions during the backtest period."}
+                                        />
                                     </h4>
                                     <p
                                         class="text-[1rem] sm:text-lg font-semibold"
