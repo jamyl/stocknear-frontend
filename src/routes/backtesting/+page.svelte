@@ -995,8 +995,8 @@
         { key: "price", label: "Price", align: "right" },
         { key: "net_amount", label: "Profit/Loss", align: "right" },
         { key: "commission", label: "Commisssion", align: "right" },
+        { key: "return_pct", label: "Trade Return", align: "right" },
         { key: "portfolio_value", label: "Portfolio Value", align: "right" },
-        { key: "return_pct", label: "Total Return", align: "right" },
     ];
 
     let sortOrders = {
@@ -2517,20 +2517,6 @@
                                     </td>
 
                                     <td
-                                        class="text-end text-sm sm:text-[1rem] whitespace-nowrap"
-                                    >
-                                        {item?.portfolio_value?.toLocaleString(
-                                            "en-US",
-                                            {
-                                                style: "currency",
-                                                currency: "USD",
-                                                minimumFractionDigits: 0,
-                                                maximumFractionDigits: 0,
-                                            },
-                                        ) ?? "$0.00"}
-                                    </td>
-
-                                    <td
                                         class="text-end text-sm sm:text-[1rem] whitespace-nowrap {item?.return_pct >=
                                             0 && item?.return_pct
                                             ? " before:content-['+'] text-green-800 dark:text-[#00FC50]"
@@ -2544,6 +2530,20 @@
                                                   item?.return_pct,
                                               ) + "%"
                                             : "n/a"}
+                                    </td>
+
+                                    <td
+                                        class="text-end text-sm sm:text-[1rem] whitespace-nowrap"
+                                    >
+                                        {item?.portfolio_value?.toLocaleString(
+                                            "en-US",
+                                            {
+                                                style: "currency",
+                                                currency: "USD",
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0,
+                                            },
+                                        ) ?? "$0.00"}
                                     </td>
                                 </tr>
                             {/each}
