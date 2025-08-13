@@ -99,8 +99,6 @@
     // Convert insider trading data to markers
     const purchaseMarkers = [];
     const saleMarkers = [];
-    const currentDate = new Date();
-    const sixMonthsAgo = new Date();
 
     rawData
       ?.filter((item) => {

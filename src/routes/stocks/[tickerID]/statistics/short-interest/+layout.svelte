@@ -89,7 +89,7 @@
                           : ''}"
                         ><td class="text-left text-[1rem] px-2"
                           ><a
-                            href={`/stocks/${item?.symbol}`}
+                            href={`/stocks/${item?.symbol}/statistics/short-interest`}
                             class="text-blue-800 sm:hover:text-muted dark:sm:hover:text-white dark:text-blue-400"
                             >{removeCompanyStrings(item?.name)}</a
                           ></td

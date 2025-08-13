@@ -152,16 +152,63 @@
 
     // Prepare series data in one pass
     const priceSeries = [];
-    const shortFloatSeries = [];
-    const shortOutSeries = [];
-    rawData.forEach(
-      ({ recordDate, price, shortPercentOfFloat, shortPercentOfOut }) => {
-        const time = new Date(recordDate).getTime();
-        priceSeries.push([time, price]);
-        shortFloatSeries.push([time, shortPercentOfFloat]);
-        shortOutSeries.push([time, shortPercentOfOut]);
-      },
-    );
+    const shortFloatData = [];
+
+    rawData.forEach(({ recordDate, price, shortPercentOfFloat }) => {
+      const time = new Date(recordDate).getTime();
+      priceSeries.push([time, price]);
+      shortFloatData.push({ time, price, shortFloat: shortPercentOfFloat });
+    });
+
+    // Calculate statistical thresholds for categorization
+    const shortFloatValues = shortFloatData.map((d) => d.shortFloat);
+    const maxShortFloat = Math.max(...shortFloatValues);
+    const minShortFloat = Math.min(...shortFloatValues);
+    const avgShortFloat =
+      shortFloatValues.reduce((sum, val) => sum + val, 0) /
+      shortFloatValues.length;
+
+    // Calculate standard deviation for better threshold detection
+    const variance =
+      shortFloatValues.reduce(
+        (sum, val) => sum + Math.pow(val - avgShortFloat, 2),
+        0,
+      ) / shortFloatValues.length;
+    const stdDev = Math.sqrt(variance);
+
+    // Define thresholds for different severity levels (relative to avg)
+    const extremeThreshold = avgShortFloat + 2 * stdDev;
+    const highThreshold = avgShortFloat + stdDev;
+    const mediumThreshold = avgShortFloat + 0.5 * stdDev;
+
+    // Categorize short interest spikes into different severity levels
+    const extremeShortBubbles = [];
+    const highShortBubbles = [];
+    const mediumShortBubbles = [];
+
+    shortFloatData.forEach((item) => {
+      // Create bubble point with proper structure
+      const bubblePoint = {
+        x: item.time,
+        y: item.price,
+        z: item.shortFloat, // Size based on short float percentage
+        shortFloat: item.shortFloat,
+        date: new Date(item.time).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }),
+      };
+
+      // Categorize by severity (keeps same thresholds, but used for grouping/visuals)
+      if (item.shortFloat >= extremeThreshold) {
+        extremeShortBubbles.push(bubblePoint);
+      } else if (item.shortFloat >= highThreshold) {
+        highShortBubbles.push(bubblePoint);
+      } else if (item.shortFloat >= mediumThreshold) {
+        mediumShortBubbles.push(bubblePoint);
+      }
+    });
 
     const fillColorStart = "rgba(70, 129, 244, 0.5)";
     const fillColorEnd = "rgba(70, 129, 244, 0.001)";
@@ -171,33 +218,32 @@
       chart: {
         backgroundColor: $mode === "light" ? "#fff" : "#09090B",
         plotBackgroundColor: $mode === "light" ? "#fff" : "#09090B",
-        height: 360,
+        height: 400,
+        animation: false,
       },
       title: {
-        text: `<h3 class=\"mt-3 mb-1\">${removeCompanyStrings($displayCompanyName)} Short Interest</h3>`,
+        text: `<h3 class="mt-3 -mb-3 text-[1rem] sm:text-lg">Short Interest Activity</h3>`,
         useHTML: true,
         style: { color: $mode === "light" ? "black" : "white" },
       },
       xAxis: {
         type: "datetime",
-        endOnTick: false,
         crosshair: {
           color: $mode === "light" ? "black" : "white",
           width: 1,
           dashStyle: "Solid",
         },
         labels: {
-          style: { color: $mode === "light" ? "#545454" : "white" },
-          distance: 10,
-          formatter() {
-            return new Date(this.value).toLocaleDateString("en-US", {
+          style: { color: $mode === "light" ? "#6b7280" : "#fff" },
+          formatter: function () {
+            const date = new Date(this.value);
+            return `<span class="text-xs">${date.toLocaleDateString("en-US", {
               month: "short",
               year: "numeric",
-              timeZone: "Europe/Berlin",
-            });
+            })}</span>`;
           },
         },
-        tickPositioner() {
+        tickPositioner: function () {
           const positions = [];
           const { min, max } = this.getExtremes();
           const tickCount = 5;
@@ -208,82 +254,138 @@
           return positions;
         },
       },
-      yAxis: [
-        {
-          gridLineWidth: 1,
-          gridLineColor: $mode === "light" ? "#e5e7eb" : "#111827",
-          labels: { style: { color: $mode === "light" ? "#545454" : "white" } },
-          title: { text: null },
-          opposite: true,
+      yAxis: {
+        title: {
+          text: "Stock Price ($)",
+          style: {
+            color: $mode === "light" ? "#6b7280" : "#fff",
+          },
         },
-        {
-          gridLineWidth: 0,
-          labels: { enabled: false },
-          title: { text: null },
+        labels: {
+          style: {
+            color: $mode === "light" ? "#6b7280" : "#fff",
+          },
+          formatter: function () {
+            return `$${this.value.toFixed(2)}`;
+          },
         },
-        {
-          gridLineWidth: 0,
-          labels: { enabled: false },
-          title: { text: null },
-        },
-      ],
+        gridLineWidth: 1,
+        gridLineColor: $mode === "light" ? "#e5e7eb" : "#111827",
+      },
       tooltip: {
-        shared: true,
+        shared: false,
         useHTML: true,
         backgroundColor: "rgba(0, 0, 0, 0.8)",
         borderColor: "rgba(255, 255, 255, 0.2)",
         borderWidth: 1,
-        style: { color: "#fff", fontSize: "16px", padding: "10px" },
+        style: {
+          color: "#fff",
+          fontSize: "14px",
+          padding: "10px",
+        },
         borderRadius: 4,
-        formatter() {
-          // Display date in Europe/Berlin timezone
-          const dateStr = new Date(this.x).toLocaleDateString("en-US", {
-            year: "numeric",
+        formatter: function () {
+          const date = new Date(this.x);
+          const formattedDate = date.toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
-            timeZone: "Europe/Berlin",
-          });
-          let html = `<span class=\"m-auto text-[1rem] font-[501]\">${dateStr}</span><br/>`;
-
-          // Loop through each point and add colored bullet
-          this.points.forEach((point) => {
-            html += `
-            <span style=\"display:inline-block; width:10px; height:10px; background-color:${point.color}; border-radius:50%; margin-right:5px; vertical-align:middle;\"></span>
-            <span class=\"font-semibold text-sm\">${point.series.name}:</span>
-            <span class=\"font-normal text-sm\">${abbreviateNumber(point.y)}${point.series.name.includes("%") ? "%" : ""}</span><br/>`;
+            year: "numeric",
           });
 
-          return html;
+          if (this.series.type === "bubble") {
+            // Determine how the short float compares to the average
+            const val = this.point.shortFloat;
+            let severityLabel = "";
+            let severityColor = "";
+
+            if (val >= extremeThreshold) {
+              severityLabel = "Well above average";
+              severityColor = "#dc2626"; // red
+            } else if (val >= highThreshold) {
+              severityLabel = "Above average";
+              severityColor = "#f59e0b"; // orange
+            } else if (val >= mediumThreshold) {
+              severityLabel = "Slightly above average";
+              severityColor = "#fbbf24"; // amber
+            } else {
+              severityLabel = "Average or below";
+              severityColor = $mode === "light" ? "#10b981" : "#34d399"; // green tones
+            }
+
+            return `
+            <span class="text-white text-sm font-normal">${formattedDate}</span><br>
+            <span class="text-white text-sm">Stock Price: $${this.point.y?.toFixed(2)}</span><br>
+            <span class="text-white text-sm">Short Float: ${this.point.shortFloat?.toFixed(2)}%</span><br>
+            <span class="text-white text-sm">Comparison to Avg: <span style="color: ${severityColor}">${severityLabel}</span></span><br>
+          `;
+          } else {
+            return `
+            <span class="text-white text-sm font-normal">${formattedDate}</span><br>
+            <span class="text-white text-sm font-[501]">Stock Price: $${this.y?.toFixed(2)}</span>
+          `;
+          }
         },
       },
       plotOptions: {
         series: {
-          animation: false,
           legendSymbol: "rectangle",
-          states: { hover: { enabled: false } },
+          animation: false,
+          marker: {
+            enabled: false,
+            states: {
+              hover: { enabled: false },
+              select: { enabled: false },
+            },
+          },
+        },
+        spline: {
+          lineWidth: 2.5,
+          shadow: false,
+        },
+        areaspline: {
+          lineWidth: 1.5,
+          fillOpacity: 0.3,
+          shadow: false,
+        },
+        bubble: {
+          minSize: 5, // Smaller minimum for small spikes
+          maxSize: 40, // Larger maximum for biggest spikes
+          opacity: 0.8,
+          marker: {
+            enabled: true, // Enable markers for bubbles
+            fillOpacity: 0.8,
+            lineWidth: 1,
+            lineColor: $mode === "light" ? "#d97706" : "#f59e0b",
+          },
+          dataLabels: {
+            enabled: false,
+          },
+          sizeBy: "z", // Size bubbles by z-value
+          zMin: minShortFloat, // Use actual minimum volume for scaling
+          zMax: maxShortFloat, // Use actual maximum volume for scaling
+          sizeByAbsoluteValue: false, // Use relative sizing for better proportion
         },
       },
       legend: {
         enabled: true,
-        align: "center", // Positions legend at the left edge
-        verticalAlign: "top", // Positions legend at the top
-        layout: "horizontal", // Align items horizontally (use 'vertical' if preferred)
+        align: "center",
+        verticalAlign: "top",
+        layout: "horizontal",
+        squareSymbol: false,
+        symbolWidth: 20,
+        symbolHeight: 12,
+        symbolRadius: 0,
         itemStyle: {
           color: $mode === "light" ? "black" : "white",
         },
-        symbolWidth: 14, // Controls the width of the legend symbol
-        symbolRadius: 1, // Creates circular symbols (adjust radius as needed)
-        squareSymbol: true, // Ensures symbols are circular, not square
       },
       series: [
         {
-          name: "Price",
+          name: "Stock Price",
           type: "area",
           data: priceSeries,
-          yAxis: 0,
           color: "#4681f4",
-          lineWidth: 1.3,
-          marker: { enabled: false },
+          lineWidth: 1.5,
           fillColor: {
             linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
             stops: [
@@ -291,24 +393,47 @@
               [1, fillColorEnd],
             ],
           },
+          animation: false,
+          zIndex: 1,
         },
         {
-          name: "Short % Float",
-          type: "spline",
-          data: shortFloatSeries,
-          yAxis: 1,
-          color: $mode === "light" ? "#d32f2f" : "#ff6e6e",
-          lineWidth: 1.3,
-          marker: { enabled: false },
+          // points >= avg + 2*stdDev
+          name: "Well above average",
+          type: "bubble",
+          data: extremeShortBubbles,
+          color: "#ef4444", // Red for well above avg
+          marker: {
+            lineColor: "#dc2626",
+          },
+          animation: false,
+          zIndex: 4,
+          showInLegend: extremeShortBubbles.length > 0,
         },
         {
-          name: "Short % Outstanding",
-          type: "spline",
-          data: shortOutSeries,
-          yAxis: 2,
-          color: $mode === "light" ? "purple" : "#ffc947",
-          lineWidth: 1.3,
-          marker: { enabled: false },
+          // points >= avg + 1*stdDev
+          name: "Above average",
+          type: "bubble",
+          data: highShortBubbles,
+          color: "#fb923c", // Orange for above avg
+          marker: {
+            lineColor: "#f59e0b",
+          },
+          animation: false,
+          zIndex: 3,
+          showInLegend: highShortBubbles.length > 0,
+        },
+        {
+          // points >= avg + 0.5*stdDev
+          name: "Slightly above average",
+          type: "bubble",
+          data: mediumShortBubbles,
+          color: "#fbbf24", // Amber for slightly above avg
+          marker: {
+            lineColor: "#fbbf24",
+          },
+          animation: false,
+          zIndex: 2,
+          showInLegend: mediumShortBubbles.length > 0,
         },
       ],
     };
