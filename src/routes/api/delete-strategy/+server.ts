@@ -7,19 +7,9 @@ export const POST = (async ({ request, locals }) => {
  
   let output;
 
-  if (type === 'optionsScreener') {
-    try {
-        await pb.collection("optionsScreener")?.delete(data?.strategyId)
-        output = 'success';
-    }
-    catch(e) {
-        output = 'failure';
-    }
-    return new Response(JSON.stringify(output));
-  } else {
 
      try {
-        await pb.collection("stocksScreener")?.delete(data?.strategyId)
+        await pb.collection(type)?.delete(data?.strategyId)
         output = 'success';
     }
     catch(e) {
@@ -27,8 +17,6 @@ export const POST = (async ({ request, locals }) => {
     }
 
   return new Response(JSON.stringify(output));
-
-  }
  
 }) satisfies RequestHandler;
 

@@ -15,6 +15,7 @@
     import { onMount } from "svelte";
     import highcharts from "$lib/highcharts.ts";
     import InfoModal from "$lib/components/InfoModal.svelte";
+    import { goto } from "$app/navigation";
 
     export let data;
     export let form;
@@ -815,8 +816,6 @@
         }
     }
 
-    let LoginPopup;
-
     function plotData() {
         const dates =
             backtestResults?.plot_data?.strategy?.map((item) => item.date) ||
@@ -1126,6 +1125,11 @@
     async function handleSave(showMessage) {
         if (!data?.user) return;
 
+        if (!["Plus", "Pro"]?.includes(data?.user?.tier)) {
+            goto("/pricing");
+            return;
+        }
+
         if (strategyList?.length === 0) {
             handleCreateStrategy();
         }
@@ -1155,8 +1159,8 @@
 
             if (showMessage) {
                 return toast.promise(savePromise, {
-                    loading: "Saving Backtesting strategy...",
-                    success: "Strategy saved!",
+                    loading: "Saving backtest...",
+                    success: "Backtest saved!",
                     error: "Save failed. Please try again.",
                     style: `
             border-radius: 5px;
@@ -1178,9 +1182,7 @@
             const closePopup = document.getElementById("addStrategy");
             closePopup?.dispatchEvent(new MouseEvent("click"));
         } else {
-            toast.info("Available only to Plus or Pro Member", {
-                style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
-            });
+            goto("/pricing");
         }
     }
 
@@ -1193,7 +1195,7 @@
         let title = formData.get("title");
 
         if (!title || title.length === 0) {
-            title = "My Strategy";
+            title = "My Backtest";
         }
 
         if (title?.length > 100) {
@@ -1236,7 +1238,7 @@
             }
 
             // ——— SUCCESS: run your existing post-create logic ———
-            toast.success("Screener created successfully!", {
+            toast.success("Backtest created successfully!", {
                 style: `
         border-radius: 5px;
         background: #fff;
@@ -1273,9 +1275,57 @@
 
         // show loading / success / error around the whole operation
         return toast.promise(createPromise, {
-            loading: "Creating screener…",
+            loading: "Creating backtest...",
             success: () => "", // we already show success inside the promise
             error: "Something went wrong. Please try again later!",
+            style: `
+        border-radius: 5px;
+        background: #fff;
+        color: #000;
+        border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"};
+        font-size: 15px;
+      `,
+        });
+    }
+
+    async function handleDeleteStrategy() {
+        const deletePromise = (async () => {
+            const postData = {
+                strategyId: selectedStrategy,
+                type: "backtesting",
+            };
+
+            const response = await fetch("/api/delete-strategy", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(postData),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Network error: ${response.status}`);
+            }
+
+            const output = await response.json();
+            if (output !== "success") {
+                throw new Error("Server returned failure");
+            }
+
+            strategyList =
+                strategyList?.filter((item) => item.id !== selectedStrategy) ??
+                [];
+            selectedStrategy = strategyList?.at(0)?.id ?? "";
+            strategyData =
+                strategyList?.find((item) => item.id === selectedStrategy)
+                    ?.rules ?? {};
+
+            // return something if you need to chain further
+            return true;
+        })();
+
+        return toast?.promise(deletePromise, {
+            loading: "Deleting backtest…",
+            success: "Backtest deleted successfully!",
+            error: "Delete failed. Please try again.",
             style: `
         border-radius: 5px;
         background: #fff;
@@ -1289,7 +1339,7 @@
 
 <SEO
     title="Free Backtesting - Search, Filter and Analyze Stocks"
-    description={`A free backtesting to search, filter and analyze stocks  different indicators and metrics. The screener data is updated once per minute.`}
+    description={`A free backtesting to search, filter and analyze stocks  different indicators and metrics.`}
 />
 
 <svelte:window on:scroll={handleScroll} />
@@ -1428,7 +1478,6 @@
                                     <DropdownMenu.Trigger asChild let:builder>
                                         <Button
                                             on:click={() => {
-                                                removeList = true;
                                                 handleCreateStrategy();
                                             }}
                                             builders={[builder]}
@@ -1866,7 +1915,6 @@
                         <div class="w-full sm:ml-auto flex justify-end">
                             {#if data?.user}
                                 <label
-                                    for={!data?.user ? "userLogin" : ""}
                                     on:click={() => handleSave(true)}
                                     class=" cursor-pointer inline-flex items-center text-sm gap-1 px-3 py-2 bg-black sm:hover:bg-default disabled:bg-black/80 text-white dark:text-muted dark:bg-white dark:sm:hover:bg-gray-100 dark:disabled:bg-white/80 rounded font-medium transition-colors"
                                 >
@@ -2481,11 +2529,6 @@
     <!--End Matching Preview-->
 </section>
 
-<!--Start Login Modal-->
-{#if LoginPopup}
-    <LoginPopup {form} />
-{/if}
-
 <!--End Login Modal-->
 
 <!--Start Add Strategy Modal-->
@@ -2499,7 +2542,7 @@
         class="modal-box w-full p-6 rounded border
         bg-white dark:bg-secondary border border-gray-300 dark:border-gray-800"
     >
-        <h1 class="text-2xl font-bold">New Backtesting</h1>
+        <h1 class="text-2xl font-bold">New Backtest</h1>
 
         <form
             on:submit={createStrategy}
@@ -2510,7 +2553,7 @@
                 id="title"
                 type="text"
                 errors=""
-                label="Backtesting Name"
+                label="Backtest Name"
                 required={true}
             />
 
@@ -2518,8 +2561,66 @@
                 type="submit"
                 class="cursor-pointer mt-2 py-2.5 bg-black dark:bg-[#fff] dark:sm:hover:bg-gray-300 duration-100 w-full rounded m-auto text-white dark:text-black font-semibold text-md"
             >
-                Create Backtesting
+                Create Backtest
             </button>
         </form>
+    </div>
+</dialog>
+
+<!--Start Delete Strategy Modal-->
+<input type="checkbox" id="deleteStrategy" class="modal-toggle" />
+
+<dialog id="deleteStrategy" class="modal modal-bottom sm:modal-middle">
+    <label
+        for="deleteStrategy"
+        class="cursor-pointer modal-backdrop bg-[#000]/40"
+    ></label>
+
+    <div
+        class="modal-box w-full p-6 rounded border
+        bg-white dark:bg-secondary border border-gray-300 dark:border-gray-800"
+    >
+        <h3 class="text-lg font-medium mb-2">Delete Backtest</h3>
+        <p class="text-sm mb-6">
+            Are you sure you want to delete this backtest? This action cannot be
+            undone.
+        </p>
+        <div class="flex justify-end space-x-3">
+            <label
+                for="deleteStrategy"
+                class="cursor-pointer px-4 py-2 rounded text-sm font-medium
+            transition-colors duration-100
+            bg-gray-600 text-white dark:bg-white dark:text-black"
+                tabindex="0">Cancel</label
+            ><label
+                for="deleteStrategy"
+                on:click={handleDeleteStrategy}
+                class="cursor-pointer px-4 py-2 rounded text-sm font-medium
+            transition-colors duration-100 flex items-center
+            bg-red-600 text-white sm:hover:bg-red-700
+            "
+                tabindex="0"
+                ><svg
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="w-4 h-4 mr-2"
+                    height="1em"
+                    width="1em"
+                    xmlns="http://www.w3.org/2000/svg"
+                    ><polyline points="3 6 5 6 21 6"></polyline><path
+                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                    ></path><line x1="10" y1="11" x2="10" y2="17"></line><line
+                        x1="14"
+                        y1="11"
+                        x2="14"
+                        y2="17"
+                    ></line></svg
+                >Delete Backtest</label
+            >
+        </div>
     </div>
 </dialog>
