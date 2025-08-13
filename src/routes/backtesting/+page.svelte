@@ -16,6 +16,45 @@
 
     let config = null;
     let activeTab = "buy";
+
+    // Buy conditions
+    let buyConditions = [];
+
+    // Sell conditions
+    let sellConditions = [];
+
+    // Risk Management
+    let riskManagement = {
+        stopLoss: {
+            enabled: true,
+            type: "percentage",
+            value: 5,
+        },
+        takeProfit: {
+            enabled: true,
+            type: "percentage",
+            value: 10,
+        },
+        positionSize: {
+            type: "fixed",
+            value: 1000,
+        },
+    };
+
+    // Backtesting parameters
+    let selectedTickers = ["AAPL"];
+    let startDate = "2020-01-01";
+    let endDate = new Date().toISOString().split("T")[0];
+    // Backtesting variables
+    let backtestResults = {};
+    let isBacktesting = false;
+    let backtestError = null;
+    let selectedTicker = "AAPL";
+    let initialCapital = 100000;
+
+    // Strategy data collection - this is the main object you requested
+    let strategyData = {};
+
     const popularStrategyList = [
         { key: "rsiOversold", label: "RSI Oversold" },
         { key: "macdBullish", label: "MACD Bullish Crossover" },
@@ -155,38 +194,6 @@
         }
     }
 
-    // Buy conditions
-    let buyConditions = [];
-
-    // Sell conditions
-    let sellConditions = [];
-
-    // Risk Management
-    let riskManagement = {
-        stopLoss: {
-            enabled: true,
-            type: "percentage",
-            value: 5,
-        },
-        takeProfit: {
-            enabled: true,
-            type: "percentage",
-            value: 10,
-        },
-        positionSize: {
-            type: "fixed",
-            value: 1000,
-        },
-    };
-
-    // Backtesting parameters
-    let selectedTickers = ["AAPL"];
-    let startDate = "2020-01-01";
-    let endDate = new Date().toISOString().split("T")[0];
-
-    // Strategy data collection - this is the main object you requested
-    let strategyData = {};
-
     // Function to collect and format all strategy data
     function updateStrategyData() {
         strategyData = {
@@ -248,7 +255,10 @@
 
     // Sync selectedTicker with selectedTickers array
     $: if (selectedTicker) {
-        selectedTickers = [selectedTicker];
+        selectedTickers = selectedTicker
+            .split(",")
+            .map((ticker) => ticker.trim().toUpperCase())
+            .filter((ticker) => ticker.length > 0);
     }
 
     // Update strategy data whenever conditions change
@@ -534,17 +544,6 @@
     let buyConditionBlocks = [];
     let sellConditionBlocks = [];
 
-    // Define all possible rules and their properties (keeping for compatibility)
-    const allRules = {
-        rsi: {
-            label: "Relative Strength Index",
-            step: [90, 80, 70, 60, 50, 40, 30, 20],
-
-            defaultCondition: "over",
-            defaultValue: "any",
-        },
-    };
-
     let filteredData = [];
     let displayResults = [];
 
@@ -650,13 +649,6 @@
         "sell",
     );
 
-    // Backtesting variables
-    let backtestResults = {};
-    let isBacktesting = false;
-    let backtestError = null;
-    let selectedTicker = "AAPL";
-    let initialCapital = 100000;
-
     async function runBacktest() {
         if (
             buyConditionBlocks.length === 0 ||
@@ -690,8 +682,15 @@
             if (output?.success) {
                 backtestResults = output;
                 config = plotData();
+                backtestError = null;
             } else {
                 backtestResults = {};
+                config = null;
+                backtestError =
+                    output?.error ||
+                    output?.message ||
+                    "Backtesting failed. Please check your inputs and try again.";
+                console.log(output);
             }
         } catch (error) {
             backtestError = "Failed to run backtest: " + error.message;
@@ -1515,13 +1514,13 @@
                                 <div>
                                     <label
                                         class="block text-sm font-medium mb-2"
-                                        >Symbol</label
+                                        >Symbols (comma-separated)</label
                                     >
                                     <input
                                         type="text"
                                         bind:value={selectedTicker}
                                         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm uppercase"
-                                        placeholder=""
+                                        placeholder="AAPL, MSFT, GOOGL"
                                     />
                                 </div>
                                 <div>
