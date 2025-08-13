@@ -6,20 +6,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
   const type = data?.type
   let output;
-  if (type === 'optionsScreener') {
-  try {
-        output = await pb.collection("optionsScreener").create(data)
-    }
-    catch(e) {
-        output = {};
-    }
-  } else {
+  
       try {
-        output = await pb.collection("stocksScreener").create(data)
+        output = await pb.collection(type).create(data)
+        
     }
     catch(e) {
         output = {};
-    }
+    
   }
 
   return new Response(JSON.stringify(output));

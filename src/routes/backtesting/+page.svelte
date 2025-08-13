@@ -8,6 +8,7 @@
     import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
     import { Button } from "$lib/components/shadcn/button/index.js";
     import * as Tabs from "$lib/components/shadcn/tabs/index.js";
+    import Input from "$lib/components/Input.svelte";
 
     import SEO from "$lib/components/SEO.svelte";
     import StrategyBuilder from "$lib/components/StrategyBuilder.svelte";
@@ -34,6 +35,7 @@
 
     let config = null;
     let activeTab = "buy";
+    let removeList = false;
 
     let rawTradeHistory = [];
     let displayTradeHistory = [];
@@ -1011,6 +1013,161 @@
             window.removeEventListener("scroll", handleScroll);
         };
     });
+
+    async function handleSave(showMessage) {
+        if (!data?.user) return;
+
+        if (strategyList?.length === 0) {
+            handleCreateStrategy();
+        }
+
+        if (strategyList?.length > 0) {
+            // update local strategyList
+            strategyList.find((item) => item.id === selectedStrategy).rules =
+                strategyData;
+
+            const postData = {
+                strategyId: selectedStrategy,
+                rules: strategyData,
+                type: "backtesting",
+            };
+
+            const savePromise = (async () => {
+                const response = await fetch("/api/save-strategy", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(postData),
+                });
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+                return response;
+            })();
+
+            if (showMessage) {
+                return toast.promise(savePromise, {
+                    loading: "Saving Backtesting strategy...",
+                    success: "Strategy saved!",
+                    error: "Save failed. Please try again.",
+                    style: `
+            border-radius: 5px;
+            background: #fff;
+            color: #000;
+            border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"};
+            font-size: 15px;
+          `,
+                });
+            } else {
+                // just await without toast
+                await savePromise;
+            }
+        }
+    }
+
+    async function handleCreateStrategy() {
+        if (["Pro", "Plus"]?.includes(data?.user?.tier)) {
+            const closePopup = document.getElementById("addStrategy");
+            closePopup?.dispatchEvent(new MouseEvent("click"));
+        } else {
+            toast.info("Available only to Plus or Pro Member", {
+                style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+            });
+        }
+    }
+
+    async function createStrategy(event) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        formData.append("user", data?.user?.id);
+        formData.append("rules", "[]");
+        let title = formData.get("title");
+
+        if (!title || title.length === 0) {
+            title = "My Strategy";
+        }
+
+        if (title?.length > 100) {
+            toast.error(
+                "Title is too long. Please keep it under 100 characters.",
+                {
+                    style: `
+        border-radius: 5px;
+        background: #fff;
+        color: #000;
+        border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"};
+        font-size: 15px;
+      `,
+                },
+            );
+            return;
+        }
+
+        // build postData object
+        const postData = { type: "backtesting" };
+        for (const [key, value] of formData.entries()) {
+            postData[key] = value;
+        }
+
+        // wrap the fetch + response check + state updates in a promise
+        const createPromise = (async () => {
+            const response = await fetch("/api/create-strategy", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(postData),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Network error: ${response.status}`);
+            }
+
+            const output = await response.json();
+            if (!output?.id) {
+                throw new Error("Server did not return a new strategy ID");
+            }
+
+            // ——— SUCCESS: run your existing post-create logic ———
+            toast.success("Screener created successfully!", {
+                style: `
+        border-radius: 5px;
+        background: #fff;
+        color: #000;
+        border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"};
+        font-size: 15px;
+      `,
+            });
+
+            // close modal
+            const closePopup = document.getElementById("addStrategy");
+            closePopup?.dispatchEvent(new MouseEvent("click"));
+
+            selectedStrategy = output.id;
+            strategyList?.unshift(output);
+
+            if (removeList) {
+                removeList = false;
+                ruleOfList = [];
+            }
+
+            await handleSave(false);
+            title = "";
+            return output;
+        })();
+
+        // show loading / success / error around the whole operation
+        return toast.promise(createPromise, {
+            loading: "Creating screener…",
+            success: () => "", // we already show success inside the promise
+            error: "Something went wrong. Please try again later!",
+            style: `
+        border-radius: 5px;
+        background: #fff;
+        color: #000;
+        border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"};
+        font-size: 15px;
+      `,
+        });
+    }
 </script>
 
 <SEO
@@ -1168,7 +1325,7 @@
                                                 ></path>
                                             </svg>
                                             <div class="text-sm text-start">
-                                                New Screen
+                                                New Backtest
                                             </div>
                                         </Button>
                                     </DropdownMenu.Trigger>
@@ -1185,8 +1342,7 @@
                                             {item?.title?.length > 20
                                                 ? item?.title?.slice(0, 20) +
                                                   "..."
-                                                : item?.title} ({item?.rules
-                                                ?.length})
+                                                : item?.title}
 
                                             <label
                                                 for="deleteStrategy"
@@ -1572,15 +1728,38 @@
 
                 <!-- Backtesting Tab Content -->
                 <Tabs.Content value="backtest" class="outline-none">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold capitalize w-full">
+                    <div
+                        class="flex flex-col sm:flex-row justify-between items-center mb-4"
+                    >
+                        <h3
+                            class="text-lg font-semibold capitalize w-full mb-4 sm:mb-0"
+                        >
                             Define Backtesting Settings
                         </h3>
-                        <div class="w-full ml-auto flex justify-end">
+                        <div class="w-full sm:ml-auto flex justify-end">
+                            {#if data?.user}
+                                <label
+                                    for={!data?.user ? "userLogin" : ""}
+                                    on:click={() => handleSave(true)}
+                                    class=" cursor-pointer inline-flex items-center text-sm gap-1 px-3 py-2 bg-black sm:hover:bg-default disabled:bg-black/80 text-white dark:text-muted dark:bg-white dark:sm:hover:bg-gray-100 dark:disabled:bg-white/80 rounded font-medium transition-colors"
+                                >
+                                    <svg
+                                        class="h-4 w-4"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 32 32"
+                                        ><path
+                                            fill="currentColor"
+                                            d="M5 5v22h22V9.594l-.281-.313l-4-4L22.406 5zm2 2h3v6h12V7.437l3 3V25h-2v-9H9v9H7zm5 0h4v2h2V7h2v4h-8zm-1 11h10v7H11z"
+                                        /></svg
+                                    >
+                                    <div>Save</div>
+                                </label>
+                            {/if}
+
                             <button
                                 on:click={runBacktest}
                                 disabled={isBacktesting}
-                                class=" cursor-pointer inline-flex items-center text-sm gap-1 px-3 py-2 bg-black sm:hover:bg-default disabled:bg-black/80 text-white dark:text-muted dark:bg-white dark:sm:hover:bg-gray-100 dark:disabled:bg-white/80 rounded font-medium transition-colors"
+                                class=" cursor-pointer ml-3 inline-flex items-center text-sm gap-1 px-3 py-2 bg-black sm:hover:bg-default disabled:bg-black/80 text-white dark:text-muted dark:bg-white dark:sm:hover:bg-gray-100 dark:disabled:bg-white/80 rounded font-medium transition-colors"
                             >
                                 {#if isBacktesting}
                                     <svg
@@ -2181,3 +2360,39 @@
 {/if}
 
 <!--End Login Modal-->
+
+<!--Start Add Strategy Modal-->
+<input type="checkbox" id="addStrategy" class="modal-toggle" />
+
+<dialog id="addStrategy" class="modal modal-bottom sm:modal-middle">
+    <label for="addStrategy" class="cursor-pointer modal-backdrop bg-[#000]/40"
+    ></label>
+
+    <div
+        class="modal-box w-full p-6 rounded border
+        bg-white dark:bg-secondary border border-gray-300 dark:border-gray-800"
+    >
+        <h1 class="text-2xl font-bold">New Backtesting</h1>
+
+        <form
+            on:submit={createStrategy}
+            method="POST"
+            class="space-y-2 pt-5 pb-10 sm:pb-5"
+        >
+            <Input
+                id="title"
+                type="text"
+                errors=""
+                label="Backtesting Name"
+                required={true}
+            />
+
+            <button
+                type="submit"
+                class="cursor-pointer mt-2 py-2.5 bg-black dark:bg-[#fff] dark:sm:hover:bg-gray-300 duration-100 w-full rounded m-auto text-white dark:text-black font-semibold text-md"
+            >
+                Create Backtesting
+            </button>
+        </form>
+    </div>
+</dialog>
