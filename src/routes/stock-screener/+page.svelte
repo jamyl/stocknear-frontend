@@ -25,7 +25,6 @@
   //const userConfirmation = confirm('Unsaved changes detected. Leaving now will discard your strategy. Continue?');
 
   import { writable } from "svelte/store";
-  import { includes } from "lodash-es";
 
   let shouldLoadWorker = writable(false);
   export let data;

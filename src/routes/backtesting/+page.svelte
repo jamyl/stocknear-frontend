@@ -18,17 +18,29 @@
     export let data;
     export let form;
 
+    let strategyList = data?.getAllStrategies;
+    let selectedStrategy = strategyList?.at(0)?.id ?? "";
+    let strategyData = strategyList?.at(0)?.rules ?? {};
+
+    let selectedTickers = strategyData?.tickers || ["NVDA"];
+    let selectedTicker = selectedTickers.join(", ");
+    let startDate = strategyData?.start_date || "2015-01-01";
+    let endDate =
+        strategyData?.end_date || new Date().toISOString().split("T")[0];
+    let buyConditions = strategyData?.buy_condition || [];
+    let sellConditions = strategyData?.sell_condition || [];
+    let initialCapital = strategyData?.initial_capital || 100000;
+    let commissionFee = strategyData?.commission || 0.5; // Default 0.
+
     let config = null;
     let activeTab = "buy";
 
     let rawTradeHistory = [];
     let displayTradeHistory = [];
 
-    // Buy conditions
-    let buyConditions = [];
-
-    // Sell conditions
-    let sellConditions = [];
+    let backtestResults = {};
+    let isBacktesting = false;
+    let backtestError = null;
 
     // Risk Management
     let riskManagement = {
@@ -47,21 +59,6 @@
             value: 1000,
         },
     };
-
-    // Backtesting parameters
-    let selectedTickers = ["AAPL"];
-    let startDate = "2015-01-01";
-    let endDate = new Date().toISOString().split("T")[0];
-    // Backtesting variables
-    let backtestResults = {};
-    let isBacktesting = false;
-    let backtestError = null;
-    let selectedTicker = "AAPL";
-    let initialCapital = 100000;
-    let commissionFee = 0.5; // Default 0.5% commission fee
-
-    // Strategy data collection - this is the main object you requested
-    let strategyData = {};
 
     const popularStrategyList = [
         { key: "rsiOversold", label: "RSI Oversold" },
@@ -693,6 +690,18 @@
             return;
         }
 
+        // Validate initial capital
+        if (
+            typeof initialCapital !== "number" ||
+            isNaN(initialCapital) ||
+            initialCapital <= 0
+        ) {
+            toast?.error("Initial capital should be a positive number", {
+                style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+            });
+            return;
+        }
+
         // Validate commission fee
         if (
             typeof commissionFee !== "number" ||
@@ -768,6 +777,7 @@
                 backgroundColor: $mode === "light" ? "#fff" : "#09090B",
                 plotBackgroundColor: $mode === "light" ? "#fff" : "#09090B",
                 height: 360,
+                width: "auto",
             },
             title: {
                 text: null,
@@ -911,10 +921,6 @@
         return options;
     }
 
-    onMount(() => {
-        handleStrategySelection("rsiOversold");
-    });
-
     $: columns = [
         { key: "date", label: "Transaction Date", align: "left" },
         { key: "symbol", label: "Symbol", align: "right" },
@@ -998,6 +1004,13 @@
             .sort(compareValues)
             ?.slice(0, 50);
     };
+
+    onMount(() => {
+        window.addEventListener("scroll", handleScroll);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    });
 </script>
 
 <SEO
@@ -1008,7 +1021,7 @@
 <svelte:window on:scroll={handleScroll} />
 
 <section
-    class="w-full max-w-3xl sm:max-w-(--breakpoint-xl) overflow-hidden min-h-screen pb-40 px-5"
+    class="w-full max-w-3xl sm:max-w-(--breakpoint-xl) overflow-hidden min-h-screen pb-40 px-5 pt-4"
 >
     <div class="text-sm sm:text-[1rem] breadcrumbs">
         <ul>
@@ -1560,9 +1573,48 @@
                 <!-- Backtesting Tab Content -->
                 <Tabs.Content value="backtest" class="outline-none">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold capitalize">
+                        <h3 class="text-lg font-semibold capitalize w-full">
                             Define Backtesting Settings
                         </h3>
+                        <div class="w-full ml-auto flex justify-end">
+                            <button
+                                on:click={runBacktest}
+                                disabled={isBacktesting}
+                                class=" cursor-pointer inline-flex items-center text-sm gap-1 px-3 py-2 bg-black sm:hover:bg-default disabled:bg-black/80 text-white dark:text-muted dark:bg-white dark:sm:hover:bg-gray-100 dark:disabled:bg-white/80 rounded font-medium transition-colors"
+                            >
+                                {#if isBacktesting}
+                                    <svg
+                                        class="w-4 h-4 animate-spin"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                        />
+                                    </svg>
+                                    Running Backtest...
+                                {:else}
+                                    <svg
+                                        class="w-4 h-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                                        />
+                                    </svg>
+                                    Run Backtest
+                                {/if}
+                            </button>
+                        </div>
                     </div>
 
                     <div class="space-y-6">
@@ -1636,45 +1688,6 @@
                                     />
                                 </div>
                             </div>
-                            <div class="mt-4 w-full ml-auto flex justify-end">
-                                <button
-                                    on:click={runBacktest}
-                                    disabled={isBacktesting}
-                                    class="mt-3 cursor-pointer inline-flex items-center text-sm gap-1 px-3 py-2 bg-black sm:hover:bg-default disabled:bg-black/80 text-white dark:text-muted dark:bg-white dark:sm:hover:bg-gray-100 dark:disabled:bg-white/80 rounded font-medium transition-colors"
-                                >
-                                    {#if isBacktesting}
-                                        <svg
-                                            class="w-4 h-4 animate-spin"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                                            />
-                                        </svg>
-                                        Running Backtest...
-                                    {:else}
-                                        <svg
-                                            class="w-4 h-4"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M13 10V3L4 14h7v7l9-11h-7z"
-                                            />
-                                        </svg>
-                                        Run Backtest
-                                    {/if}
-                                </button>
-                            </div>
                         </div>
 
                         <!-- Error Display -->
@@ -1710,7 +1723,7 @@
                         <div class="w-full">
                             <!-- Strategy Performance -->
                             {#if backtestResults?.period}
-                                <p class="mb-2">
+                                <p class="mb-2 text-sm italic">
                                     Trading Period between {backtestResults?.period}
                                 </p>
                             {/if}
