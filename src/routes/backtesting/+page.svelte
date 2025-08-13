@@ -25,7 +25,6 @@
     let strategyData = strategyList?.at(0)?.rules ?? {};
 
     let selectedTickers = strategyData?.tickers || ["NVDA"];
-    let selectedTicker = selectedTickers.join(", ");
     let startDate = strategyData?.start_date || "2015-01-01";
     let endDate =
         strategyData?.end_date || new Date().toISOString().split("T")[0];
@@ -278,12 +277,18 @@
         });
     }
 
-    // Sync selectedTicker with selectedTickers array
-    $: if (selectedTicker) {
-        selectedTickers = selectedTicker
+    // Function to handle ticker input
+    function handleTickerInput(event) {
+        const value = event.target.value;
+        selectedTickers = value
             .split(",")
             .map((ticker) => ticker.trim().toUpperCase())
             .filter((ticker) => ticker.length > 0);
+    }
+
+    // Get ticker string for display
+    function getTickerString() {
+        return selectedTickers.join(", ");
     }
 
     // Update strategy data whenever conditions change
@@ -721,7 +726,7 @@
         selectedTickers = [...new Set(selectedTickers)];
 
         // Validate number of symbols
-        if (selectedTickers.length > 10) {
+        if (selectedTickers?.length > 10) {
             toast?.error(
                 "Maximum 10 symbols allowed. Please remove some symbols.",
                 {
@@ -731,7 +736,7 @@
             return;
         }
 
-        if (selectedTickers.length === 0) {
+        if (selectedTickers?.length === 0) {
             toast?.error("Please enter at least one symbol.", {
                 style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
             });
@@ -801,7 +806,7 @@
                 backtestResults = output;
                 config = plotData();
                 rawTradeHistory = output?.trade_history || [];
-                displayTradeHistory = rawTradeHistory.slice(0, 30);
+                displayTradeHistory = rawTradeHistory.slice(0, 50);
                 backtestError = null;
             } else {
                 backtestResults = {};
@@ -1090,7 +1095,6 @@
     function initializeToDefaults() {
         // Reset to default values
         selectedTickers = ["NVDA"];
-        selectedTicker = "NVDA";
         startDate = "2015-01-01";
         endDate = new Date().toISOString().split("T")[0];
         buyConditions = [];
@@ -1121,7 +1125,6 @@
             [];
 
         selectedTickers = strategyData?.tickers || ["NVDA"];
-        selectedTicker = selectedTickers.join(", ");
         startDate = strategyData?.start_date || "2015-01-01";
         endDate =
             strategyData?.end_date || new Date().toISOString().split("T")[0];
@@ -2014,7 +2017,8 @@
                                     >
                                     <input
                                         type="text"
-                                        bind:value={selectedTicker}
+                                        value={getTickerString()}
+                                        on:input={handleTickerInput}
                                         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm uppercase"
                                         placeholder="AAPL, MSFT, GOOGL"
                                     />
