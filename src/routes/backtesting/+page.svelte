@@ -570,19 +570,22 @@
     let buyConditionBlocks = [];
     let sellConditionBlocks = [];
 
-    let filteredData = [];
-    let displayResults = [];
-
     async function handleScroll() {
         const scrollThreshold = document.body.offsetHeight * 0.8; // 80% of the website height
         const isBottom = window.innerHeight + window.scrollY >= scrollThreshold;
-        if (isBottom && displayResults?.length !== filteredData?.length) {
-            const nextIndex = displayResults?.length;
-            const filteredNewResults = filteredData?.slice(
+        if (
+            isBottom &&
+            displayTradeHistory?.length !== rawTradeHistory?.length
+        ) {
+            const nextIndex = displayTradeHistory?.length;
+            const filteredNewResults = rawTradeHistory?.slice(
                 nextIndex,
                 nextIndex + 30,
             );
-            displayResults = [...displayResults, ...filteredNewResults];
+            displayTradeHistory = [
+                ...displayTradeHistory,
+                ...filteredNewResults,
+            ];
         }
     }
 
@@ -715,6 +718,8 @@
             return;
         }
 
+        selectedTickers = [...new Set(selectedTickers)];
+
         // Validate number of symbols
         if (selectedTickers.length > 10) {
             toast?.error(
@@ -815,8 +820,9 @@
 
     function plotData() {
         const dates =
-            backtestResults?.plot_data?.strategy?.map((item) => item.date) ||
-            [];
+            backtestResults?.plot_data?.spy_benchmark?.map(
+                (item) => item.date,
+            ) || [];
         const values =
             backtestResults?.plot_data?.strategy?.map(
                 (item) => item.return_pct,
