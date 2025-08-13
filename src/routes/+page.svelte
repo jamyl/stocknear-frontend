@@ -69,35 +69,24 @@
   {#if AppInstalled && !$closedPWA}
     <svelte:component this={AppInstalled} />
   {/if}
-  <!--
-  {#if !["Pro", "Plus"]?.includes(data?.user?.tier)}
+
+  {#if !["Pro", "Plus"].includes(data?.user?.tier)}
     <div class="flex justify-center mb-5 whitespace-nowrap mt-5 sm:mt-0">
       <a
         href="/pricing"
-        class="cursor-pointer whitespace-nowrap flex flex-col sm:flex-row items-center gap-2 px-3.5 py-2.5 text-sm sm:text-[1rem] font-medium border border-gray-300 dark:border-gray-800 shadow rounded"
+        class="cursor-pointer whitespace-nowrap flex flex-col sm:flex-row items-center gap-2 px-3.5 py-2.5 text-sm sm:text-[1rem] font-medium border border-gray-300 dark:border-gray-800 shadow rounded hover:bg-gray-50 dark:hover:bg-gray-900 transition"
         tabindex="0"
       >
         <div>
-          <svg
-            class="w-5 h-5 text-zinc-500 dark:text-orange-200 inline-block"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z"
-              clip-rule="evenodd"
-            ></path>
-          </svg>
-          <strong class="text-pink-500 text-[1rem]"> Summer Sale:</strong>
+          <strong class="text-[1rem]">Last Chance</strong>
         </div>
-        <div>Get <strong> 50% OFF</strong> on your Subscription!</div>
+        <div>
+          Get <strong>30% OFF</strong> your subscription —
+          <span class=" font-semibold">No more discounts!</span>
+        </div>
       </a>
     </div>
   {/if}
--->
 
   <main id="main">
     <div

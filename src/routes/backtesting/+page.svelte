@@ -1084,6 +1084,31 @@
         };
     });
 
+    function initializeToDefaults() {
+        // Reset to default values
+        selectedTickers = ["NVDA"];
+        selectedTicker = "NVDA";
+        startDate = "2015-01-01";
+        endDate = new Date().toISOString().split("T")[0];
+        buyConditions = [];
+        sellConditions = [];
+        initialCapital = 100000;
+        commissionFee = 0.5;
+
+        // Reset blocks to empty - user starts with clean slate
+        buyConditionBlocks = [];
+        sellConditionBlocks = [];
+
+        // Clear any previous backtest results
+        backtestResults = {};
+        config = null;
+        backtestError = null;
+        strategyData = {};
+
+        // Switch to buy tab to start fresh
+        activeTab = "buy";
+    }
+
     async function switchStrategy(item) {
         activeTab = "buy";
         selectedStrategy = item?.id ?? "";
@@ -1310,13 +1335,28 @@
                 throw new Error("Server returned failure");
             }
 
+            // Remove the deleted strategy from the list
             strategyList =
                 strategyList?.filter((item) => item.id !== selectedStrategy) ??
                 [];
-            selectedStrategy = strategyList?.at(0)?.id ?? "";
-            strategyData =
-                strategyList?.find((item) => item.id === selectedStrategy)
-                    ?.rules ?? {};
+
+            // Check if there are any strategies left
+            console.log(
+                "Strategies remaining after deletion:",
+                strategyList.length,
+            );
+
+            if (strategyList.length > 0) {
+                // Switch to the first available strategy
+                const nextStrategy = strategyList[0];
+                console.log("Switching to next strategy:", nextStrategy);
+                switchStrategy(nextStrategy);
+            } else {
+                // No strategies left, initialize to defaults
+                console.log("No strategies left, initializing to defaults");
+                selectedStrategy = "";
+                initializeToDefaults();
+            }
 
             // return something if you need to chain further
             return true;
