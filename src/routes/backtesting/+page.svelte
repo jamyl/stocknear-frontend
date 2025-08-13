@@ -58,6 +58,7 @@
     let backtestError = null;
     let selectedTicker = "AAPL";
     let initialCapital = 100000;
+    let commissionFee = 0.5; // Default 0.5% commission fee
 
     // Strategy data collection - this is the main object you requested
     let strategyData = {};
@@ -210,6 +211,7 @@
             buy_condition: formatConditionsForBacktesting(buyConditions),
             sell_condition: formatConditionsForBacktesting(sellConditions),
             initial_capital: initialCapital,
+            commission: commissionFee,
         };
     }
 
@@ -691,6 +693,18 @@
             return;
         }
 
+        // Validate commission fee
+        if (
+            typeof commissionFee !== "number" ||
+            isNaN(commissionFee) ||
+            commissionFee < 0
+        ) {
+            toast?.error("Commission fee should be at least 0", {
+                style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+            });
+            return;
+        }
+
         isBacktesting = true;
         backtestError = null;
 
@@ -907,7 +921,7 @@
         { key: "action", label: "Action", align: "right" },
         { key: "shares", label: "Shares", align: "right" },
         { key: "price", label: "Price", align: "right" },
-        { key: "net_amount", label: "P/L", align: "right" },
+        { key: "net_amount", label: "Profit/Loss", align: "right" },
         { key: "commission", label: "Commisssion", align: "right" },
         { key: "portfolio_value", label: "Portfolio Value", align: "right" },
         { key: "return_pct", label: "Total Return", align: "right" },
@@ -1554,7 +1568,9 @@
                     <div class="space-y-6">
                         <!-- Backtest Configuration -->
                         <div class="bg-gray-100 dark:bg-default p-3">
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div
+                                class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4"
+                            >
                                 <div>
                                     <label
                                         class="block text-sm font-medium mb-2"
@@ -1602,6 +1618,21 @@
                                         min="1000"
                                         step="1000"
                                         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium mb-2"
+                                        >Commission Fee (%)</label
+                                    >
+                                    <input
+                                        type="number"
+                                        bind:value={commissionFee}
+                                        min="0"
+                                        max="100"
+                                        step="0.1"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        placeholder="0.5"
                                     />
                                 </div>
                             </div>
@@ -2037,9 +2068,15 @@
                                     </td>
 
                                     <td
-                                        class="whitespace-nowrap text-sm sm:text-[1rem] text-end"
+                                        class="text-end text-sm sm:text-[1rem] whitespace-nowrap {item?.action ===
+                                            'BUY' && item?.action
+                                            ? 'text-green-800 dark:text-[#00FC50]'
+                                            : item?.action === 'SELL' &&
+                                                item?.action
+                                              ? 'text-red-800 dark:text-[#FF2F1F]'
+                                              : ''}"
                                     >
-                                        {item?.action}
+                                        {item?.action ?? "n/a"}
                                     </td>
 
                                     <td
@@ -2057,27 +2094,59 @@
                                     <td
                                         class="text-end text-sm sm:text-[1rem] whitespace-nowrap"
                                     >
-                                        {abbreviateNumber(item?.net_amount)}
+                                        {item?.net_amount?.toLocaleString(
+                                            "en-US",
+                                            {
+                                                style: "currency",
+                                                currency: "USD",
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0,
+                                            },
+                                        ) ?? "$0.00"}
                                     </td>
 
                                     <td
                                         class="text-end text-sm sm:text-[1rem] whitespace-nowrap"
                                     >
-                                        {item?.commission?.toFixed(2) ?? "0.00"}
+                                        {item?.commission?.toLocaleString(
+                                            "en-US",
+                                            {
+                                                style: "currency",
+                                                currency: "USD",
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0,
+                                            },
+                                        ) ?? "$0.00"}
                                     </td>
 
                                     <td
                                         class="text-end text-sm sm:text-[1rem] whitespace-nowrap"
                                     >
-                                        {abbreviateNumber(
-                                            item?.portfolio_value,
-                                        )}
+                                        {item?.portfolio_value?.toLocaleString(
+                                            "en-US",
+                                            {
+                                                style: "currency",
+                                                currency: "USD",
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0,
+                                            },
+                                        ) ?? "$0.00"}
                                     </td>
 
                                     <td
-                                        class="text-end text-sm sm:text-[1rem] whitespace-nowrap"
+                                        class="text-end text-sm sm:text-[1rem] whitespace-nowrap {item?.return_pct >=
+                                            0 && item?.return_pct
+                                            ? " before:content-['+'] text-green-800 dark:text-[#00FC50]"
+                                            : item?.return_pct < 0 &&
+                                                item?.return_pct
+                                              ? 'text-red-800 dark:text-[#FF2F1F]'
+                                              : ''}"
                                     >
-                                        {abbreviateNumber(item?.return_pct)}
+                                        {item?.return_pct
+                                            ? abbreviateNumber(
+                                                  item?.return_pct,
+                                              ) + "%"
+                                            : "n/a"}
                                     </td>
                                 </tr>
                             {/each}
