@@ -203,12 +203,29 @@
 
     // Function to collect and format all strategy data
     function updateStrategyData() {
+        console.log(
+            "Updating strategy data with buyConditions:",
+            buyConditions,
+        );
+        console.log(
+            "Updating strategy data with sellConditions:",
+            sellConditions,
+        );
+
+        const formattedBuyConditions =
+            formatConditionsForBacktesting(buyConditions);
+        const formattedSellConditions =
+            formatConditionsForBacktesting(sellConditions);
+
+        console.log("Formatted buy conditions:", formattedBuyConditions);
+        console.log("Formatted sell conditions:", formattedSellConditions);
+
         strategyData = {
             tickers: selectedTickers,
             start_date: startDate,
             end_date: endDate,
-            buy_condition: formatConditionsForBacktesting(buyConditions),
-            sell_condition: formatConditionsForBacktesting(sellConditions),
+            buy_condition: formattedBuyConditions,
+            sell_condition: formattedSellConditions,
             initial_capital: initialCapital,
             commission: commissionFee,
         };
@@ -217,22 +234,31 @@
     // Convert conditions to backtesting format
     function formatConditionsForBacktesting(conditions) {
         return conditions.map((condition, index) => {
+            // Ensure we have a name field
+            if (!condition.name && !condition.indicator) {
+                console.error(
+                    "Missing name/indicator field in condition:",
+                    condition,
+                );
+            }
+
             const formattedCondition = {
-                name: condition.indicator,
+                name: condition.name || condition.indicator || "rsi", // Fallback to prevent API errors
                 value: condition.value,
                 operator: condition.operator,
             };
 
             // For moving averages comparing to other indicators, we need special handling
+            const indicatorName = condition.name || condition.indicator;
             if (
-                condition.indicator === "sma_20" ||
-                condition.indicator === "sma_50" ||
-                condition.indicator === "sma_100" ||
-                condition.indicator === "sma_200" ||
-                condition.indicator === "ema_20" ||
-                condition.indicator === "ema_50" ||
-                condition.indicator === "ema_100" ||
-                condition.indicator === "ema_200"
+                indicatorName === "sma_20" ||
+                indicatorName === "sma_50" ||
+                indicatorName === "sma_100" ||
+                indicatorName === "sma_200" ||
+                indicatorName === "ema_20" ||
+                indicatorName === "ema_50" ||
+                indicatorName === "ema_100" ||
+                indicatorName === "ema_200"
             ) {
                 // If the value is a string like "price", "sma_50", etc., keep it as is
                 // If it's a number, convert appropriately
@@ -253,8 +279,11 @@
 
             // Add connector except for the last condition
             if (index < conditions.length - 1) {
+                // Check for connector or logic field (might come from different sources)
                 formattedCondition.connector =
-                    condition.logic?.toUpperCase() || "AND";
+                    condition.connector?.toUpperCase() ||
+                    condition.logic?.toUpperCase() ||
+                    "AND";
             }
 
             return formattedCondition;
@@ -276,7 +305,8 @@
         selectedTickers ||
         startDate ||
         endDate ||
-        initialCapital
+        initialCapital ||
+        commissionFee
     ) {
         updateStrategyData();
     }
@@ -552,6 +582,19 @@
     let buyConditionBlocks = [];
     let sellConditionBlocks = [];
 
+    // Initialize blocks from loaded strategy data
+    $: if (buyConditions.length > 0 && buyConditionBlocks.length === 0) {
+        console.log("Loading buy conditions:", buyConditions);
+        buyConditionBlocks = convertConditionsToBlocks(buyConditions);
+        console.log("Converted to buy blocks:", buyConditionBlocks);
+    }
+
+    $: if (sellConditions.length > 0 && sellConditionBlocks.length === 0) {
+        console.log("Loading sell conditions:", sellConditions);
+        sellConditionBlocks = convertConditionsToBlocks(sellConditions);
+        console.log("Converted to sell blocks:", sellConditionBlocks);
+    }
+
     let filteredData = [];
     let displayResults = [];
 
@@ -582,13 +625,38 @@
     }
 
     function convertBlocksToConditions(blocks) {
-        return blocks.map((block) => ({
+        return blocks.map((block, index) => ({
             indicator: block.indicator,
             operator: block.operator,
             value: block.value,
             logic: block.logicOperator
                 ? block.logicOperator.toLowerCase()
                 : undefined,
+            // Also preserve connector for API formatting
+            connector: block.logicOperator
+                ? block.logicOperator.toUpperCase()
+                : index < blocks.length - 1
+                  ? "AND"
+                  : undefined,
+        }));
+    }
+
+    function convertConditionsToBlocks(conditions) {
+        if (!conditions || conditions.length === 0) return [];
+
+        return conditions.map((condition, index) => ({
+            id: `block_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 9)}`,
+            type: "condition",
+            indicator: condition.name || condition.indicator || "rsi", // Fallback to 'rsi' if undefined
+            operator: condition.operator || "below",
+            value: condition.value !== undefined ? condition.value : 30,
+            logicOperator: condition.connector
+                ? condition.connector.toUpperCase()
+                : condition.logic
+                  ? condition.logic.toUpperCase()
+                  : index < conditions.length - 1
+                    ? "AND"
+                    : null,
         }));
     }
 
@@ -672,6 +740,24 @@
             return;
         }
 
+        // Validate number of symbols
+        if (selectedTickers.length > 10) {
+            toast?.error(
+                "Maximum 10 symbols allowed. Please remove some symbols.",
+                {
+                    style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+                },
+            );
+            return;
+        }
+
+        if (selectedTickers.length === 0) {
+            toast?.error("Please enter at least one symbol.", {
+                style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+            });
+            return;
+        }
+
         // Validate date inputs
         const start = new Date(startDate);
         const end = new Date(endDate);
@@ -730,6 +816,7 @@
                 body: JSON.stringify(postData),
             });
 
+            console.log(strategyData);
             const output = await response.json();
             if (output?.success) {
                 backtestResults = output;
@@ -744,7 +831,6 @@
                     output?.error ||
                     output?.message ||
                     "Backtesting failed. Please check your inputs and try again.";
-                console.log(output);
             }
         } catch (error) {
             backtestError = "Failed to run backtest: " + error.message;
