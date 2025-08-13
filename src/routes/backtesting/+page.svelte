@@ -572,19 +572,6 @@
     let buyConditionBlocks = [];
     let sellConditionBlocks = [];
 
-    // Initialize blocks from loaded strategy data
-    $: if (buyConditions.length > 0 && buyConditionBlocks.length === 0) {
-        console.log("Loading buy conditions:", buyConditions);
-        buyConditionBlocks = convertConditionsToBlocks(buyConditions);
-        console.log("Converted to buy blocks:", buyConditionBlocks);
-    }
-
-    $: if (sellConditions.length > 0 && sellConditionBlocks.length === 0) {
-        console.log("Loading sell conditions:", sellConditions);
-        sellConditionBlocks = convertConditionsToBlocks(sellConditions);
-        console.log("Converted to sell blocks:", sellConditionBlocks);
-    }
-
     let filteredData = [];
     let displayResults = [];
 
@@ -1084,6 +1071,15 @@
 
     onMount(() => {
         window.addEventListener("scroll", handleScroll);
+
+        // Initialize blocks from initial conditions
+        if (buyConditions.length > 0) {
+            buyConditionBlocks = convertConditionsToBlocks(buyConditions);
+        }
+        if (sellConditions.length > 0) {
+            sellConditionBlocks = convertConditionsToBlocks(sellConditions);
+        }
+
         return () => {
             window.removeEventListener("scroll", handleScroll);
         };
@@ -1106,6 +1102,25 @@
         sellConditions = strategyData?.sell_condition || [];
         initialCapital = strategyData?.initial_capital || 100000;
         commissionFee = strategyData?.commission || 0.5; // Default 0.
+
+        // Reset and reinitialize the blocks for UI display
+        buyConditionBlocks = [];
+        sellConditionBlocks = [];
+
+        // Convert conditions to blocks after a short delay to trigger reactive updates
+        setTimeout(() => {
+            if (buyConditions.length > 0) {
+                buyConditionBlocks = convertConditionsToBlocks(buyConditions);
+            }
+            if (sellConditions.length > 0) {
+                sellConditionBlocks = convertConditionsToBlocks(sellConditions);
+            }
+        }, 10);
+
+        // Clear any previous backtest results
+        backtestResults = {};
+        config = null;
+        backtestError = null;
     }
 
     async function handleSave(showMessage) {
@@ -1340,7 +1355,7 @@
                                 <DropdownMenu.Label
                                     class="text-muted dark:text-gray-400 font-normal"
                                 >
-                                    Popular Strategies
+                                    Popular Backtest
                                 </DropdownMenu.Label>
                                 <DropdownMenu.Separator />
                                 <DropdownMenu.Group>
@@ -1367,7 +1382,7 @@
                     <div
                         class="hidden text-sm sm:text-[1rem] font-semibold md:block sm:mb-1"
                     >
-                        Saved Strategies
+                        Saved Backtest
                     </div>
                     <div class="relative inline-block text-left grow">
                         <DropdownMenu.Root>
@@ -2269,7 +2284,7 @@
             </div>
 
             <!-- Strategy Summary in Plain English -->
-            <div class="p-3 mt-4">
+            <div class="mt-6 mb-6">
                 <div class="">
                     <div class="flex items-start gap-3">
                         <div class="flex-1">
