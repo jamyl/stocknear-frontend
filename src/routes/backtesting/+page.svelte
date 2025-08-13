@@ -12,7 +12,7 @@
 
     import SEO from "$lib/components/SEO.svelte";
     import StrategyBuilder from "$lib/components/StrategyBuilder.svelte";
-    import { onMount } from "svelte";
+    import { onMount, onDestroy } from "svelte";
     import highcharts from "$lib/highcharts.ts";
     import InfoModal from "$lib/components/InfoModal.svelte";
     import { goto } from "$app/navigation";
@@ -42,6 +42,46 @@
     let backtestResults = {};
     let isBacktesting = false;
     let backtestError = null;
+
+    // Cache system for backtest results
+    const backtestCache = new Map();
+    const CACHE_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
+
+    // Generate cache key from strategy parameters
+    function generateCacheKey(strategyData) {
+        const key = {
+            tickers: [...strategyData.tickers].sort(),
+            start_date: strategyData.start_date,
+            end_date: strategyData.end_date,
+            buy_condition: JSON.stringify(strategyData.buy_condition),
+            sell_condition: JSON.stringify(strategyData.sell_condition),
+            initial_capital: strategyData.initial_capital,
+            commission: strategyData.commission,
+        };
+        return JSON.stringify(key);
+    }
+
+    // Check if cache entry is valid
+    function isCacheValid(entry) {
+        if (!entry) return false;
+        const now = Date.now();
+        return now - entry.timestamp < CACHE_EXPIRY_MS;
+    }
+
+    // Clear expired cache entries
+    function clearExpiredCache() {
+        const now = Date.now();
+        for (const [key, entry] of backtestCache.entries()) {
+            if (now - entry.timestamp >= CACHE_EXPIRY_MS) {
+                backtestCache.delete(key);
+            }
+        }
+    }
+
+    // Clear all cache
+    function clearAllCache() {
+        backtestCache.clear();
+    }
 
     // Risk Management
     let riskManagement = {
@@ -787,13 +827,33 @@
             return;
         }
 
+        // Update strategyData before running backtest
+        updateStrategyData();
+
+        // Generate cache key for current strategy
+        const cacheKey = generateCacheKey(strategyData);
+
+        // Clear expired cache entries periodically
+        clearExpiredCache();
+
+        // Check if we have valid cached results
+        const cachedEntry = backtestCache.get(cacheKey);
+        if (cachedEntry && isCacheValid(cachedEntry)) {
+            // Use cached results
+            const output = cachedEntry.data;
+            backtestResults = output;
+            config = plotData();
+            rawTradeHistory = output?.trade_history || [];
+            displayTradeHistory = rawTradeHistory.slice(0, 50);
+            backtestError = null;
+
+            return;
+        }
+
         isBacktesting = true;
         backtestError = null;
 
         try {
-            // Update strategyData before running backtest
-            updateStrategyData();
-
             const postData = { strategyData: strategyData };
             const response = await fetch("/api/backtesting", {
                 method: "POST",
@@ -803,6 +863,12 @@
 
             const output = await response.json();
             if (output?.success) {
+                // Store successful result in cache
+                backtestCache.set(cacheKey, {
+                    data: output,
+                    timestamp: Date.now(),
+                });
+
                 backtestResults = output;
                 config = plotData();
                 rawTradeHistory = output?.trade_history || [];
@@ -1090,6 +1156,11 @@
         return () => {
             window.removeEventListener("scroll", handleScroll);
         };
+    });
+
+    onDestroy(() => {
+        // Clear all cache when leaving the page
+        clearAllCache();
     });
 
     function initializeToDefaults() {
@@ -1416,7 +1487,7 @@
                             <DropdownMenu.Trigger asChild let:builder>
                                 <Button
                                     builders={[builder]}
-                                    class="w-full  border-gray-300 dark:border-gray-800 border text-white bg-black sm:hover:bg-default dark:bg-default dark:sm:hover:bg-primary ease-out flex flex-row justify-between items-center px-3 py-2  rounded truncate"
+                                    class="w-full  border-gray-300 dark:border-gray-600 border text-white bg-black sm:hover:bg-default dark:bg-default dark:sm:hover:bg-primary ease-out flex flex-row justify-between items-center px-3 py-2  rounded truncate"
                                 >
                                     <span class="truncate">Select Popular</span>
                                     <svg
@@ -1472,7 +1543,7 @@
                             <DropdownMenu.Trigger asChild let:builder>
                                 <Button
                                     builders={[builder]}
-                                    class="min-w-[110px]  w-full border-gray-300 dark:border-gray-800 border text-white bg-black sm:hover:bg-default dark:bg-default  dark:sm:hover:bg-primary ease-out flex flex-row justify-between items-center px-3 py-2  rounded truncate"
+                                    class="min-w-[110px]  w-full border-gray-300 dark:border-gray-600 border text-white bg-black sm:hover:bg-default dark:bg-default  dark:sm:hover:bg-primary ease-out flex flex-row justify-between items-center px-3 py-2  rounded truncate"
                                 >
                                     <span class="truncate max-w-48"
                                         >{selectedStrategy?.length !== 0
@@ -2006,7 +2077,7 @@
 
                     <div class="space-y-6">
                         <!-- Backtest Configuration -->
-                        <div class="bg-gray-100 dark:bg-default p-3">
+                        <div class="bg-gray-100 dark:bg-[#2A2E39] p-3">
                             <div
                                 class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4"
                             >
@@ -2019,7 +2090,7 @@
                                         type="text"
                                         value={getTickerString()}
                                         on:input={handleTickerInput}
-                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm uppercase"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-500 rounded bg-white dark:bg-inherit focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm uppercase"
                                         placeholder="AAPL, MSFT, GOOGL"
                                     />
                                 </div>
@@ -2031,7 +2102,7 @@
                                     <input
                                         type="text"
                                         bind:value={startDate}
-                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-500 rounded bg-white dark:bg-inherit focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                         placeholder="YYYY-MM-DD"
                                     />
                                 </div>
@@ -2043,7 +2114,7 @@
                                     <input
                                         type="text"
                                         bind:value={endDate}
-                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-500 rounded bg-white dark:bg-inherit focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                         placeholder="YYYY-MM-DD"
                                     />
                                 </div>
@@ -2057,7 +2128,7 @@
                                         bind:value={initialCapital}
                                         min="1000"
                                         step="1000"
-                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-500 rounded bg-white dark:bg-inherit focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                     />
                                 </div>
                                 <div>
@@ -2071,7 +2142,7 @@
                                         min="0"
                                         max="100"
                                         step="0.1"
-                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-800 rounded bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-500 rounded bg-white dark:bg-inherit focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                         placeholder="0.5"
                                     />
                                 </div>

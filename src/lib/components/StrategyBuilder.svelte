@@ -493,7 +493,7 @@
 
     {#if strategyBlocks.length === 0}
         <div
-            class="border border-gray-300 dark:border-gray-800 rounded bg-[#F8F9FA] dark:bg-default p-10 min-h-40 m-auto flex justify-center items-center w-full"
+            class="border border-gray-300 dark:border-gray-600 rounded bg-[#F8F9FA] dark:bg-default p-10 min-h-40 m-auto flex justify-center items-center w-full"
         >
             <div class="text-center">
                 <p class="">No conditions added yet</p>
