@@ -35,7 +35,6 @@
 
     let config = null;
     let activeTab = "buy";
-    let removeList = false;
 
     let rawTradeHistory = [];
     let displayTradeHistory = [];
@@ -203,15 +202,6 @@
 
     // Function to collect and format all strategy data
     function updateStrategyData() {
-        console.log(
-            "Updating strategy data with buyConditions:",
-            buyConditions,
-        );
-        console.log(
-            "Updating strategy data with sellConditions:",
-            sellConditions,
-        );
-
         const formattedBuyConditions =
             formatConditionsForBacktesting(buyConditions);
         const formattedSellConditions =
@@ -816,7 +806,6 @@
                 body: JSON.stringify(postData),
             });
 
-            console.log(strategyData);
             const output = await response.json();
             if (output?.success) {
                 backtestResults = output;
@@ -1100,6 +1089,25 @@
         };
     });
 
+    async function switchStrategy(item) {
+        activeTab = "buy";
+        selectedStrategy = item?.id ?? "";
+
+        strategyData =
+            strategyList?.find((item) => item.id === selectedStrategy)?.rules ??
+            [];
+
+        selectedTickers = strategyData?.tickers || ["NVDA"];
+        selectedTicker = selectedTickers.join(", ");
+        startDate = strategyData?.start_date || "2015-01-01";
+        endDate =
+            strategyData?.end_date || new Date().toISOString().split("T")[0];
+        buyConditions = strategyData?.buy_condition || [];
+        sellConditions = strategyData?.sell_condition || [];
+        initialCapital = strategyData?.initial_capital || 100000;
+        commissionFee = strategyData?.commission || 0.5; // Default 0.
+    }
+
     async function handleSave(showMessage) {
         if (!data?.user) return;
 
@@ -1230,10 +1238,18 @@
             selectedStrategy = output.id;
             strategyList?.unshift(output);
 
-            if (removeList) {
-                removeList = false;
-                ruleOfList = [];
-            }
+            strategyData = {};
+
+            selectedTickers = strategyData?.tickers || ["NVDA"];
+            selectedTicker = selectedTickers.join(", ");
+            startDate = strategyData?.start_date || "2015-01-01";
+            endDate =
+                strategyData?.end_date ||
+                new Date().toISOString().split("T")[0];
+            buyConditions = [];
+            sellConditions = [];
+            initialCapital = strategyData?.initial_capital || 100000;
+            commissionFee = strategyData?.commission || 0.5; // Default 0.
 
             await handleSave(false);
             title = "";
@@ -1361,7 +1377,13 @@
                                     class="min-w-[110px]  w-full border-gray-300 dark:border-gray-800 border text-white bg-black sm:hover:bg-default dark:bg-default  dark:sm:hover:bg-primary ease-out flex flex-row justify-between items-center px-3 py-2  rounded truncate"
                                 >
                                     <span class="truncate max-w-48"
-                                        >{"Select Strategy"}</span
+                                        >{selectedStrategy?.length !== 0
+                                            ? strategyList?.find(
+                                                  (item) =>
+                                                      item.id ===
+                                                      selectedStrategy,
+                                              )?.title
+                                            : "Select Strategy"}</span
                                     >
                                     <svg
                                         class="-mr-1 ml-1 h-5 w-5 xs:ml-2 inline-block"
@@ -1420,6 +1442,10 @@
                                 <DropdownMenu.Group>
                                     {#each strategyList as item}
                                         <DropdownMenu.Item
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                switchStrategy(item);
+                                            }}
                                             class=" {item?.id ===
                                             selectedStrategy
                                                 ? 'bg-gray-300 dark:bg-primary'
