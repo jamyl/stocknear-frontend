@@ -1,6 +1,9 @@
 <script lang="ts">
     import { toast } from "svelte-sonner";
     import { mode } from "mode-watcher";
+    import HoverStockChart from "$lib/components/HoverStockChart.svelte";
+    import { abbreviateNumber } from "$lib/utils";
+    import TableHeader from "$lib/components/Table/TableHeader.svelte";
 
     import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
     import { Button } from "$lib/components/shadcn/button/index.js";
@@ -16,6 +19,9 @@
 
     let config = null;
     let activeTab = "buy";
+
+    let rawTradeHistory = [];
+    let displayTradeHistory = [];
 
     // Buy conditions
     let buyConditions = [];
@@ -702,6 +708,8 @@
             if (output?.success) {
                 backtestResults = output;
                 config = plotData();
+                rawTradeHistory = output?.trade_history || [];
+                displayTradeHistory = rawTradeHistory.slice(0, 30);
                 backtestError = null;
             } else {
                 backtestResults = {};
@@ -891,6 +899,90 @@
     onMount(() => {
         handleStrategySelection("rsiOversold");
     });
+
+    $: columns = [
+        { key: "date", label: "Transaction Date", align: "left" },
+        { key: "symbol", label: "Symbol", align: "right" },
+        { key: "action", label: "Action", align: "right" },
+        { key: "shares", label: "Shares", align: "right" },
+        { key: "price", label: "Price", align: "right" },
+        { key: "net_amount", label: "P/L", align: "right" },
+        { key: "commission", label: "Commisssion", align: "right" },
+        { key: "portfolio_value", label: "Portfolio Value", align: "right" },
+        { key: "return_pct", label: "Total Return", align: "right" },
+    ];
+
+    let sortOrders = {
+        date: { order: "none", type: "date" },
+        symbol: { order: "none", type: "string" },
+        action: { order: "none", type: "string" },
+        shares: { order: "none", type: "number" },
+        price: { order: "none", type: "number" },
+        net_amount: { order: "none", type: "number" },
+        commission: { order: "none", type: "number" },
+        portfolio_value: { order: "none", type: "number" },
+        return_pct: { order: "none", type: "number" },
+    };
+
+    const sortData = (key) => {
+        // Reset all other keys to 'none' except the current key
+        for (const k in sortOrders) {
+            if (k !== key) {
+                sortOrders[k].order = "none";
+            }
+        }
+
+        // Cycle through 'none', 'asc', 'desc' for the clicked key
+        const orderCycle = ["none", "asc", "desc"];
+
+        let originalData = rawTradeHistory;
+
+        const currentOrderIndex = orderCycle.indexOf(sortOrders[key].order);
+        sortOrders[key].order =
+            orderCycle[(currentOrderIndex + 1) % orderCycle.length];
+        const sortOrder = sortOrders[key].order;
+
+        // Reset to original data when 'none' and stop further sorting
+        if (sortOrder === "none") {
+            displayTradeHistory = [...originalData]?.slice(0, 50); // Reset to original data (spread to avoid mutation)
+            return;
+        }
+
+        // Define a generic comparison function
+        const compareValues = (a, b) => {
+            const { type } = sortOrders[key];
+            let valueA, valueB;
+
+            switch (type) {
+                case "date":
+                    valueA = new Date(a[key]);
+                    valueB = new Date(b[key]);
+                    break;
+                case "string":
+                    valueA = a[key].toUpperCase();
+                    valueB = b[key].toUpperCase();
+                    return sortOrder === "asc"
+                        ? valueA.localeCompare(valueB)
+                        : valueB.localeCompare(valueA);
+                case "number":
+                default:
+                    valueA = parseFloat(a[key]);
+                    valueB = parseFloat(b[key]);
+                    break;
+            }
+
+            if (sortOrder === "asc") {
+                return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+            } else {
+                return valueA > valueB ? -1 : valueA < valueB ? 1 : 0;
+            }
+        };
+
+        // Sort using the generic comparison function
+        displayTradeHistory = [...originalData]
+            .sort(compareValues)
+            ?.slice(0, 50);
+    };
 </script>
 
 <SEO
@@ -1142,7 +1234,7 @@
             </nav>
 
             <!-- Tab Content with Enhanced Styling -->
-            <div class="p-3">
+            <div class="mt-6">
                 <!-- Buy Conditions Tab Content -->
                 <Tabs.Content value="buy" class="outline-none">
                     <div class="space-y-4">
@@ -1855,6 +1947,91 @@
                     </div>
                 </div>
             </div>
+
+            {#if activeTab === "backtest" && Object?.keys(backtestResults)?.length > 0}
+                <div
+                    class="w-full m-auto rounded-none sm:rounded mb-4 overflow-x-auto mt-5"
+                >
+                    <table
+                        class="table table-sm table-compact no-scrollbar rounded-none sm:rounded w-full border border-gray-300 dark:border-gray-800 m-auto"
+                    >
+                        <thead>
+                            <TableHeader {columns} {sortOrders} {sortData} />
+                        </thead>
+                        <tbody>
+                            {#each displayTradeHistory as item, index}
+                                <tr
+                                    class="dark:sm:hover:bg-[#245073]/10 odd:bg-[#F6F7F8] dark:odd:bg-odd"
+                                >
+                                    <td
+                                        class="text-sm sm:text-[1rem] text-start"
+                                    >
+                                        {new Date(
+                                            item?.date,
+                                        ).toLocaleDateString("en-US", {
+                                            month: "short",
+                                            day: "2-digit",
+                                            year: "numeric",
+                                            timeZone: "UTC",
+                                        })}
+                                    </td>
+
+                                    <td class="text-sm sm:text-[1rem] text-end">
+                                        <HoverStockChart
+                                            symbol={item?.symbol}
+                                            assetType={item?.assetType}
+                                        />
+                                    </td>
+
+                                    <td
+                                        class="whitespace-nowrap text-sm sm:text-[1rem] text-end"
+                                    >
+                                        {item?.action}
+                                    </td>
+
+                                    <td
+                                        class="whitespace-nowrap text-sm sm:text-[1rem] text-end"
+                                    >
+                                        {item?.shares?.toLocaleString("en-US")}
+                                    </td>
+
+                                    <td
+                                        class="whitespace-nowrap text-sm sm:text-[1rem] text-end"
+                                    >
+                                        {item?.price}
+                                    </td>
+
+                                    <td
+                                        class="text-end text-sm sm:text-[1rem] whitespace-nowrap"
+                                    >
+                                        {abbreviateNumber(item?.net_amount)}
+                                    </td>
+
+                                    <td
+                                        class="text-end text-sm sm:text-[1rem] whitespace-nowrap"
+                                    >
+                                        {item?.commission?.toFixed(2) ?? "0.00"}
+                                    </td>
+
+                                    <td
+                                        class="text-end text-sm sm:text-[1rem] whitespace-nowrap"
+                                    >
+                                        {abbreviateNumber(
+                                            item?.portfolio_value,
+                                        )}
+                                    </td>
+
+                                    <td
+                                        class="text-end text-sm sm:text-[1rem] whitespace-nowrap"
+                                    >
+                                        {abbreviateNumber(item?.return_pct)}
+                                    </td>
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </table>
+                </div>
+            {/if}
         </Tabs.Root>
     </div>
 
