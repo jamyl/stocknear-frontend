@@ -208,9 +208,6 @@
         const formattedSellConditions =
             formatConditionsForBacktesting(sellConditions);
 
-        console.log("Formatted buy conditions:", formattedBuyConditions);
-        console.log("Formatted sell conditions:", formattedSellConditions);
-
         strategyData = {
             tickers: selectedTickers,
             start_date: startDate,
@@ -1214,6 +1211,8 @@
     async function createStrategy(event) {
         event.preventDefault();
 
+        const firstStrategy = strategyList?.length === 0;
+
         const formData = new FormData(event.target);
         formData.append("user", data?.user?.id);
         formData.append("rules", "[]");
@@ -1280,18 +1279,9 @@
             selectedStrategy = output.id;
             strategyList?.unshift(output);
 
-            strategyData = {};
-
-            selectedTickers = strategyData?.tickers || ["NVDA"];
-            selectedTicker = selectedTickers.join(", ");
-            startDate = strategyData?.start_date || "2015-01-01";
-            endDate =
-                strategyData?.end_date ||
-                new Date().toISOString().split("T")[0];
-            buyConditions = [];
-            sellConditions = [];
-            initialCapital = strategyData?.initial_capital || 100000;
-            commissionFee = strategyData?.commission || 0.5; // Default 0.
+            if (!firstStrategy) {
+                initializeToDefaults();
+            }
 
             await handleSave(false);
             title = "";
@@ -1378,7 +1368,7 @@
 </script>
 
 <SEO
-    title="No-Code Stock Backtesting — Analyze & Optimize Strategies Free"
+    title="Stock Backtesting — Analyze & Optimize Strategies Free"
     description="Build and test trading strategies without coding. Screen and filter stocks, apply indicators, run historical backtests, and optimize entries/exits—all in a fast, free no-code backtesting tool."
 />
 
@@ -1442,12 +1432,6 @@
                                 alignOffset={0}
                                 class="w-56 h-fit max-h-72 overflow-y-auto scroller"
                             >
-                                <DropdownMenu.Label
-                                    class="text-muted dark:text-gray-400 font-normal"
-                                >
-                                    Popular Backtest
-                                </DropdownMenu.Label>
-                                <DropdownMenu.Separator />
                                 <DropdownMenu.Group>
                                     {#each popularStrategyList as item}
                                         <DropdownMenu.Item
