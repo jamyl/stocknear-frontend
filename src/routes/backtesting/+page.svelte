@@ -1378,8 +1378,8 @@
 </script>
 
 <SEO
-    title="Free Backtesting - Search, Filter and Analyze Stocks"
-    description={`A free backtesting to search, filter and analyze stocks  different indicators and metrics.`}
+    title="No-Code Stock Backtesting — Analyze & Optimize Strategies Free"
+    description="Build and test trading strategies without coding. Screen and filter stocks, apply indicators, run historical backtests, and optimize entries/exits—all in a fast, free no-code backtesting tool."
 />
 
 <svelte:window on:scroll={handleScroll} />
