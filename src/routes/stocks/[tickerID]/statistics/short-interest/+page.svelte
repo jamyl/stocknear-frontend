@@ -350,7 +350,7 @@
         bubble: {
           minSize: 5, // Smaller minimum for small spikes
           maxSize: 40, // Larger maximum for biggest spikes
-          opacity: 0.8,
+          opacity: 0.5,
           marker: {
             enabled: true, // Enable markers for bubbles
             fillOpacity: 0.8,

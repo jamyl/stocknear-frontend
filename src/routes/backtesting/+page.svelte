@@ -13,6 +13,7 @@
     import StrategyBuilder from "$lib/components/StrategyBuilder.svelte";
     import { onMount } from "svelte";
     import highcharts from "$lib/highcharts.ts";
+    import InfoModal from "$lib/components/InfoModal.svelte";
 
     export let data;
     export let form;
@@ -1689,8 +1690,12 @@
                                 class="grid grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-6"
                             >
                                 <div class="">
-                                    <h4 class="font-semibold mb-2">
-                                        Total Returns
+                                    <h4
+                                        class=" flex flex-row items-center w-fit"
+                                    >
+                                        Total Returns <InfoModal
+                                            content={"test"}
+                                        />
                                     </h4>
                                     <p
                                         class="text-[1rem] sm:text-lg font-semibold"
