@@ -306,8 +306,58 @@
 </script>
 
 <SEO
-  title="Earnings Calendar"
-  description="A list of upcoming earnings on the US stock market, with dates, times and estimated revenue and earnings growth."
+  title="Earnings Calendar - Corporate Earnings Releases & Financial Results Schedule"
+  description="Track upcoming earnings announcements with our comprehensive earnings calendar. Get real-time earnings dates, revenue estimates, EPS forecasts, and financial results for all major US stocks. Monitor pre-market and after-hours earnings releases with detailed analyst expectations and historical performance data."
+  keywords="earnings calendar, earnings announcements, corporate earnings, earnings dates, EPS estimates, revenue forecasts, financial results, earnings season, quarterly earnings, earnings schedule, earnings reports, analyst estimates, earnings per share, company financials"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Earnings Calendar",
+    description:
+      "Comprehensive earnings calendar tracking corporate earnings announcements, financial results, and analyst estimates for US stocks",
+    url: "https://stocknear.com/earnings-calendar",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Web Browser",
+    browserRequirements: "Modern web browser with JavaScript enabled",
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Earnings Calendar",
+          item: "https://stocknear.com/earnings-calendar",
+        },
+      ],
+    },
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
+    featureList: [
+      "Real-time earnings announcement tracking",
+      "Revenue and EPS estimate analysis",
+      "Pre-market and after-hours earnings identification",
+      "Market capitalization filtering",
+      "Weekly earnings calendar navigation",
+      "Analyst consensus forecasts",
+      "Historical earnings performance",
+      "Sortable earnings data tables",
+    ],
+    creator: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+  }}
 />
 
 <section

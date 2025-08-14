@@ -8,8 +8,21 @@
 </script>
 
 <SEO
-  title="Stocknear FAQs – Answers to Common Questions"
-  description="Find answers to the most frequently asked questions about Stocknear. Learn how to navigate our stock research platform efficiently."
+  title="Frequently Asked Questions - Stocknear Help Center"
+  description="Get answers to common questions about Stocknear's stock analysis platform. Find help with features, subscriptions, data sources, technical analysis tools, and investment research capabilities."
+  keywords="Stocknear FAQ, stock platform help, investment platform questions, stock analysis help, trading platform support, financial data questions, subscription help, platform features"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    name: "Stocknear FAQ",
+    description:
+      "Frequently asked questions about Stocknear stock analysis platform",
+    url: "https://stocknear.com/faq",
+    mainEntity: {
+      "@type": "Question",
+      name: "Common questions about Stocknear platform features and services",
+    },
+  }}
 />
 
 <section

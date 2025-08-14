@@ -416,8 +416,68 @@
 </script>
 
 <SEO
-  title="Stocknear AI Agent – Real-Time Market Insights, Options Flow, and News"
-  description="Get real-time stock market insights with Stocknear AI Agent. Analyze fundamentals, dark pool activity, options flow, and breaking market news – all in one place."
+  title="AI-Powered Stock Market Analysis - Financial AI Agent & Market Intelligence"
+  description="Advanced AI financial agent providing real-time stock analysis, market insights, and investment research. Chat with specialized AI agents for stock screening, earnings analysis, options flow tracking, dark pool activity, and market sentiment analysis. Get personalized investment recommendations and comprehensive market intelligence."
+  keywords="AI financial advisor, stock market AI, financial AI agent, AI investment analysis, automated stock research, AI trading insights, machine learning finance, financial chatbot, AI market analysis, algorithmic trading insights, AI portfolio analysis, artificial intelligence investing"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Stocknear AI Financial Agent",
+    description:
+      "AI-powered financial analysis platform providing real-time market insights, stock research, and investment recommendations through conversational AI",
+    url: "https://stocknear.com/chat",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Web Browser",
+    browserRequirements: "Modern web browser with JavaScript enabled",
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "AI Financial Agent",
+          item: "https://stocknear.com/chat",
+        },
+      ],
+    },
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
+    featureList: [
+      "AI-powered stock market analysis",
+      "Real-time financial data processing",
+      "Specialized AI agents for different market sectors",
+      "Natural language financial queries",
+      "Personalized investment recommendations",
+      "Dark pool activity analysis",
+      "Options flow tracking and analysis",
+      "Market sentiment analysis",
+      "Earnings and financial statement analysis",
+      "Portfolio optimization suggestions",
+    ],
+    creator: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: "https://stocknear.com/chat?query={search_term_string}",
+      },
+      "query-input": "required name=search_term_string",
+    },
+  }}
 />
 
 <div
@@ -793,7 +853,7 @@
               {/each}
             </div>
           </div>
-        {:else}
+        {:else if !data?.user}
           <div class="mx-auto w-full max-w-[850px]">
             <h2
               class="text-lg sm:text-xl text-start w-full font-semibold flex flex-row items-center"
@@ -827,10 +887,35 @@
                 Explore detailed financial data, analyst ratings, and technicals
                 for thousands of stocks.
               </p>
-              <a
-                class="bg-black dark:bg-white text-white dark:text-muted px-4 py-2 rounded sm:hover:bg-blue-700 inline-block text-sm sm:text-[1rem] font-semibold"
-                href="/login">Sign Up Today</a
+              <label
+                for="userLogin"
+                class="cursor-pointer bg-black dark:bg-white text-white dark:text-muted px-4 py-2 rounded sm:hover:bg-blue-700 inline-block text-sm sm:text-[1rem] font-semibold"
+                >Get Started</label
               >
+            </div>
+          </div>
+        {:else}
+          <div class="mx-auto w-full max-w-[850px]">
+            <h2
+              class="text-lg sm:text-xl text-start w-full font-semibold flex flex-row items-center"
+            >
+              <svg
+                aria-hidden="true"
+                focusable="false"
+                data-prefix="fasr"
+                data-icon="rectangle-vertical-history"
+                class="w-5 h-5 inline-block"
+                role="img"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 576 512"
+                ><path
+                  fill="currentColor"
+                  d="M240 48V464H528V48H240zM192 0h48H528h48V48 464v48H528 240 192V464 48 0zM96 48h48V464H96V48zM0 96H48V416H0V96z"
+                ></path></svg
+              > <span class="ml-2">Threads</span>
+            </h2>
+            <div class="pb-2 last:mb-10 mt-2">
+              Looks like we haven’t chatted before.
             </div>
           </div>
         {/if}

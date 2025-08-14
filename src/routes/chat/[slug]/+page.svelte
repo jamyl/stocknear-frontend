@@ -315,34 +315,34 @@
             if (json?.content) {
               assistantText = json?.content;
               pendingContent = assistantText;
-              
+
               // Batch updates for smoother rendering
               updateBuffer.push(assistantText);
-              
+
               if (batchTimeout) {
                 clearTimeout(batchTimeout);
               }
-              
+
               // Process batch updates
               batchTimeout = setTimeout(() => {
                 if (updateBuffer.length > 0) {
                   const latestContent = updateBuffer[updateBuffer.length - 1];
-                  
+
                   // Use requestAnimationFrame for smooth DOM update
                   if (animationFrameId) {
                     cancelAnimationFrame(animationFrameId);
                   }
-                  
+
                   animationFrameId = requestAnimationFrame(() => {
                     messages[idx].content = latestContent;
                     messages = [...messages]; // Trigger reactivity
                     animationFrameId = null;
                   });
-                  
+
                   updateBuffer = []; // Clear buffer after processing
                 }
               }, 30); // Batch updates every 30ms for smoother rendering
-              
+
               // Save periodically during streaming
               await saveChatWithDebounce(assistantText);
             }
@@ -353,19 +353,19 @@
       }
 
       isStreaming = false; // End streaming - disable
-      
+
       // Clear batch timeout
       if (batchTimeout) {
         clearTimeout(batchTimeout);
         batchTimeout = null;
       }
-      
+
       // Ensure final content is updated
       if (pendingContent && messages[idx]) {
         messages[idx].content = pendingContent;
         messages = [...messages];
       }
-      
+
       // Clear animation frame if pending
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
@@ -527,7 +527,7 @@
     if (saveTimeout) {
       clearTimeout(saveTimeout);
     }
-    
+
     if (animationFrameId) {
       cancelAnimationFrame(animationFrameId);
     }
@@ -595,8 +595,73 @@
 </script>
 
 <SEO
-  title="Stocknear AI Agent – Real-Time Market Insights, Options Flow, and News"
-  description="Get real-time stock market insights with Stocknear AI Agent. Analyze fundamentals, dark pool activity, options flow, and breaking market news – all in one place."
+  title="AI Financial Conversation - Personalized Stock Analysis & Investment Insights"
+  description="Continue your personalized AI-powered financial analysis conversation. Review detailed stock research, market insights, and investment recommendations from your AI financial advisor. Access conversation history, follow-up questions, and comprehensive market analysis tailored to your investment needs."
+  keywords="AI financial conversation, personalized stock analysis, AI investment advisor, financial chat history, personalized market insights, AI portfolio review, investment conversation, financial AI assistant, stock market consultation, AI trading advice"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "AI Financial Conversation",
+    description:
+      "Personalized AI financial analysis conversation with detailed stock research and investment insights",
+    url: "https://stocknear.com/chat",
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "AI Chat",
+          item: "https://stocknear.com/chat",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: "Conversation",
+          item: "https://stocknear.com/chat",
+        },
+      ],
+    },
+    mainEntity: {
+      "@type": "Conversation",
+      about: {
+        "@type": "Thing",
+        name: "Stock Market Analysis and Investment Research",
+      },
+      participant: [
+        {
+          "@type": "Organization",
+          name: "Stocknear AI Financial Agent",
+        },
+        {
+          "@type": "Person",
+          name: "Investor",
+        },
+      ],
+    },
+    creator: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    potentialAction: {
+      "@type": "CommunicateAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: "https://stocknear.com/chat",
+      },
+      object: {
+        "@type": "Thing",
+        name: "Financial Analysis Request",
+      },
+    },
+  }}
 />
 
 <section class="w-full max-w-[1400px] mx-auto min-h-[80vh] pt-5 px-4 lg:px-0">

@@ -1448,8 +1448,35 @@
 </script>
 
 <SEO
-    title="Stock Backtesting — Analyze & Optimize Strategies Free"
-    description="Build and test trading strategies without coding. Screen and filter stocks, apply indicators, run historical backtests, and optimize entries/exits—all in a fast, free no-code backtesting tool."
+    title="Stock Backtesting Tool - No-Code Trading Strategy Optimizer"
+    description="Build and backtest trading strategies without coding. Create custom strategies with technical indicators, screen stocks, run historical backtests, and optimize entries/exits with our free backtesting platform."
+    keywords="stock backtesting, trading strategy backtesting, no-code backtesting, strategy optimizer, trading strategy builder, historical backtesting, stock strategy testing, algorithmic trading, technical indicators backtesting"
+    structuredData={{
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: "Stock Backtesting Tool",
+        description:
+            "No-code trading strategy backtesting and optimization platform",
+        url: "https://stocknear.com/backtesting",
+        applicationCategory: "FinanceApplication",
+        operatingSystem: "Any",
+        offers: {
+            "@type": "Offer",
+            price: "0",
+            priceCurrency: "USD",
+        },
+        featureList: [
+            "No-code strategy builder",
+            "Historical backtesting",
+            "Technical indicators",
+            "Stock screening",
+            "Portfolio optimization",
+            "Performance analytics",
+            "Risk metrics",
+            "Trade history analysis",
+        ],
+        softwareRequirements: "Web Browser",
+    }}
 />
 
 <svelte:window on:scroll={handleScroll} />

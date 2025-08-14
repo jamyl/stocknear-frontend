@@ -173,8 +173,32 @@
 </script>
 
 <SEO
-  title="IPO Statistics and Charts"
-  description="Statistics and charts for initial public offerings (IPOs) on the US stock market. Annual data is available from 2015-2025 and monthly data for 2019-2025."
+  title="IPO Statistics & Historical Charts - Initial Public Offering Market Data"
+  description="Comprehensive IPO statistics and interactive charts for US stock market initial public offerings. Track annual and monthly IPO trends from 2015-2025, analyze market cycles, and discover IPO performance patterns."
+  keywords="IPO statistics, initial public offering charts, IPO market data, IPO trends, IPO analysis, historical IPO data, IPO performance, annual IPO statistics, monthly IPO data"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    "name": "IPO Statistics and Market Data",
+    "description": "Historical initial public offering statistics and performance data for US stock market",
+    "url": "https://stocknear.com/ipos/statistics",
+    "creator": {
+      "@type": "Organization",
+      "name": "Stocknear"
+    },
+    "temporalCoverage": "2015/2025",
+    "spatialCoverage": "United States",
+    "variableMeasured": [
+      "Number of IPOs",
+      "IPO Performance",
+      "Market Trends"
+    ],
+    "distribution": {
+      "@type": "DataDownload",
+      "contentUrl": "https://stocknear.com/ipos/statistics",
+      "encodingFormat": "text/html"
+    }
+  }}
 />
 
 <div class="w-full overflow-hidden m-auto">

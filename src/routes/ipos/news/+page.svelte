@@ -75,8 +75,26 @@
 </script>
 
 <SEO
-  title="Latest IPO News"
-  description="The latest news about initial public offerings (IPOs) on the stock market, including both recent and upcoming IPOs."
+  title="Latest IPO News - Initial Public Offering Market Updates & Analysis"
+  description="Stay updated with the latest IPO news, initial public offering announcements, market debuts, and upcoming IPO analysis. Real-time coverage of recent IPOs, pricing updates, and market performance insights."
+  keywords="latest IPO news, initial public offering news, IPO announcements, upcoming IPOs, IPO market updates, new IPO listings, IPO analysis, IPO pricing news, recent IPOs, IPO market coverage"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "NewsMediaOrganization",
+    "name": "IPO News Center",
+    "description": "Latest news and updates on initial public offerings and IPO market developments",
+    "url": "https://stocknear.com/ipos/news",
+    "sameAs": "https://stocknear.com",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "name": "Latest IPO News",
+      "url": "https://stocknear.com/ipos/news"
+    },
+    "about": {
+      "@type": "Thing",
+      "name": "Initial Public Offerings"
+    }
+  }}
 />
 
 <div class="w-full overflow-hidden m-auto mt-5">

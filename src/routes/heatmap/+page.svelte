@@ -138,17 +138,19 @@
 </script>
 
 <SEO
-  title="Stock Market Heatmap - S&P 500 Visual Performance Map "
-  description="Interactive S&P 500 stock market heatmap showing real-time performance of stocks, sectors, and industries. Visualize market trends, sector rotation, and stock performance with color-coded heat map. Free market visualization tool."
-  keywords="stock market heatmap, S&P 500 heatmap, market visualization, sector heatmap, stock performance map, market trends visualization, sector rotation map, stock heat map"
+  title="S&P 500 Stock Market Heatmap - Interactive Real-Time Performance Visualization"
+  description="Advanced S&P 500 stock market heatmap with real-time performance data, sector analysis, and market trend visualization. Track stock performance, sector rotation, and market momentum with our interactive color-coded heatmap tool. Features multiple timeframes and downloadable charts for professional analysis."
+  keywords="S&P 500 heatmap, stock market heatmap, real-time market visualization, sector performance heatmap, stock performance tracker, market trends analysis, sector rotation visualization, interactive stock heatmap, market momentum tracker, financial data visualization, trading heatmap, investment analysis tool"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: "Stock Market Heatmap",
+    name: "S&P 500 Stock Market Heatmap",
     description:
-      "Interactive S&P 500 market heatmap for visualizing stock and sector performance",
+      "Interactive S&P 500 market heatmap for real-time visualization of stock and sector performance with advanced filtering and analysis tools",
     url: "https://stocknear.com/heatmap",
     applicationCategory: "FinanceApplication",
+    operatingSystem: "Web Browser",
+    browserRequirements: "Modern web browser with JavaScript enabled",
     breadcrumb: {
       "@type": "BreadcrumbList",
       itemListElement: [
@@ -161,7 +163,7 @@
         {
           "@type": "ListItem",
           position: 2,
-          name: "Heatmap",
+          name: "Market Heatmap",
           item: "https://stocknear.com/heatmap",
         },
       ],
@@ -170,15 +172,23 @@
       "@type": "Offer",
       price: "0",
       priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
     },
     featureList: [
-      "Interactive S&P 500 heatmap",
-      "Real-time stock performance visualization",
-      "Sector and industry performance",
-      "Color-coded market trends",
-      "Multiple time periods",
-      "Drill-down capabilities",
+      "Real-time S&P 500 performance visualization",
+      "Interactive sector and industry heatmap",
+      "Multiple timeframe analysis (1D, 1W, 1M, 3M, 6M, 1Y, 3Y)",
+      "Color-coded performance indicators",
+      "Downloadable charts (PNG, JPG, SVG)",
+      "Professional market trend analysis",
+      "Sector rotation tracking",
+      "Market momentum visualization",
     ],
+    creator: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
   }}
 />
 

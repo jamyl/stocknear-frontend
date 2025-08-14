@@ -48,8 +48,28 @@
 </script>
 
 <SEO
-  title={`All ${data?.getYear} IPOs - A Complete List`}
-  description={`A list of all the initial public offerings (IPOs) on the US stock market in the year ${data?.getYear}.`}
+  title="{data?.getYear} IPOs List - Complete Initial Public Offering Directory"
+  description="Comprehensive list of all {data?.getYear} initial public offerings (IPOs) on the US stock market. Track IPO performance, pricing, returns since listing, and market debuts with detailed company information and historical data."
+  keywords="{data?.getYear} IPOs, initial public offerings {data?.getYear}, IPO list {data?.getYear}, {data?.getYear} IPO performance, recent IPOs, IPO calendar {data?.getYear}, new public companies {data?.getYear}"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "{data?.getYear} IPOs Directory",
+    "description": "Complete list of initial public offerings in {data?.getYear}",
+    "url": "https://stocknear.com/ipos/{data?.getYear}",
+    "about": {
+      "@type": "Thing",
+      "name": "Initial Public Offerings {data?.getYear}"
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "{data?.getYear} IPO List",
+      "description": "List of companies that went public in {data?.getYear}",
+      "numberOfItems": rawData?.length || 0
+    },
+    "temporalCoverage": "{data?.getYear}",
+    "spatialCoverage": "United States"
+  }}
 />
 
 {#key $page?.url?.pathname}

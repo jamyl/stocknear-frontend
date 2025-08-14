@@ -306,8 +306,58 @@
 </script>
 
 <SEO
-  title="Dividends Calendar"
-  description="A list of upcoming dividends on the US stock market, with dates, times and estimated revenue and dividends growth."
+  title="Dividend Calendar - Ex-Dividend Dates & Payment Schedule for Stocks"
+  description="Track dividend payments with our comprehensive dividend calendar featuring ex-dividend dates, payment dates, and dividend amounts for all US dividend-paying stocks. Monitor upcoming dividend distributions, cash amounts, and payment schedules to optimize your dividend investment strategy and income planning."
+  keywords="dividend calendar, ex-dividend dates, dividend payments, dividend schedule, dividend stocks, dividend income, dividend yields, payment dates, cash dividends, dividend distribution, dividend investing, income investing, dividend tracker, quarterly dividends"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Dividend Calendar",
+    description:
+      "Comprehensive dividend calendar tracking ex-dividend dates, payment dates, and dividend amounts for US dividend-paying stocks",
+    url: "https://stocknear.com/dividends-calendar",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Web Browser",
+    browserRequirements: "Modern web browser with JavaScript enabled",
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Dividend Calendar",
+          item: "https://stocknear.com/dividends-calendar",
+        },
+      ],
+    },
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
+    featureList: [
+      "Real-time dividend payment tracking",
+      "Ex-dividend date notifications",
+      "Payment date scheduling",
+      "Dividend amount calculations",
+      "Market capitalization filtering",
+      "Weekly dividend calendar view",
+      "Dividend history analysis",
+      "Income planning tools",
+    ],
+    creator: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+  }}
 />
 
 <section

@@ -300,8 +300,58 @@
 </script>
 
 <SEO
-  title="Worldwide Economic Calendar"
-  description="A list of upcoming economic events on the US stock market, with dates, times and estimation."
+  title="Economic Calendar - Live Market-Moving Events & Financial Data Releases"
+  description="Stay ahead with our comprehensive economic calendar featuring real-time financial events, economic indicators, and market-moving data releases. Track GDP, inflation, employment data, central bank meetings, and key economic announcements with precise timing and forecasts. Essential tool for traders and investors to anticipate market volatility."
+  keywords="economic calendar, financial events, market calendar, economic indicators, GDP release, inflation data, employment statistics, central bank meetings, economic news, market-moving events, financial data releases, economic announcements, trading calendar, investment planning"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Economic Calendar",
+    description:
+      "Comprehensive economic calendar tracking global financial events, economic indicators, and market-moving data releases",
+    url: "https://stocknear.com/economic-calendar",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Web Browser",
+    browserRequirements: "Modern web browser with JavaScript enabled",
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Economic Calendar",
+          item: "https://stocknear.com/economic-calendar",
+        },
+      ],
+    },
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
+    featureList: [
+      "Real-time economic event tracking",
+      "Global financial calendar coverage",
+      "Economic indicator forecasts vs actuals",
+      "Country-based event filtering",
+      "Importance level classification",
+      "Weekly calendar navigation",
+      "Market impact assessment",
+      "Time zone adjusted displays",
+    ],
+    creator: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+  }}
 />
 
 <section
