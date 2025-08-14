@@ -66,51 +66,52 @@
   structuredData={{
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "Stocknear Pricing Plans",
-    "description": "Premium subscription plans for advanced stock analysis and trading tools",
-    "url": "https://stocknear.com/pricing",
-    "breadcrumb": {
+    name: "Stocknear Pricing Plans",
+    description:
+      "Premium subscription plans for advanced stock analysis and trading tools",
+    url: "https://stocknear.com/pricing",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Pricing",
-          "item": "https://stocknear.com/pricing"
-        }
-      ]
+          position: 2,
+          name: "Pricing",
+          item: "https://stocknear.com/pricing",
+        },
+      ],
     },
-    "offers": [
+    offers: [
       {
         "@type": "Offer",
-        "name": "Pro Plan",
-        "price": "14.99",
-        "priceCurrency": "USD",
-        "priceSpecification": {
+        name: "Pro Plan",
+        price: "20",
+        priceCurrency: "USD",
+        priceSpecification: {
           "@type": "UnitPriceSpecification",
-          "price": "14.99",
-          "priceCurrency": "USD",
-          "unitCode": "MON"
-        }
+          price: "20",
+          priceCurrency: "USD",
+          unitCode: "MON",
+        },
       },
       {
         "@type": "Offer",
-        "name": "Lifetime Plan",
-        "price": "299",
-        "priceCurrency": "USD",
-        "priceSpecification": {
+        name: "Lifetime Plan",
+        price: "449",
+        priceCurrency: "USD",
+        priceSpecification: {
           "@type": "UnitPriceSpecification",
-          "price": "299",
-          "priceCurrency": "USD"
-        }
-      }
-    ]
+          price: "449",
+          priceCurrency: "USD",
+        },
+      },
+    ],
   }}
 />
 

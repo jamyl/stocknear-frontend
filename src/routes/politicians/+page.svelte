@@ -297,32 +297,33 @@
   structuredData={{
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Congress Trading Tracker",
-    "description": "Real-time tracking of stock trades by US politicians and congress members",
-    "url": "https://stocknear.com/politicians",
-    "applicationCategory": "FinanceApplication",
-    "breadcrumb": {
+    name: "Congress Trading Tracker",
+    description:
+      "Real-time tracking of stock trades by US politicians and congress members",
+    url: "https://stocknear.com/politicians",
+    applicationCategory: "FinanceApplication",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Politicians Trading",
-          "item": "https://stocknear.com/politicians"
-        }
-      ]
+          position: 2,
+          name: "Politicians Trading",
+          item: "https://stocknear.com/politicians",
+        },
+      ],
     },
-    "offers": {
+    offers: {
       "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    }
+      price: "0",
+      priceCurrency: "USD",
+    },
   }}
 />
 
