@@ -703,7 +703,7 @@
 </script>
 
 <SEO
-  title={`${data?.companyName} (${$indexTicker}) Index - Real-Time Price ${$currentPortfolioPrice !== null && $currentPortfolioPrice !== 0 ? "$" + $currentPortfolioPrice : "$" + data?.getStockQuote?.price?.toFixed(2)} ${displayLegend?.change >= 0 ? "▲" : "▼"} ${displayLegend?.change}% - Market Index Analysis`}
+  title={`${$indexTicker} ${$currentPortfolioPrice !== null && $currentPortfolioPrice !== 0 ? "$" + $currentPortfolioPrice : "$" + data?.getStockQuote?.price?.toFixed(2)} ${displayLegend?.change >= 0 ? "▲" : "▼"} ${displayLegend?.change}% - Market Index Analysis`}
   description={`Complete ${data?.companyName} (${$indexTicker}) index analysis with real-time price ${$currentPortfolioPrice !== null && $currentPortfolioPrice !== 0 ? "$" + $currentPortfolioPrice : "$" + data?.getStockQuote?.price?.toFixed(2)}, market cap weighting, index constituents, and sector allocation. Track index performance, volatility patterns, and market representation for strategic asset allocation.`}
   keywords={`${$indexTicker} index, ${data?.companyName}, market index analysis, index constituents, market cap weighted index, sector allocation, index performance, market representation, benchmark analysis, index tracking`}
   structuredData={{
