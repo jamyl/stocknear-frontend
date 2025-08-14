@@ -12,8 +12,8 @@
 
   const baseURL = "https://stocknear.com";
   const canonical = baseURL + ($page?.url?.pathname || "");
-  // Use astronaut image as default OG image
-  const defaultImage = `${baseURL}/pwa-192x192.png`;
+  // Use larger PWA image for better social sharing
+  const defaultImage = image || `${baseURL}/pwa-512x512.png`;
   const siteName = "Stocknear";
   const twitterHandle = "@stocknear";
 
@@ -69,8 +69,9 @@
   <meta property="og:title" content={`${title} - ${siteName}`} />
   <meta property="og:description" content={description} />
   <meta property="og:image" content={defaultImage} />
-  <meta property="og:image:width" content="200" />
-  <meta property="og:image:height" content="200" />
+  <meta property="og:image:width" content="512" />
+  <meta property="og:image:height" content="512" />
+  <meta property="og:image:type" content="image/png" />
   <meta property="og:image:alt" content={`${title} - ${siteName}`} />
 
   {#if article}
@@ -93,7 +94,7 @@
   {/if}
 
   <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content={twitterHandle} />
   <meta name="twitter:creator" content={twitterHandle} />
   <meta name="twitter:title" content={`${title} - ${siteName}`} />
