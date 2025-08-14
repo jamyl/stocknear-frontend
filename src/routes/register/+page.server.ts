@@ -1,18 +1,8 @@
 import { error, fail, redirect } from "@sveltejs/kit";
 import { registerUserSchema } from "$lib/schemas";
-import { validateData } from "$lib/utils";
+import { validateData, checkDisposableEmail} from "$lib/utils";
 
-async function checkDisposableEmail(email) {
-  const url = `https://disposable.debounce.io/?email=${encodeURIComponent(email)}`;
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  const output = (await response.json())?.disposable ?? false;
-  return output;
-}
+
 
 export const actions = {
   register: async ({ locals, request }) => {

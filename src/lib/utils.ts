@@ -1079,6 +1079,31 @@ export function convertTimestamp(timestamp) {
   });
 }
 
+export async function checkDisposableEmail(email) {
+  const url = `https://disposable.debounce.io/?email=${encodeURIComponent(email)}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const output = (await response.json())?.disposable ?? false;
+  return output;
+}
+
+export function validateReturnUrl(returnUrl: string, origin: string) {
+    try {
+        const targetUrl = new URL(returnUrl, origin);
+        if (targetUrl.origin !== origin) {
+            return '/';
+        }
+        return targetUrl.pathname + targetUrl.search;
+    } catch {
+        return '/';
+    }
+}
+
+
 /*
 function convertNYTimeToLocalTime(nyTimeString) {
     // New York Time Zone

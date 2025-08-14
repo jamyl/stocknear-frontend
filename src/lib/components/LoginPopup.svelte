@@ -6,6 +6,7 @@
   import Input from "$lib/components/Input.svelte";
   import { screenWidth } from "$lib/store";
   import { page } from "$app/stores";
+  import { browser } from "$app/environment";
 
   export let form;
 
@@ -39,7 +40,7 @@
         default:
           await update();
       }
-
+      /*
       setTimeout(() => {
         if (
           ["redirect", "success"]?.includes(result.type) &&
@@ -52,6 +53,7 @@
           anchor.dispatchEvent(new MouseEvent("click"));
         }
       }, 280);
+      */
 
       loading = false;
     };
@@ -83,7 +85,7 @@
         default:
           await update();
       }
-
+      /*
       setTimeout(() => {
         if (
           ["redirect", "success"]?.includes(result.type) &&
@@ -96,6 +98,7 @@
           anchor.dispatchEvent(new MouseEvent("click"));
         }
       }, 280);
+      */
 
       loading = false;
     };
@@ -193,7 +196,9 @@ const output = await response.json();
 
         <div class="relative">
           <form
-            action="?/login"
+            action="?/login&returnUrl={browser
+              ? encodeURIComponent($page.url.pathname + $page.url.search)
+              : ''}"
             method="POST"
             use:enhance={submitLogin}
             class="flex flex-col text-start items-center space-y-2 w-full md:w-5/6 md:ml-auto md:mr-auto"
@@ -243,7 +248,12 @@ const output = await response.json();
             </div>
 
             <div class="flex flex-row items-center gap-x-5 pb-6">
-              <form method="post" action="?/oauth2">
+              <form
+                method="post"
+                action="?/oauth2&returnUrl={browser
+                  ? encodeURIComponent($page.url.pathname + $page.url.search)
+                  : ''}"
+              >
                 <input class="hidden" name="provider" value="google" />
                 <button
                   on:click={() => (oauthLoading = !oauthLoading)}
@@ -292,7 +302,12 @@ const output = await response.json();
                   >
                 </button>
               </form>
-              <form method="post" action="?/oauth2">
+              <form
+                method="post"
+                action="?/oauth2&returnUrl={browser
+                  ? encodeURIComponent($page.url.pathname + $page.url.search)
+                  : ''}"
+              >
                 <input class="hidden" name="provider" value="discord" />
                 <button
                   on:click={() => (oauthLoading = !oauthLoading)}
@@ -826,7 +841,12 @@ const output = await response.json();
                 </button>
               </form>
 
-              <form method="post" action="?/oauth2">
+              <form
+                method="post"
+                action="?/oauth2&returnUrl={browser
+                  ? encodeURIComponent($page.url.pathname + $page.url.search)
+                  : ''}"
+              >
                 <input class="hidden" name="provider" value="github" />
                 <button
                   on:click={() => (oauthLoading = !oauthLoading)}
@@ -877,7 +897,9 @@ const output = await response.json();
         <div class="relative">
           <form
             method="POST"
-            action="?/register"
+            action="?/register&returnUrl={browser
+              ? encodeURIComponent($page.url.pathname + $page.url.search)
+              : ''}"
             use:enhance={submitRegistration}
             class="flex flex-col text-start items-center space-y-2 w-full md:w-5/6 pt-4 md:ml-auto md:mr-auto"
           >
@@ -933,7 +955,12 @@ const output = await response.json();
             </div>
 
             <div class="flex flex-row items-center gap-x-5 pb-6">
-              <form method="post" action="?/oauth2">
+              <form
+                method="post"
+                action="?/oauth2&returnUrl={browser
+                  ? encodeURIComponent($page.url.pathname + $page.url.search)
+                  : ''}"
+              >
                 <input class="hidden" name="provider" value="google" />
                 <button
                   on:click={() => (oauthLoading = !oauthLoading)}
@@ -982,7 +1009,12 @@ const output = await response.json();
                   >
                 </button>
               </form>
-              <form method="post" action="?/oauth2">
+              <form
+                method="post"
+                action="?/oauth2&returnUrl={browser
+                  ? encodeURIComponent($page.url.pathname + $page.url.search)
+                  : ''}"
+              >
                 <input class="hidden" name="provider" value="discord" />
                 <button
                   on:click={() => (oauthLoading = !oauthLoading)}
@@ -1516,7 +1548,12 @@ const output = await response.json();
                 </button>
               </form>
 
-              <form method="post" action="?/oauth2">
+              <form
+                method="post"
+                action="?/oauth2&returnUrl={browser
+                  ? encodeURIComponent($page.url.pathname + $page.url.search)
+                  : ''}"
+              >
                 <input class="hidden" name="provider" value="github" />
                 <button
                   on:click={() => (oauthLoading = !oauthLoading)}

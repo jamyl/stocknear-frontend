@@ -57,6 +57,23 @@ export const GET = async ({ locals, url, cookies }) => {
     redirect(302, "/register");
   }
 
+  // Get return URL from cookie and validate it
+  const returnUrl = cookies?.get("returnUrl");
+  cookies.delete("returnUrl", { path: "/" });
+  
+  if (returnUrl) {
+    // Validate the return URL to ensure it's safe
+    try {
+      const targetUrl = new URL(returnUrl, url.origin);
+      if (targetUrl.origin === url.origin) {
+        redirect(302, targetUrl.pathname + targetUrl.search);
+      }
+    } catch {
+      // Invalid URL, redirect to home
+    }
+  }
+  
+  // Fallback to path cookie or home
   if (cookies?.get("path")) {
     redirect(301, cookies?.get("path"));
   } else {

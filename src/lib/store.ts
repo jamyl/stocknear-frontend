@@ -50,7 +50,7 @@ export const shouldUpdatePriceChart = writable(<boolean>false);
 export const selectedTimePeriod =  writable(<string>"");
 export const coolMode = writable(<boolean>false);
 
-export const timeFrame =writable(<string>"10Y");
+export const timeFrame =writable(<string>"5Y");
 
 export const closedPWA = writable(<boolean>false);
 
