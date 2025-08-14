@@ -774,8 +774,35 @@
 </script>
 
 <SEO
-  title="Stock Comparison Tool"
-  description="Compare Stocks side by side, including charts, performance, statistics, financials, and more."
+  title="Stock Comparison Tool - Compare Stocks Side by Side"
+  description="Compare stocks side by side with interactive charts, financial metrics, performance analysis, and key statistics. Analyze multiple companies across price, revenue, market cap, ratios, and more financial data."
+  keywords="stock comparison tool, compare stocks, stock analysis, side by side comparison, financial metrics comparison, stock performance comparison, investment analysis, stock charts comparison, earnings comparison"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Stock Comparison Tool",
+    description:
+      "Interactive tool for comparing multiple stocks side by side with charts and financial analysis",
+    url: "https://stocknear.com/compare",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Any",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    featureList: [
+      "Side-by-side stock comparison",
+      "Interactive financial charts",
+      "Performance metrics analysis",
+      "Historical data comparison",
+      "Multiple timeframe analysis",
+      "Revenue and earnings comparison",
+      "Market cap analysis",
+      "Financial ratios comparison",
+      "Return on investment tracking",
+    ],
+  }}
 />
 
 <section
