@@ -13,7 +13,9 @@
   const baseURL = "https://stocknear.com";
   const canonical = baseURL + ($page?.url?.pathname || "");
   // Use larger PWA image for better social sharing
-  const defaultImage = image || `${baseURL}/pwa-512x512.png`;
+  // const defaultImage = image || `${baseURL}/pwa-512x512.png`;
+  const defaultImage = image;
+
   const siteName = "Stocknear";
   const twitterHandle = "@stocknear";
 
