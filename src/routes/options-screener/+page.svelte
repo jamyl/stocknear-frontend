@@ -1156,8 +1156,38 @@
 </script>
 
 <SEO
-  title="Free Options Screener - Search, Filter and Analyze Options"
-  description={`A free options screener to search, filter, and analyze options by ${allRows?.length} different indicators and metrics.`}
+  title="Advanced Options Screener - Free Options Filter & Analysis Tool"
+  description="Powerful options screener with {allRows?.length || 'comprehensive'} filtering criteria. Screen options by implied volatility, open interest, volume, Greeks, and expiration dates. Find high-probability options trades with real-time options chain data."
+  keywords="options screener, free options screener, options filter, options scanner, implied volatility screener, options chain analysis, high volume options, options trading tool, Greeks screener, open interest analysis"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Options Screener Tool",
+    "description": "Advanced options screening and filtering platform with real-time options market data",
+    "url": "https://stocknear.com/options-screener",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Multi-criteria options filtering",
+      "Implied volatility screening",
+      "Open interest analysis",
+      "Options volume filtering",
+      "Greeks-based screening",
+      "Expiration date filtering",
+      "Real-time options data",
+      "Custom screening strategies"
+    ],
+    "softwareRequirements": "Web Browser",
+    "provider": {
+      "@type": "Organization",
+      "name": "Stocknear"
+    }
+  }}
 />
 
 <svelte:window on:scroll={handleScroll} />

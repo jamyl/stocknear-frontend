@@ -2926,8 +2926,40 @@ const handleKeyDown = (event) => {
 </script>
 
 <SEO
-  title="Free Stock Screener - Search, Filter and Analyze Stocks"
-  description={`A free stock screener to search, filter and analyze stocks by ${allRows?.length} different indicators and metrics. The screener data is updated once per minute.`}
+  title="Advanced Stock Screener - Free Stock Filter & Analysis Tool"
+  description="Powerful stock screener with {allRows?.length ||
+    'advanced'} filtering criteria. Screen stocks by fundamentals, technicals, valuation metrics, and performance indicators. Real-time data updated every minute for optimal stock discovery and analysis."
+  keywords="stock screener, free stock screener, stock filter, stock scanner, fundamental screener, technical screener, value stocks screener, growth stocks screener, dividend stocks screener, stock analysis tool"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Stock Screener Tool",
+    description:
+      "Advanced stock screening and filtering platform with real-time market data",
+    url: "https://stocknear.com/stock-screener",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Any",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    featureList: [
+      "Multi-criteria stock filtering",
+      "Fundamental analysis screening",
+      "Technical indicator filters",
+      "Valuation metrics screening",
+      "Real-time data updates",
+      "Custom screening strategies",
+      "Performance analytics",
+      "Export capabilities",
+    ],
+    softwareRequirements: "Web Browser",
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+    },
+  }}
 />
 
 <svelte:window on:scroll={handleScroll} />

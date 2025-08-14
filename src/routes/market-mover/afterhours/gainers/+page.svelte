@@ -21,11 +21,31 @@
     { name: "% Change", rule: "changesPercentage" },
     { name: "Volume", rule: "volume" },
   ];
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Top After-Hours Stock Gainers Today",
+    "description": "Real-time list of the best performing stocks in after-hours trading, featuring stocks with highest percentage increases during extended hours.",
+    "url": "https://stocknear.com/market-mover/afterhours/gainers",
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "After-Hours Stock Gainers",
+      "description": "Top performing stocks in after-hours trading by percentage increase"
+    },
+    "about": {
+      "@type": "Thing",
+      "name": "After-Hours Stock Trading Gainers",
+      "description": "Stocks with highest percentage price increases during after-hours extended hours trading"
+    }
+  };
 </script>
 
 <SEO
-  title="Top Aftermarket Gainers Today"
-  description="Explore today's top aftermarket stock gainers based on percentage increase. View extended hours stock performance, volume, market cap, and more."
+  title="Top After-Hours Stock Gainers Today - Extended Hours Winners"
+  description="Discover today's top after-hours stock gainers with highest percentage increases. Track extended hours trading performance, aftermarket winners, evening movers, and post-market stock activity."
+  keywords="afterhours gainers, after-hours stocks, extended hours trading, aftermarket winners, evening trading, post-market movers, extended hours gainers, aftermarket trading, after-hours performance"
+  {structuredData}
 />
 <Table
   {data}
