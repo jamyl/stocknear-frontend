@@ -137,32 +137,34 @@
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Top Wall Street Stock Analysts",
-    "description": "Comprehensive ranking of Wall Street equity research analysts by performance metrics",
-    "url": "https://stocknear.com/analysts",
-    "breadcrumb": {
+    name: "Top Wall Street Stock Analysts",
+    description:
+      "Comprehensive ranking of Wall Street equity research analysts by performance metrics",
+    url: "https://stocknear.com/analysts",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Top Wall Street Analysts",
-          "item": "https://stocknear.com/analysts"
-        }
-      ]
+          position: 2,
+          name: "Top Wall Street Analysts",
+          item: "https://stocknear.com/analysts",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "Wall Street Analyst Rankings",
-      "description": "List of equity research analysts ranked by success rate and average returns",
-      "numberOfItems": rawData?.length || 0
-    }
+      name: "Wall Street Analyst Rankings",
+      description:
+        "List of equity research analysts ranked by success rate and average returns",
+      numberOfItems: rawData?.length || 0,
+    },
   }}
 />
 

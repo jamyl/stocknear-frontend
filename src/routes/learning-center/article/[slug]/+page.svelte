@@ -19,11 +19,50 @@
 </script>
 
 <SEO
-  title={article?.title}
-  description={article?.abstract}
+  title="{article?.title}"
+  description="{article?.abstract}"
+  keywords="stock market education, investment tutorial, {article?.title?.toLowerCase()}, learn investing, trading strategy, financial education, investment guide, stock analysis tutorial"
   image={article?.cover
     ? getImageURL(article?.collectionId, article?.id, article?.cover)
     : ""}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "EducationalArticle",
+    "headline": article?.title,
+    "description": article?.abstract,
+    "image": article?.cover ? getImageURL(article?.collectionId, article?.id, article?.cover) : "https://stocknear.com/pwa-512x512.png",
+    "author": {
+      "@type": "Organization",
+      "name": "Stocknear",
+      "url": "https://stocknear.com"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Stocknear",
+      "url": "https://stocknear.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://stocknear.com/pwa-512x512.png"
+      }
+    },
+    "datePublished": article?.created,
+    "dateModified": article?.updated,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://stocknear.com/learning-center/article/${data?.getParams}`
+    },
+    "about": {
+      "@type": "Thing",
+      "name": "Stock Market Education"
+    },
+    "educationalLevel": "beginner",
+    "learningResourceType": "tutorial",
+    "audience": {
+      "@type": "EducationalAudience",
+      "educationalRole": "student"
+    },
+    "wordCount": article?.description?.replace(/<[^>]*>/g, '')?.split(' ')?.length || 0
+  }}
 />
 
 <!--

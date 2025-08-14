@@ -14,8 +14,34 @@
 </script>
 
 <SEO
-  title="Learning Center"
-  description="Explore Stocknear's comprehensive Learning Center to enhance your trading strategies, understand key concepts, and leverage advanced features for smarter investments."
+  title="Learning Center - Stock Market Education & Investment Tutorials"
+  description="Master stock market investing with our comprehensive Learning Center. Free tutorials on trading strategies, technical analysis, fundamental analysis, portfolio management, and investment education for beginners to advanced traders."
+  keywords="stock market education, investment tutorials, trading strategies, learn investing, stock analysis tutorials, financial education, investment guide, stock market basics, portfolio management, technical analysis course"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "Stocknear Learning Center",
+    "description": "Comprehensive stock market education and investment tutorials",
+    "url": "https://stocknear.com/learning-center",
+    "educationalUse": "Investment Education",
+    "audience": {
+      "@type": "EducationalAudience",
+      "educationalRole": "student"
+    },
+    "teaches": [
+      "Stock Market Investing",
+      "Technical Analysis",
+      "Fundamental Analysis", 
+      "Portfolio Management",
+      "Trading Strategies"
+    ],
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Educational Articles",
+      "description": "Stock market education and investment tutorial articles",
+      "numberOfItems": allBlogPosts?.length || 0
+    }
+  }}
 />
 
 <section

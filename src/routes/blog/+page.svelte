@@ -14,9 +14,32 @@
 </script>
 
 <SEO
-  title="Stock
-    Analysis Blog"
-  description="Get the latest blog post to understand and invest correctly into companies."
+  title="Stock Analysis Blog - Investment Insights & Market Analysis"
+  description="Expert stock analysis blog with investment insights, market trends, company research, and financial analysis. Learn how to invest correctly with our comprehensive stock market guides and investment strategies."
+  keywords="stock analysis blog, investment insights, market analysis, stock market blog, investment strategies, company research, financial analysis, stock market trends, investment education, market commentary"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "Stock Analysis Blog",
+    "description": "Expert investment insights and stock market analysis blog",
+    "url": "https://stocknear.com/blog",
+    "author": {
+      "@type": "Organization",
+      "name": "Stocknear",
+      "url": "https://stocknear.com"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Stocknear",
+      "url": "https://stocknear.com"
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Blog Posts",
+      "description": "Stock analysis and investment insight articles",
+      "numberOfItems": allBlogPosts?.length || 0
+    }
+  }}
 />
 
 <section
