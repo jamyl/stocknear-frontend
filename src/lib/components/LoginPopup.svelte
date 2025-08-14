@@ -40,7 +40,7 @@
         default:
           await update();
       }
-      /*
+
       setTimeout(() => {
         if (
           ["redirect", "success"]?.includes(result.type) &&
@@ -53,7 +53,6 @@
           anchor.dispatchEvent(new MouseEvent("click"));
         }
       }, 280);
-      */
 
       loading = false;
     };
@@ -85,11 +84,11 @@
         default:
           await update();
       }
-      /*
+
       setTimeout(() => {
         if (
           ["redirect", "success"]?.includes(result.type) &&
-          $page?.url?.pathname === "/pricing"
+          $page?.url?.pathname
         ) {
           const anchor = document.createElement("a");
           anchor.href = "/pricing";
@@ -98,7 +97,6 @@
           anchor.dispatchEvent(new MouseEvent("click"));
         }
       }, 280);
-      */
 
       loading = false;
     };
