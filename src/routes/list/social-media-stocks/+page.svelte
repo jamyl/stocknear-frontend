@@ -13,11 +13,65 @@
     rawData?.reduce((total, stock) => total + stock?.revenue, 0) ?? 0;
 </script>
 
-<SEO title="A List of Social Media Company Stocks" description="" />
+<SEO
+  title="Social Media Stocks List - Social Media Company Stocks | Stocknear"
+  description="Complete list of social media company stocks including Meta, X (Twitter), Snap, Pinterest and other social networking platforms. Analyze market cap, revenue, and growth metrics of social media investments."
+  keywords="social media stocks, social media company stocks, META stock, SNAP stock, PINS stock, social networking stocks, social platform stocks, digital media stocks"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Social Media Stocks List",
+    "description": "Complete directory of social media companies and social networking platforms",
+    "url": "https://stocknear.com/list/social-media-stocks",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Stock Lists",
+          "item": "https://stocknear.com/list"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Social Media Stocks",
+          "item": "https://stocknear.com/list/social-media-stocks"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Social Media Companies Directory",
+      "description": "List of social media and social networking companies with market capitalization data",
+      "numberOfItems": rawData?.length || 0
+    }
+  }}
+/>
 
-<section class="w-full overflow-hidden m-auto">
+<section class="w-full max-w-3xl sm:max-w-[1400px] overflow-hidden min-h-screen pt-5 pb-40 px-3">
+  <div class="text-sm sm:text-[1rem] breadcrumbs">
+    <ul>
+      <li><a href="/" class="text-muted dark:text-gray-300">Home</a></li>
+      <li><a href="/list" class="text-muted dark:text-gray-300">Stock Lists</a></li>
+      <li class="text-muted dark:text-gray-300">Social Media Stocks</li>
+    </ul>
+  </div>
+
+  <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px] mt-5">
+    <h1 class="mb-1 text-2xl sm:text-3xl font-bold">
+      Social Media Stocks List
+    </h1>
+  </div>
+
   <Infobox
-    text="This list includes stocks of companies who own social networks or have a significant percentage of their operations involved with social media."
+    text="Comprehensive list of social media company stocks including Meta, Snap, Pinterest, and other companies that own social networks or have significant social media operations. Analyze the performance of leading social networking platforms and digital media companies."
   />
 
   <div

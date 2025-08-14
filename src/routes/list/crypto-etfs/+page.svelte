@@ -120,13 +120,64 @@
 </script>
 
 <SEO
-  title="Crypto ETFs - Complete List of Cryptocurrency Funds"
-  description="Browse a full list of crypto ETFs trading on the US stock market. Gain exposure to major cryptocurrencies like Bitcoin, Ethereum, and more through regulated exchange-traded funds."
+  title="Crypto ETFs List - Complete Cryptocurrency ETF Directory | Stocknear"
+  description="Comprehensive list of cryptocurrency ETFs trading on US stock exchanges. Compare Bitcoin, Ethereum, and blockchain ETFs with expense ratios, assets under management, and real-time performance. Track BITO, ETHE, BLOK and more crypto funds."
+  keywords="crypto ETFs, cryptocurrency ETFs, crypto ETF list, bitcoin ETFs, ethereum ETFs, blockchain ETFs, crypto investment funds, cryptocurrency exchange traded funds, BITO ETF, ETHE ETF, BLOK ETF"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Crypto ETFs List",
+    "description": "Complete directory of cryptocurrency exchange-traded funds available on US stock exchanges",
+    "url": "https://stocknear.com/list/crypto-etfs",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Stock Lists",
+          "item": "https://stocknear.com/list"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Crypto ETFs",
+          "item": "https://stocknear.com/list/crypto-etfs"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Cryptocurrency ETF Directory",
+      "description": "List of cryptocurrency exchange-traded funds with performance metrics and expense ratios",
+      "numberOfItems": rawData?.length || 0
+    }
+  }}
 />
 
-<section class="w-full overflow-hidden m-auto">
+<section class="w-full max-w-3xl sm:max-w-[1400px] overflow-hidden min-h-screen pt-5 pb-40 px-3">
+  <div class="text-sm sm:text-[1rem] breadcrumbs">
+    <ul>
+      <li><a href="/" class="text-muted dark:text-gray-300">Home</a></li>
+      <li><a href="/list" class="text-muted dark:text-gray-300">Stock Lists</a></li>
+      <li class="text-muted dark:text-gray-300">Crypto ETFs</li>
+    </ul>
+  </div>
+
+  <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px] mt-5">
+    <h1 class="mb-1 text-2xl sm:text-3xl font-bold">
+      Crypto ETFs List
+    </h1>
+  </div>
+
   <Infobox
-    text="A list of all the crypto ETFs that are currently active. These exchange-traded funds provide exposure to the price of bitcoin, etherum or the crypto industry generally."
+    text="Comprehensive list of cryptocurrency ETFs that are currently active. These exchange-traded funds provide exposure to Bitcoin, Ethereum, and the crypto industry generally."
   />
 
   <div

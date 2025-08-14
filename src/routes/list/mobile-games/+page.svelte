@@ -1,6 +1,7 @@
 <script lang="ts">
   import { abbreviateNumber } from "$lib/utils";
   import Table from "$lib/components/Table/Table.svelte";
+  import Infobox from "$lib/components/Infobox.svelte";
   import SEO from "$lib/components/SEO.svelte";
 
   export let data;
@@ -12,9 +13,67 @@
     rawData?.reduce((total, stock) => total + stock?.revenue, 0) ?? 0;
 </script>
 
-<SEO title="A List of Mobile Game Stocks" description="" />
+<SEO
+  title="Mobile Game Stocks List - Mobile Gaming Companies | Stocknear"
+  description="Complete list of mobile gaming and mobile game developer stocks. Analyze companies developing mobile games, gaming apps, and mobile entertainment with market cap, revenue, and growth metrics."
+  keywords="mobile game stocks, mobile gaming stocks, mobile game developers, gaming app stocks, mobile entertainment stocks, game developer stocks, smartphone gaming companies"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Mobile Game Stocks List",
+    "description": "Complete directory of mobile gaming companies and mobile game developers",
+    "url": "https://stocknear.com/list/mobile-games",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Stock Lists",
+          "item": "https://stocknear.com/list"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Mobile Game Stocks",
+          "item": "https://stocknear.com/list/mobile-games"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Mobile Gaming Companies Directory",
+      "description": "List of mobile gaming and mobile game development companies with market capitalization data",
+      "numberOfItems": rawData?.length || 0
+    }
+  }}
+/>
 
-<section class="w-full overflow-hidden m-auto">
+<section class="w-full max-w-3xl sm:max-w-[1400px] overflow-hidden min-h-screen pt-5 pb-40 px-3">
+  <div class="text-sm sm:text-[1rem] breadcrumbs">
+    <ul>
+      <li><a href="/" class="text-muted dark:text-gray-300">Home</a></li>
+      <li><a href="/list" class="text-muted dark:text-gray-300">Stock Lists</a></li>
+      <li class="text-muted dark:text-gray-300">Mobile Game Stocks</li>
+    </ul>
+  </div>
+
+  <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px] mt-5">
+    <h1 class="mb-1 text-2xl sm:text-3xl font-bold">
+      Mobile Game Stocks List
+    </h1>
+  </div>
+
+  <Infobox
+    text="Comprehensive list of mobile gaming and mobile game developer stocks. Includes companies developing popular mobile games, gaming apps, and mobile entertainment platforms. Track the performance of the rapidly growing mobile gaming industry."
+  />
+
   <div
     class="shadow-xs mt-6 mb-4 flex flex-col divide-y divide-gray-300 dark:divide-gray-600 rounded border border-gray-300 dark:border-gray-600 sm:grid sm:grid-cols-3 sm:divide-x sm:divide-y-0"
   >

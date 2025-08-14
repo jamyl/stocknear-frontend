@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from "$app/stores";
 
-  export let title = "Free Online Stock Analysis for Investors";
+  export let title = "Advanced Stock Analysis & Financial Data Platform";
   export let description =
     "Stocknear gives you realtime market insights for your stock analysis with up-to-date financials, news, and interactive charts.";
   export let keywords: string | null = null;

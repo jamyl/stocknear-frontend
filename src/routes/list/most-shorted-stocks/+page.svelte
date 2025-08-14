@@ -24,15 +24,64 @@
 </script>
 
 <SEO
-  title="Most Shorted Stocks – High Short Interest Shares"
-  description="Discover the most shorted stocks with the highest short interest relative to float. Learn how short sellers target these stocks and what it means for investors."
+  title="Most Shorted Stocks List - High Short Interest Stocks | Stocknear"
+  description="Complete list of most shorted stocks with highest short interest as percentage of float. Track heavily shorted stocks, short squeeze candidates, and bearish sentiment indicators for contrarian investing strategies."
+  keywords="most shorted stocks, high short interest stocks, heavily shorted stocks, short squeeze stocks, short float percentage, bearish stocks, contrarian investing, short interest data"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Most Shorted Stocks List",
+    "description": "Complete directory of stocks with the highest short interest relative to their float",
+    "url": "https://stocknear.com/list/most-shorted-stocks",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Stock Lists",
+          "item": "https://stocknear.com/list"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Most Shorted Stocks",
+          "item": "https://stocknear.com/list/most-shorted-stocks"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "High Short Interest Stocks Directory",
+      "description": "List of stocks with the highest number of shares shorted relative to float",
+      "numberOfItems": data?.getStocks?.length || 0
+    }
+  }}
 />
 
-<section class="w-full overflow-hidden m-auto">
+<section class="w-full max-w-3xl sm:max-w-[1400px] overflow-hidden min-h-screen pt-5 pb-40 px-3">
+  <div class="text-sm sm:text-[1rem] breadcrumbs">
+    <ul>
+      <li><a href="/" class="text-muted dark:text-gray-300">Home</a></li>
+      <li><a href="/list" class="text-muted dark:text-gray-300">Stock Lists</a></li>
+      <li class="text-muted dark:text-gray-300">Most Shorted Stocks</li>
+    </ul>
+  </div>
+
+  <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px] mt-5">
+    <h1 class="mb-1 text-2xl sm:text-3xl font-bold">
+      Most Shorted Stocks List
+    </h1>
+  </div>
+
   <Infobox
-    text="A list of the stocks with the highest number of shares shorted relative to
-    the stock's float. Float is the amount of shares that are considered
-    available for trading."
+    text="Comprehensive list of stocks with the highest short interest as a percentage of float. These heavily shorted stocks represent bearish sentiment and potential short squeeze candidates. Float represents shares available for trading by the public."
   />
 
   <!-- Page wrapper -->

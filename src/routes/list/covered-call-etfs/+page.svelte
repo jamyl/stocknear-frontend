@@ -113,13 +113,64 @@
 </script>
 
 <SEO
-  title="Covered Call ETFs - Full List of Income-Generating Funds"
-  description="Discover a complete list of covered call ETFs trading on the US stock market. These funds use options strategies to generate income and enhance yield for income-focused investors."
+  title="Covered Call ETFs List - Options Income Strategy ETFs | Stocknear"
+  description="Complete list of covered call ETFs that generate income through options strategies. Compare yields, expense ratios, and performance of JEPI, QYLD, XYLD and other covered call exchange-traded funds. Enhanced income through call writing strategies."
+  keywords="covered call ETFs, covered call ETF list, JEPI ETF, QYLD ETF, XYLD ETF, options income ETFs, covered call strategy, income generating ETFs, high yield ETFs, call writing funds, dividend ETFs with options"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Covered Call ETFs List",
+    "description": "Complete directory of covered call exchange-traded funds that use options strategies to generate enhanced income",
+    "url": "https://stocknear.com/list/covered-call-etfs",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Stock Lists",
+          "item": "https://stocknear.com/list"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Covered Call ETFs",
+          "item": "https://stocknear.com/list/covered-call-etfs"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Covered Call ETF Directory",
+      "description": "List of covered call exchange-traded funds with income generation through options strategies",
+      "numberOfItems": rawData?.length || 0
+    }
+  }}
 />
 
-<section class="w-full overflow-hidden m-auto">
+<section class="w-full max-w-3xl sm:max-w-[1400px] overflow-hidden min-h-screen pt-5 pb-40 px-3">
+  <div class="text-sm sm:text-[1rem] breadcrumbs">
+    <ul>
+      <li><a href="/" class="text-muted dark:text-gray-300">Home</a></li>
+      <li><a href="/list" class="text-muted dark:text-gray-300">Stock Lists</a></li>
+      <li class="text-muted dark:text-gray-300">Covered Call ETFs</li>
+    </ul>
+  </div>
+
+  <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px] mt-5">
+    <h1 class="mb-1 text-2xl sm:text-3xl font-bold">
+      Covered Call ETFs List
+    </h1>
+  </div>
+
   <Infobox
-    text="A list of ETFs that generate extra income by writing covered call options. Covered calls involve selling call options on stocks that are owned. These ETFs tend to have higher dividend yields, but with less capital appreciation than regular ETFs that simply go long on the underlying stocks."
+    text="Comprehensive list of covered call ETFs that generate enhanced income through options strategies. These exchange-traded funds write covered call options on their underlying holdings, typically providing higher yields than traditional equity ETFs while potentially limiting upside potential. Popular funds include JEPI, QYLD, and XYLD."
   />
 
   <div class="flex flex-row items-center justify-between w-full mt-5 mb-2">

@@ -14,13 +14,68 @@
 </script>
 
 <SEO
-  title="A List of Car Company Stocks, Ranked by Market Cap"
-  description="A list of the biggest car company and automaker stocks, ranked by market capitalization."
+  title="Car Company Stocks List - Top Auto Manufacturers | Stocknear"
+  description="Complete list of car company and automaker stocks ranked by market capitalization. Analyze Tesla, Toyota, Ford, GM and other automotive industry leaders with market cap, revenue, and performance metrics."
+  keywords="car company stocks, auto stocks, automotive stocks, car manufacturer stocks, TSLA stock, F stock, GM stock, TM stock, auto industry stocks, vehicle manufacturer stocks"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Car Company Stocks List",
+    description:
+      "Complete directory of car company and automaker stocks ranked by market capitalization",
+    url: "https://stocknear.com/list/car-company-stocks",
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Stock Lists",
+          item: "https://stocknear.com/list",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: "Car Company Stocks",
+          item: "https://stocknear.com/list/car-company-stocks",
+        },
+      ],
+    },
+    mainEntity: {
+      "@type": "ItemList",
+      name: "Automotive Stocks Directory",
+      description:
+        "List of car company and automaker stocks with market capitalization and financial metrics",
+      numberOfItems: rawData?.length || 0,
+    },
+  }}
 />
 
-<section class="w-full overflow-hidden m-auto">
+<section
+  class="w-full max-w-3xl sm:max-w-[1400px] overflow-hidden min-h-screen pt-5 pb-40 px-3"
+>
+  <div class="text-sm sm:text-[1rem] breadcrumbs">
+    <ul>
+      <li><a href="/" class="text-muted dark:text-gray-300">Home</a></li>
+      <li>
+        <a href="/list" class="text-muted dark:text-gray-300">Stock Lists</a>
+      </li>
+      <li class="text-muted dark:text-gray-300">Car Company Stocks</li>
+    </ul>
+  </div>
+
+  <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px] mt-5">
+    <h1 class="mb-1 text-2xl sm:text-3xl font-bold">Car Company Stocks List</h1>
+  </div>
+
   <Infobox
-    text="This is a list of the biggest car company and automaker stocks, ranked by market capitalization."
+    text="Comprehensive list of car company and automaker stocks ranked by market capitalization. Includes major automotive manufacturers like Tesla, Toyota, Ford, General Motors, and other leading vehicle companies. Compare financial metrics, market performance, and industry positioning."
   />
 
   <div

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { abbreviateNumber } from "$lib/utils";
   import Table from "$lib/components/Table/Table.svelte";
+  import Infobox from "$lib/components/Infobox.svelte";
   import SEO from "$lib/components/SEO.svelte";
 
   export let data;
@@ -13,11 +14,66 @@
 </script>
 
 <SEO
-  title="Biggest Electric Vehicle Stocks, Sorted by Market Cap"
-  description=""
+  title="Electric Vehicle Stocks List - Top EV Companies | Stocknear"
+  description="Complete list of electric vehicle stocks and EV companies ranked by market capitalization. Analyze Tesla, BYD, NIO, Rivian and other electric vehicle manufacturers with market cap, revenue, and growth metrics."
+  keywords="electric vehicle stocks, EV stocks, electric car stocks, TSLA stock, NIO stock, RIVN stock, BYD stock, electric vehicle companies, EV manufacturers, electric mobility stocks"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Electric Vehicle Stocks List",
+    "description": "Complete directory of electric vehicle companies and EV manufacturers ranked by market capitalization",
+    "url": "https://stocknear.com/list/electric-vehicles",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Stock Lists",
+          "item": "https://stocknear.com/list"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Electric Vehicle Stocks",
+          "item": "https://stocknear.com/list/electric-vehicles"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Electric Vehicle Companies Directory",
+      "description": "List of electric vehicle manufacturers and EV technology companies with market capitalization metrics",
+      "numberOfItems": rawData?.length || 0
+    }
+  }}
 />
 
-<section class="w-full overflow-hidden m-auto">
+<section class="w-full max-w-3xl sm:max-w-[1400px] overflow-hidden min-h-screen pt-5 pb-40 px-3">
+  <div class="text-sm sm:text-[1rem] breadcrumbs">
+    <ul>
+      <li><a href="/" class="text-muted dark:text-gray-300">Home</a></li>
+      <li><a href="/list" class="text-muted dark:text-gray-300">Stock Lists</a></li>
+      <li class="text-muted dark:text-gray-300">Electric Vehicle Stocks</li>
+    </ul>
+  </div>
+
+  <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px] mt-5">
+    <h1 class="mb-1 text-2xl sm:text-3xl font-bold">
+      Electric Vehicle Stocks List
+    </h1>
+  </div>
+
+  <Infobox
+    text="Comprehensive list of electric vehicle stocks and EV companies ranked by market capitalization. Includes leading electric vehicle manufacturers like Tesla, BYD, NIO, and Rivian, as well as EV technology suppliers, battery companies, and charging infrastructure providers."
+  />
+
   <div
     class="shadow-xs mt-6 mb-4 flex flex-col divide-y divide-gray-300 dark:divide-gray-600 rounded border border-gray-300 dark:border-gray-600 sm:grid sm:grid-cols-3 sm:divide-x sm:divide-y-0"
   >

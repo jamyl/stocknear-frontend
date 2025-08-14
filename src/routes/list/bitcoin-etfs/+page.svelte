@@ -102,14 +102,64 @@
 </script>
 
 <SEO
-  title="Bitcoin ETFs - A Complete List"
-  description="A list of all the bitcoin ETFs trading on the US stock market. These funds provide exposure to the price of bitcoin."
+  title="Bitcoin ETFs List - Complete Bitcoin Spot ETF Directory | Stocknear"
+  description="Comprehensive list of Bitcoin ETFs trading on US stock exchanges. Compare Bitcoin spot ETFs, expense ratios, assets under management, and real-time performance. Track BITO, BTCO, HODL and more Bitcoin exchange-traded funds."
+  keywords="bitcoin ETFs, bitcoin ETF list, spot bitcoin ETF, BITO ETF, bitcoin exchange traded funds, crypto ETFs, bitcoin investment funds, bitcoin ETF comparison, BTCO ETF, HODL ETF"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Bitcoin ETFs List",
+    "description": "Complete directory of Bitcoin exchange-traded funds available on US stock exchanges",
+    "url": "https://stocknear.com/list/bitcoin-etfs",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Stock Lists",
+          "item": "https://stocknear.com/list"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Bitcoin ETFs",
+          "item": "https://stocknear.com/list/bitcoin-etfs"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Bitcoin ETF Directory",
+      "description": "List of Bitcoin exchange-traded funds with performance metrics and expense ratios",
+      "numberOfItems": rawData?.length || 0
+    }
+  }}
 />
 
-<section class="w-full overflow-hidden m-auto">
+<section class="w-full max-w-3xl sm:max-w-[1400px] overflow-hidden min-h-screen pt-5 pb-40 px-3">
+  <div class="text-sm sm:text-[1rem] breadcrumbs">
+    <ul>
+      <li><a href="/" class="text-muted dark:text-gray-300">Home</a></li>
+      <li><a href="/list" class="text-muted dark:text-gray-300">Stock Lists</a></li>
+      <li class="text-muted dark:text-gray-300">Bitcoin ETFs</li>
+    </ul>
+  </div>
+
+  <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px] mt-5">
+    <h1 class="mb-1 text-2xl sm:text-3xl font-bold">
+      Bitcoin ETFs List
+    </h1>
+  </div>
+
   <Infobox
-    text=" A list of all Bitcoin ETFs available for trading on the US stock market,
-    offering investors exposure to the cryptocurrency's price."
+    text="Comprehensive list of Bitcoin ETFs available for trading on the US stock market, offering investors exposure to the cryptocurrency's price movements."
   />
 
   <div

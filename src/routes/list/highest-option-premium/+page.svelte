@@ -28,13 +28,64 @@
 </script>
 
 <SEO
-  title="Top US Companies with the Highest Total Options Premium"
-  description="Discover the largest US companies ranked by total options premium, highlighting top players in the options market and their financial performance."
+  title="Highest Options Premium Stocks - Top Total Options Premium | Stocknear"
+  description="List of US stocks ranked by highest total options premium. Track which companies have the most options premium value and highest options market interest."
+  keywords="highest options premium, total options premium, options market leaders, options premium value, premium collection stocks, highest premium stocks"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Highest Options Premium Stocks",
+    "description": "US stocks ranked by highest total options premium",
+    "url": "https://stocknear.com/list/highest-option-premium",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Stock Lists",
+          "item": "https://stocknear.com/list"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Highest Options Premium",
+          "item": "https://stocknear.com/list/highest-option-premium"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Stocks by Options Premium",
+      "description": "List of US stocks ranked by total options premium value",
+      "numberOfItems": data?.getStocks?.length || 0
+    }
+  }}
 />
 
-<section class="w-full overflow-hidden m-auto">
+<section class="w-full max-w-3xl sm:max-w-[1400px] overflow-hidden min-h-screen pt-5 pb-40 px-3">
+  <div class="text-sm sm:text-[1rem] breadcrumbs">
+    <ul>
+      <li><a href="/" class="text-muted dark:text-gray-300">Home</a></li>
+      <li><a href="/list" class="text-muted dark:text-gray-300">Stock Lists</a></li>
+      <li class="text-muted dark:text-gray-300">Highest Options Premium</li>
+    </ul>
+  </div>
+
+  <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px] mt-5">
+    <h1 class="mb-1 text-2xl sm:text-3xl font-bold">
+      Highest Options Premium Stocks
+    </h1>
+  </div>
+
   <Infobox
-    text="A list of stocks with the highest total options premium. This premium is the sum of all options contract premiums for each stock, reflecting the overall market sentiment and expectations for volatility."
+    text="These are US stocks with the highest total options premium. The premium represents the sum of all options contract values for each stock, reflecting market sentiment, volatility expectations, and overall options trading interest."
   />
 
   <!-- Page wrapper -->

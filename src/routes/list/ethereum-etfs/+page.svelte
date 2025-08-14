@@ -102,14 +102,64 @@
 </script>
 
 <SEO
-  title="Ethereum ETFs - Full List of US-Traded ETH Funds"
-  description="Discover a complete list of Ethereum ETFs currently trading on the US stock market. Get direct exposure to ETH price through regulated exchange-traded funds."
+  title="Ethereum ETFs List - Complete ETH Spot ETF Directory | Stocknear"
+  description="Comprehensive list of Ethereum ETFs trading on US stock exchanges. Compare Ethereum spot ETFs, expense ratios, assets under management, and real-time performance. Track ETHE, ETHW, FETH and more Ethereum exchange-traded funds."
+  keywords="ethereum ETFs, ethereum ETF list, spot ethereum ETF, ETHE ETF, ethereum exchange traded funds, crypto ETFs, ETH investment funds, ethereum ETF comparison, ETHW ETF, FETH ETF"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Ethereum ETFs List",
+    "description": "Complete directory of Ethereum exchange-traded funds available on US stock exchanges",
+    "url": "https://stocknear.com/list/ethereum-etfs",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Stock Lists",
+          "item": "https://stocknear.com/list"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Ethereum ETFs",
+          "item": "https://stocknear.com/list/ethereum-etfs"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Ethereum ETF Directory",
+      "description": "List of Ethereum exchange-traded funds with performance metrics and expense ratios",
+      "numberOfItems": rawData?.length || 0
+    }
+  }}
 />
 
-<section class="w-full overflow-hidden m-auto">
+<section class="w-full max-w-3xl sm:max-w-[1400px] overflow-hidden min-h-screen pt-5 pb-40 px-3">
+  <div class="text-sm sm:text-[1rem] breadcrumbs">
+    <ul>
+      <li><a href="/" class="text-muted dark:text-gray-300">Home</a></li>
+      <li><a href="/list" class="text-muted dark:text-gray-300">Stock Lists</a></li>
+      <li class="text-muted dark:text-gray-300">Ethereum ETFs</li>
+    </ul>
+  </div>
+
+  <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px] mt-5">
+    <h1 class="mb-1 text-2xl sm:text-3xl font-bold">
+      Ethereum ETFs List
+    </h1>
+  </div>
+
   <Infobox
-    text=" A list of all Ethereum ETFs available for trading on the US stock market,
-    offering investors exposure to the cryptocurrency's price."
+    text="Comprehensive list of Ethereum ETFs available for trading on the US stock market, offering investors exposure to the cryptocurrency's price movements."
   />
 
   <div

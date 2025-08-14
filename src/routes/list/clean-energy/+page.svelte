@@ -1,6 +1,7 @@
 <script lang="ts">
   import { abbreviateNumber } from "$lib/utils";
   import Table from "$lib/components/Table/Table.svelte";
+  import Infobox from "$lib/components/Infobox.svelte";
   import SEO from "$lib/components/SEO.svelte";
 
   export let data;
@@ -13,11 +14,66 @@
 </script>
 
 <SEO
-  title="A List of Clean Energy Stocks, Ranked by Market Cap"
-  description=""
+  title="Clean Energy Stocks List - Renewable Energy Companies | Stocknear"
+  description="Complete list of clean energy and renewable energy stocks ranked by market capitalization. Analyze solar, wind, battery, and green technology companies with market cap, revenue, and ESG metrics."
+  keywords="clean energy stocks, renewable energy stocks, green energy stocks, solar stocks, wind energy stocks, battery stocks, ESG stocks, sustainable energy investments, clean tech stocks"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Clean Energy Stocks List",
+    "description": "Complete directory of clean energy and renewable energy companies ranked by market capitalization",
+    "url": "https://stocknear.com/list/clean-energy",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Stock Lists",
+          "item": "https://stocknear.com/list"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Clean Energy Stocks",
+          "item": "https://stocknear.com/list/clean-energy"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Clean Energy Companies Directory",
+      "description": "List of clean energy and renewable energy companies with market capitalization and financial metrics",
+      "numberOfItems": rawData?.length || 0
+    }
+  }}
 />
 
-<section class="w-full overflow-hidden m-auto">
+<section class="w-full max-w-3xl sm:max-w-[1400px] overflow-hidden min-h-screen pt-5 pb-40 px-3">
+  <div class="text-sm sm:text-[1rem] breadcrumbs">
+    <ul>
+      <li><a href="/" class="text-muted dark:text-gray-300">Home</a></li>
+      <li><a href="/list" class="text-muted dark:text-gray-300">Stock Lists</a></li>
+      <li class="text-muted dark:text-gray-300">Clean Energy Stocks</li>
+    </ul>
+  </div>
+
+  <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px] mt-5">
+    <h1 class="mb-1 text-2xl sm:text-3xl font-bold">
+      Clean Energy Stocks List
+    </h1>
+  </div>
+
+  <Infobox
+    text="Comprehensive list of clean energy and renewable energy stocks ranked by market capitalization. Includes companies focused on solar power, wind energy, battery technology, electric utilities, and other sustainable energy solutions. Track the performance of leading green technology investments."
+  />
+
   <div
     class="shadow-xs mt-6 mb-4 flex flex-col divide-y divide-gray-300 dark:divide-gray-600 rounded border border-gray-300 dark:border-gray-600 sm:grid sm:grid-cols-3 sm:divide-x sm:divide-y-0"
   >

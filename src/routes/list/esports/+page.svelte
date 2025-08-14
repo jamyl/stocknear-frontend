@@ -13,11 +13,65 @@
     rawData?.reduce((total, stock) => total + stock?.revenue, 0) ?? 0;
 </script>
 
-<SEO title="A List of E-Sports Stocks" description="" />
+<SEO
+  title="Esports Stocks List - Gaming & Esports Companies | Stocknear"
+  description="Complete list of esports and competitive gaming stocks. Analyze companies involved in esports tournaments, gaming platforms, streaming, and professional gaming with market cap and revenue data."
+  keywords="esports stocks, gaming stocks, esports companies, competitive gaming stocks, gaming industry stocks, esports tournament stocks, gaming platform stocks, streaming stocks"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Esports Stocks List",
+    "description": "Complete directory of esports and competitive gaming companies involved in electronic sports",
+    "url": "https://stocknear.com/list/esports",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Stock Lists",
+          "item": "https://stocknear.com/list"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Esports Stocks",
+          "item": "https://stocknear.com/list/esports"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Esports Companies Directory",
+      "description": "List of companies involved in esports and competitive gaming with market capitalization data",
+      "numberOfItems": rawData?.length || 0
+    }
+  }}
+/>
 
-<section class="w-full overflow-hidden m-auto">
+<section class="w-full max-w-3xl sm:max-w-[1400px] overflow-hidden min-h-screen pt-5 pb-40 px-3">
+  <div class="text-sm sm:text-[1rem] breadcrumbs">
+    <ul>
+      <li><a href="/" class="text-muted dark:text-gray-300">Home</a></li>
+      <li><a href="/list" class="text-muted dark:text-gray-300">Stock Lists</a></li>
+      <li class="text-muted dark:text-gray-300">Esports Stocks</li>
+    </ul>
+  </div>
+
+  <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px] mt-5">
+    <h1 class="mb-1 text-2xl sm:text-3xl font-bold">
+      Esports Stocks List
+    </h1>
+  </div>
+
   <Infobox
-    text="E-Sports stands for Electronic Sports. It is a term for competition in video games, often over the internet but also via in-person events. Below is a list of stocks of companies involved in e-sports."
+    text="Comprehensive list of esports and competitive gaming stocks. Includes companies involved in esports tournaments, gaming platforms, streaming services, professional gaming teams, and esports infrastructure. Track the growing electronic sports industry and its investment opportunities."
   />
 
   <div
