@@ -291,9 +291,39 @@
 </script>
 
 <SEO
-  title="US
-    Politician Stock Trade Tracker"
-  description="What are US Politicians trading? Filter by Senate or House, Party, Committee, State and more - get detailed infomation about it."
+  title="Congress Trading Tracker - Real-Time Politicians Stock Trades | Stocknear"
+  description="Track real-time stock trades by US Congress members, senators, and politicians. Monitor Nancy Pelosi trades, senate stock purchases, and congressional insider trading. Free politician trading tracker with detailed transaction history."
+  keywords="congress trading, nancy pelosi trades, politician stock trades, senate trades, congressional trading, insider trading congress, political stock tracker, us politicians trading, pelosi portfolio, congress stock trades"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Congress Trading Tracker",
+    "description": "Real-time tracking of stock trades by US politicians and congress members",
+    "url": "https://stocknear.com/politicians",
+    "applicationCategory": "FinanceApplication",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Politicians Trading",
+          "item": "https://stocknear.com/politicians"
+        }
+      ]
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }}
 />
 
 <section

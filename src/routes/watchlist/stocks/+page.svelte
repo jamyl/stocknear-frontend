@@ -1175,8 +1175,45 @@
 </script>
 
 <SEO
-  title="Stock Watchlist Tracker - Monitor Stocks & ETFs"
-  description="Effortlessly track your favorite stocks and ETFs. Monitor real-time performance, price fluctuations, and market trends with our intuitive watchlist tool."
+  title="Stock Watchlist - Track Your Portfolio & Monitor Stock Prices | Stocknear"
+  description="Create and manage your personal stock watchlist with real-time price tracking. Monitor your favorite stocks, ETFs, and investments with price alerts and performance analytics. Free stock portfolio tracker with advanced features."
+  keywords="stock watchlist, portfolio tracker, stock tracker, investment tracker, stock monitoring, price alerts, portfolio management, stock performance, investment watchlist"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Stock Watchlist Tracker",
+    "description": "Personal stock watchlist and portfolio tracking tool",
+    "url": "https://stocknear.com/watchlist/stocks",
+    "applicationCategory": "FinanceApplication",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Watchlist",
+          "item": "https://stocknear.com/watchlist"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Stocks",
+          "item": "https://stocknear.com/watchlist/stocks"
+        }
+      ]
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }}
 />
 
 <section

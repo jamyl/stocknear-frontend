@@ -268,8 +268,39 @@
 </script>
 
 <SEO
-  title="Reddit Stock Tracker - WSB Analytics & Insights"
-  description="Track WallStreetBets stock discussions and trends in real-time. Get detailed analytics, sentiment analysis, and trading insights from Reddit's largest stock community."
+  title="Reddit Stock Tracker - WallStreetBets Analytics & WSB Sentiment | Stocknear"
+  description="Track WallStreetBets (WSB) stock discussions, sentiment analysis, and trending stocks from Reddit. Monitor r/wallstreetbets mentions, sentiment scores, and social trading insights. Free Reddit stock tracker with real-time data."
+  keywords="wallstreetbets, wsb tracker, reddit stocks, wsb sentiment, reddit trading, wallstreetbets tracker, wsb analytics, reddit stock mentions, social trading, wsb data"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Reddit Stock Tracker",
+    "description": "WallStreetBets and Reddit stock discussion tracker with sentiment analysis",
+    "url": "https://stocknear.com/reddit-tracker",
+    "applicationCategory": "FinanceApplication",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Reddit Tracker",
+          "item": "https://stocknear.com/reddit-tracker"
+        }
+      ]
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }}
 />
 
 <section

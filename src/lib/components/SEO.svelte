@@ -69,8 +69,8 @@
   <meta property="og:title" content={`${title} - ${siteName}`} />
   <meta property="og:description" content={description} />
   <meta property="og:image" content={defaultImage} />
-  <meta property="og:image:width" content="512" />
-  <meta property="og:image:height" content="512" />
+  <meta property="og:image:width" content="256" />
+  <meta property="og:image:height" content="256" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:alt" content={`${title} - ${siteName}`} />
 

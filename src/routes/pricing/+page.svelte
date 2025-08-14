@@ -60,8 +60,58 @@
 </script>
 
 <SEO
-  title="Pricing Plans"
-  description="Get unlimited access to all of our data and tools, including full financial history, full ETF holdings, and more."
+  title="Stocknear Pricing - Pro Stock Analysis Plans & Premium Features | Stocknear"
+  description="Unlock premium stock analysis features with Stocknear Pro and Lifetime plans. Get unlimited access to advanced tools, real-time data, AI forecasts, options flow, and institutional-grade analytics. Start your free trial today."
+  keywords="stocknear pricing, stocknear pro, stock analysis subscription, premium stock tools, investment analytics pricing, trading tools subscription, stock data premium, financial analysis plans"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Stocknear Pricing Plans",
+    "description": "Premium subscription plans for advanced stock analysis and trading tools",
+    "url": "https://stocknear.com/pricing",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Pricing",
+          "item": "https://stocknear.com/pricing"
+        }
+      ]
+    },
+    "offers": [
+      {
+        "@type": "Offer",
+        "name": "Pro Plan",
+        "price": "14.99",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "14.99",
+          "priceCurrency": "USD",
+          "unitCode": "MON"
+        }
+      },
+      {
+        "@type": "Offer",
+        "name": "Lifetime Plan",
+        "price": "299",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "299",
+          "priceCurrency": "USD"
+        }
+      }
+    ]
+  }}
 />
 
 <svelte:head>
