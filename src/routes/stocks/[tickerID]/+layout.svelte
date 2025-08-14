@@ -195,7 +195,7 @@
             !["Pro", "Plus"]?.includes(data?.user?.tier) &&
             updatedTickers.length > 5
           ) {
-            toast.error("Upgrade to Pro to add unlimited stocks!", {
+            toast.error("Want to add more stocks? Go Plus or Pro!!", {
               style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
             });
             return;

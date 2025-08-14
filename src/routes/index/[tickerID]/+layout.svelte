@@ -67,7 +67,7 @@
       // User not logged in, let the label handle opening login modal
       return;
     }
-    
+
     if (!userWatchList || userWatchList?.length === 0) {
       // No watchlists exist, create one and add ticker
       try {
@@ -80,10 +80,10 @@
             title: "My Watchlist",
           }),
         });
-        
+
         const output = await response.json();
         userWatchList = [output];
-        
+
         toast.success("Ticker added to your Watchlist", {
           style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
         });
@@ -129,7 +129,7 @@
             !["Pro", "Plus"]?.includes(data?.user?.tier) &&
             updatedTickers.length > 5
           ) {
-            toast.error("Upgrade to Pro to add unlimited stocks!", {
+            toast.error("Want to add more stocks? Go Plus or Pro!!", {
               style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
             });
             return;
@@ -403,7 +403,8 @@
                               if (data?.user) {
                                 handleWatchlistButtonClick();
                               } else {
-                                const modal = document.getElementById('userLogin');
+                                const modal =
+                                  document.getElementById("userLogin");
                                 if (modal) modal.checked = true;
                               }
                             }}
