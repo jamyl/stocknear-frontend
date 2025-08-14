@@ -15,44 +15,46 @@
 </script>
 
 <SEO
-  title="Monthly Dividend Stocks List - Income Stocks That Pay Monthly | Stocknear"
+  title="Monthly Dividend Stocks List - Income Stocks That Pay Monthly "
   description="Complete list of monthly dividend stocks that pay dividends every month. Find reliable income stocks for consistent monthly cash flow including REITs, BDCs, and dividend aristocrats with monthly distributions."
   keywords="monthly dividend stocks, monthly income stocks, monthly dividend paying stocks, monthly cash flow stocks, income investing, dividend stocks monthly, REITs monthly dividends"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Monthly Dividend Stocks List",
-    "description": "Complete directory of stocks that pay dividends every month for consistent income",
-    "url": "https://stocknear.com/list/monthly-dividend-stocks",
-    "breadcrumb": {
+    name: "Monthly Dividend Stocks List",
+    description:
+      "Complete directory of stocks that pay dividends every month for consistent income",
+    url: "https://stocknear.com/list/monthly-dividend-stocks",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Stock Lists",
-          "item": "https://stocknear.com/list"
+          position: 2,
+          name: "Stock Lists",
+          item: "https://stocknear.com/list",
         },
         {
           "@type": "ListItem",
-          "position": 3,
-          "name": "Monthly Dividend Stocks",
-          "item": "https://stocknear.com/list/monthly-dividend-stocks"
-        }
-      ]
+          position: 3,
+          name: "Monthly Dividend Stocks",
+          item: "https://stocknear.com/list/monthly-dividend-stocks",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "Monthly Dividend Stocks Directory",
-      "description": "List of stocks that pay dividends monthly for consistent income generation",
-      "numberOfItems": data?.getData?.length || 0
-    }
+      name: "Monthly Dividend Stocks Directory",
+      description:
+        "List of stocks that pay dividends monthly for consistent income generation",
+      numberOfItems: data?.getData?.length || 0,
+    },
   }}
 />
 

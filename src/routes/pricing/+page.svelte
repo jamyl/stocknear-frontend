@@ -60,7 +60,7 @@
 </script>
 
 <SEO
-  title="Stocknear Pricing - Pro Stock Analysis Plans & Premium Features | Stocknear"
+  title="Stocknear Pricing - Pro Stock Analysis Plans & Premium Features "
   description="Unlock premium stock analysis features with Stocknear Pro and Lifetime plans. Get unlimited access to advanced tools, real-time data, AI forecasts, options flow, and institutional-grade analytics. Start your free trial today."
   keywords="stocknear pricing, stocknear pro, stock analysis subscription, premium stock tools, investment analytics pricing, trading tools subscription, stock data premium, financial analysis plans"
   structuredData={{

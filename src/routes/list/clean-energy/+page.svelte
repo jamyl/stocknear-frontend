@@ -14,49 +14,50 @@
 </script>
 
 <SEO
-  title="Clean Energy Stocks List - Renewable Energy Companies | Stocknear"
+  title="Clean Energy Stocks List - Renewable Energy Companies "
   description="Complete list of clean energy and renewable energy stocks ranked by market capitalization. Analyze solar, wind, battery, and green technology companies with market cap, revenue, and ESG metrics."
   keywords="clean energy stocks, renewable energy stocks, green energy stocks, solar stocks, wind energy stocks, battery stocks, ESG stocks, sustainable energy investments, clean tech stocks"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Clean Energy Stocks List",
-    "description": "Complete directory of clean energy and renewable energy companies ranked by market capitalization",
-    "url": "https://stocknear.com/list/clean-energy",
-    "breadcrumb": {
+    name: "Clean Energy Stocks List",
+    description:
+      "Complete directory of clean energy and renewable energy companies ranked by market capitalization",
+    url: "https://stocknear.com/list/clean-energy",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Stock Lists",
-          "item": "https://stocknear.com/list"
+          position: 2,
+          name: "Stock Lists",
+          item: "https://stocknear.com/list",
         },
         {
           "@type": "ListItem",
-          "position": 3,
-          "name": "Clean Energy Stocks",
-          "item": "https://stocknear.com/list/clean-energy"
-        }
-      ]
+          position: 3,
+          name: "Clean Energy Stocks",
+          item: "https://stocknear.com/list/clean-energy",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "Clean Energy Companies Directory",
-      "description": "List of clean energy and renewable energy companies with market capitalization and financial metrics",
-      "numberOfItems": rawData?.length || 0
-    }
+      name: "Clean Energy Companies Directory",
+      description:
+        "List of clean energy and renewable energy companies with market capitalization and financial metrics",
+      numberOfItems: rawData?.length || 0,
+    },
   }}
 />
 
 <section class="w-full overflow-hidden m-auto">
-
   <Infobox
     text="Comprehensive list of clean energy and renewable energy stocks ranked by market capitalization. Includes companies focused on solar power, wind energy, battery technology, electric utilities, and other sustainable energy solutions. Track the performance of leading green technology investments."
   />

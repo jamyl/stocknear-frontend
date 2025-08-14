@@ -14,49 +14,50 @@
 </script>
 
 <SEO
-  title="Esports Stocks List - Gaming & Esports Companies | Stocknear"
+  title="Esports Stocks List - Gaming & Esports Companies "
   description="Complete list of esports and competitive gaming stocks. Analyze companies involved in esports tournaments, gaming platforms, streaming, and professional gaming with market cap and revenue data."
   keywords="esports stocks, gaming stocks, esports companies, competitive gaming stocks, gaming industry stocks, esports tournament stocks, gaming platform stocks, streaming stocks"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Esports Stocks List",
-    "description": "Complete directory of esports and competitive gaming companies involved in electronic sports",
-    "url": "https://stocknear.com/list/esports",
-    "breadcrumb": {
+    name: "Esports Stocks List",
+    description:
+      "Complete directory of esports and competitive gaming companies involved in electronic sports",
+    url: "https://stocknear.com/list/esports",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Stock Lists",
-          "item": "https://stocknear.com/list"
+          position: 2,
+          name: "Stock Lists",
+          item: "https://stocknear.com/list",
         },
         {
           "@type": "ListItem",
-          "position": 3,
-          "name": "Esports Stocks",
-          "item": "https://stocknear.com/list/esports"
-        }
-      ]
+          position: 3,
+          name: "Esports Stocks",
+          item: "https://stocknear.com/list/esports",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "Esports Companies Directory",
-      "description": "List of companies involved in esports and competitive gaming with market capitalization data",
-      "numberOfItems": rawData?.length || 0
-    }
+      name: "Esports Companies Directory",
+      description:
+        "List of companies involved in esports and competitive gaming with market capitalization data",
+      numberOfItems: rawData?.length || 0,
+    },
   }}
 />
 
 <section class="w-full overflow-hidden m-auto">
-
   <Infobox
     text="Comprehensive list of esports and competitive gaming stocks. Includes companies involved in esports tournaments, gaming platforms, streaming services, professional gaming teams, and esports infrastructure. Track the growing electronic sports industry and its investment opportunities."
   />

@@ -12,38 +12,38 @@
 </script>
 
 <SEO
-  title="Stock Sectors & Industries Analysis - Market Performance by Sector | Stocknear"
+  title="Stock Sectors & Industries Analysis - Market Performance by Sector "
   description={`Analyze stock performance across ${sectorList?.length} sectors and ${industryList?.length} industries. Track sector rotation, industry trends, and market performance by business category. Free sector and industry analysis tool.`}
   keywords="stock sectors, stock industries, sector analysis, industry analysis, sector performance, technology stocks, healthcare stocks, financial sector, energy sector, sector rotation"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Stock Sectors and Industries",
-    "description": "Stock market analysis organized by sectors and industries",
-    "url": "https://stocknear.com/industry",
-    "breadcrumb": {
+    name: "Stock Sectors and Industries",
+    description: "Stock market analysis organized by sectors and industries",
+    url: "https://stocknear.com/industry",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Industries",
-          "item": "https://stocknear.com/industry"
-        }
-      ]
+          position: 2,
+          name: "Industries",
+          item: "https://stocknear.com/industry",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "Stock Market Sectors and Industries",
-      "description": "Comprehensive list of stock market sectors and industries",
-      "numberOfItems": sectorList?.length + industryList?.length
-    }
+      name: "Stock Market Sectors and Industries",
+      description: "Comprehensive list of stock market sectors and industries",
+      numberOfItems: sectorList?.length + industryList?.length,
+    },
   }}
 />
 

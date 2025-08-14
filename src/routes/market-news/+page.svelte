@@ -75,37 +75,38 @@
 </script>
 
 <SEO
-  title="Stock Market News - Latest Financial News & Market Updates | Stocknear"
+  title="Stock Market News - Latest Financial News & Market Updates "
   description="Get the latest stock market news, financial updates, and breaking market stories. Stay informed with real-time news affecting stocks, earnings reports, market analysis, and investment insights from trusted sources."
   keywords="stock market news, financial news, market updates, breaking market news, stock news, earnings news, investment news, market analysis, financial headlines"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Stock Market News",
-    "description": "Latest financial news and market updates",
-    "url": "https://stocknear.com/market-news",
-    "breadcrumb": {
+    name: "Stock Market News",
+    description: "Latest financial news and market updates",
+    url: "https://stocknear.com/market-news",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Market News",
-          "item": "https://stocknear.com/market-news"
-        }
-      ]
+          position: 2,
+          name: "Market News",
+          item: "https://stocknear.com/market-news",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "Stock Market News Articles",
-      "description": "Collection of latest stock market news and financial updates"
-    }
+      name: "Stock Market News Articles",
+      description:
+        "Collection of latest stock market news and financial updates",
+    },
   }}
 />
 

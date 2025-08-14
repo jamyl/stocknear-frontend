@@ -740,38 +740,38 @@
 </script>
 
 <SEO
-  title="Market Flow - Real-Time S&P 500 Options Sentiment & Market Tide | Stocknear"
+  title="Market Flow - Real-Time S&P 500 Options Sentiment & Market Tide "
   description="Track real-time S&P 500 market flow and options sentiment analysis. Monitor call/put premium flows, market tide indicators, and institutional options activity. Free market sentiment tracker with live data."
   keywords="market flow, options sentiment, market tide, S&P 500 flow, call put ratio, options premium flow, market sentiment, institutional flow, SPX options flow"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Market Flow Tracker",
-    "description": "Real-time S&P 500 market flow and options sentiment analysis",
-    "url": "https://stocknear.com/market-flow",
-    "applicationCategory": "FinanceApplication",
-    "breadcrumb": {
+    name: "Market Flow Tracker",
+    description: "Real-time S&P 500 market flow and options sentiment analysis",
+    url: "https://stocknear.com/market-flow",
+    applicationCategory: "FinanceApplication",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Market Flow",
-          "item": "https://stocknear.com/market-flow"
-        }
-      ]
+          position: 2,
+          name: "Market Flow",
+          item: "https://stocknear.com/market-flow",
+        },
+      ],
     },
-    "offers": {
+    offers: {
       "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    }
+      price: "0",
+      priceCurrency: "USD",
+    },
   }}
 />
 

@@ -687,9 +687,34 @@
 </script>
 
 <SEO
-  title="Dark
-    Pool Flow Feed"
-  description="Explore unusual dark pool trades from big institutional traders and hedge funds in realtime."
+  title="Dark Pool Flow Feed - Real-Time Institutional Trading Activity"
+  description="Track real-time dark pool trades from institutional investors and hedge funds. Monitor hidden large block trades, unusual activity, and institutional money flow to identify opportunities before retail investors."
+  keywords="dark pool flow, institutional trading, dark pool trades, hedge fund activity, block trades, institutional money flow, real-time dark pools, unusual activity, hidden trades, institutional investors"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Dark Pool Flow Feed",
+    description:
+      "Real-time tracking of institutional dark pool trading activity and large block trades",
+    url: "https://stocknear.com/dark-pool-flow",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Any",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    featureList: [
+      "Real-time dark pool monitoring",
+      "Institutional trade filtering",
+      "Block size analysis",
+      "Volume percentage tracking",
+      "Sector-based filtering",
+      "Historical data access",
+      "Audio alerts for new trades",
+      "Custom screening filters",
+    ],
+  }}
 />
 
 <body class="overflow-y-auto">

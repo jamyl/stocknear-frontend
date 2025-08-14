@@ -618,44 +618,44 @@
 </script>
 
 <SEO
-  title="Options Watchlist - Track Options Contracts & Monitor Option Chains | Stocknear"
+  title="Options Watchlist - Track Options Contracts & Monitor Option Chains "
   description="Create and manage your options watchlist with real-time tracking of calls, puts, and option chains. Monitor volume, open interest, Greeks, and options performance. Free options tracking tool for traders."
   keywords="options watchlist, options tracker, option chains, calls and puts, options trading, options monitoring, option Greeks, volume tracking, open interest"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Options Watchlist Tracker",
-    "description": "Options contracts tracking and monitoring tool",
-    "url": "https://stocknear.com/watchlist/options",
-    "applicationCategory": "FinanceApplication",
-    "breadcrumb": {
+    name: "Options Watchlist Tracker",
+    description: "Options contracts tracking and monitoring tool",
+    url: "https://stocknear.com/watchlist/options",
+    applicationCategory: "FinanceApplication",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Watchlist",
-          "item": "https://stocknear.com/watchlist"
+          position: 2,
+          name: "Watchlist",
+          item: "https://stocknear.com/watchlist",
         },
         {
           "@type": "ListItem",
-          "position": 3,
-          "name": "Options",
-          "item": "https://stocknear.com/watchlist/options"
-        }
-      ]
+          position: 3,
+          name: "Options",
+          item: "https://stocknear.com/watchlist/options",
+        },
+      ],
     },
-    "offers": {
+    offers: {
       "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    }
+      price: "0",
+      priceCurrency: "USD",
+    },
   }}
 />
 

@@ -102,49 +102,50 @@
 </script>
 
 <SEO
-  title="Ethereum ETFs List - Complete ETH Spot ETF Directory | Stocknear"
+  title="Ethereum ETFs List - Complete ETH Spot ETF Directory "
   description="Comprehensive list of Ethereum ETFs trading on US stock exchanges. Compare Ethereum spot ETFs, expense ratios, assets under management, and real-time performance. Track ETHE, ETHW, FETH and more Ethereum exchange-traded funds."
   keywords="ethereum ETFs, ethereum ETF list, spot ethereum ETF, ETHE ETF, ethereum exchange traded funds, crypto ETFs, ETH investment funds, ethereum ETF comparison, ETHW ETF, FETH ETF"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Ethereum ETFs List",
-    "description": "Complete directory of Ethereum exchange-traded funds available on US stock exchanges",
-    "url": "https://stocknear.com/list/ethereum-etfs",
-    "breadcrumb": {
+    name: "Ethereum ETFs List",
+    description:
+      "Complete directory of Ethereum exchange-traded funds available on US stock exchanges",
+    url: "https://stocknear.com/list/ethereum-etfs",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Stock Lists",
-          "item": "https://stocknear.com/list"
+          position: 2,
+          name: "Stock Lists",
+          item: "https://stocknear.com/list",
         },
         {
           "@type": "ListItem",
-          "position": 3,
-          "name": "Ethereum ETFs",
-          "item": "https://stocknear.com/list/ethereum-etfs"
-        }
-      ]
+          position: 3,
+          name: "Ethereum ETFs",
+          item: "https://stocknear.com/list/ethereum-etfs",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "Ethereum ETF Directory",
-      "description": "List of Ethereum exchange-traded funds with performance metrics and expense ratios",
-      "numberOfItems": rawData?.length || 0
-    }
+      name: "Ethereum ETF Directory",
+      description:
+        "List of Ethereum exchange-traded funds with performance metrics and expense ratios",
+      numberOfItems: rawData?.length || 0,
+    },
   }}
 />
 
 <section class="w-full overflow-hidden m-auto">
-
   <Infobox
     text="Comprehensive list of Ethereum ETFs available for trading on the US stock market, offering investors exposure to the cryptocurrency's price movements."
   />

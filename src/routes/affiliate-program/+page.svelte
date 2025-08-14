@@ -68,7 +68,7 @@
 -->
 
 <SEO
-  title="Affiliate Program - Earn Up to 20% Commission | Stocknear"
+  title="Affiliate Program - Earn Up to 20% Commission "
   description="Join Stocknear's Affiliate Program and earn up to 20% commission on every sale. Refer customers and start earning cash today!"
 />
 

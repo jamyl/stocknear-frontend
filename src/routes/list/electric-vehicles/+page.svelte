@@ -14,49 +14,50 @@
 </script>
 
 <SEO
-  title="Electric Vehicle Stocks List - Top EV Companies | Stocknear"
+  title="Electric Vehicle Stocks List - Top EV Companies "
   description="Complete list of electric vehicle stocks and EV companies ranked by market capitalization. Analyze Tesla, BYD, NIO, Rivian and other electric vehicle manufacturers with market cap, revenue, and growth metrics."
   keywords="electric vehicle stocks, EV stocks, electric car stocks, TSLA stock, NIO stock, RIVN stock, BYD stock, electric vehicle companies, EV manufacturers, electric mobility stocks"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Electric Vehicle Stocks List",
-    "description": "Complete directory of electric vehicle companies and EV manufacturers ranked by market capitalization",
-    "url": "https://stocknear.com/list/electric-vehicles",
-    "breadcrumb": {
+    name: "Electric Vehicle Stocks List",
+    description:
+      "Complete directory of electric vehicle companies and EV manufacturers ranked by market capitalization",
+    url: "https://stocknear.com/list/electric-vehicles",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Stock Lists",
-          "item": "https://stocknear.com/list"
+          position: 2,
+          name: "Stock Lists",
+          item: "https://stocknear.com/list",
         },
         {
           "@type": "ListItem",
-          "position": 3,
-          "name": "Electric Vehicle Stocks",
-          "item": "https://stocknear.com/list/electric-vehicles"
-        }
-      ]
+          position: 3,
+          name: "Electric Vehicle Stocks",
+          item: "https://stocknear.com/list/electric-vehicles",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "Electric Vehicle Companies Directory",
-      "description": "List of electric vehicle manufacturers and EV technology companies with market capitalization metrics",
-      "numberOfItems": rawData?.length || 0
-    }
+      name: "Electric Vehicle Companies Directory",
+      description:
+        "List of electric vehicle manufacturers and EV technology companies with market capitalization metrics",
+      numberOfItems: rawData?.length || 0,
+    },
   }}
 />
 
 <section class="w-full overflow-hidden m-auto">
-
   <Infobox
     text="Comprehensive list of electric vehicle stocks and EV companies ranked by market capitalization. Includes leading electric vehicle manufacturers like Tesla, BYD, NIO, and Rivian, as well as EV technology suppliers, battery companies, and charging infrastructure providers."
   />

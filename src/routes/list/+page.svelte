@@ -3,7 +3,7 @@
 </script>
 
 <SEO
-  title="Stock Lists & Screeners - Stock Rankings by Market Cap, Dividend & More | Stocknear"
+  title="Stock Lists & Screeners - Stock Rankings by Market Cap, Dividend & More "
   description="Comprehensive stock lists and screeners organized by market cap, dividends, sectors, exchanges, and special categories. Find FAANG, Magnificent Seven, dividend aristocrats, penny stocks and more. Free stock screening and filtering tool."
   keywords="stock lists, stock screener, stock rankings, market cap stocks, dividend stocks, FAANG stocks, magnificent seven, penny stocks, dividend aristocrats, sector stocks, S&P 500 list, NASDAQ 100"
   structuredData={{

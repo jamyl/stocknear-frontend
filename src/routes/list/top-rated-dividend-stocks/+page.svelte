@@ -13,49 +13,50 @@
 </script>
 
 <SEO
-  title="Top-Rated Dividend Stocks - Analyst Buy Recommendations | Stocknear"
+  title="Top-Rated Dividend Stocks - Analyst Buy Recommendations "
   description="Complete list of dividend stocks rated as Buy or Strong Buy by analysts. High-quality dividend stocks with sustainable yields, strong fundamentals, and positive analyst sentiment for income investing."
   keywords="top rated dividend stocks, buy rated dividend stocks, analyst recommendations dividend, dividend stock ratings, dividend aristocrats, quality dividend stocks, income stocks buy rating"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Top-Rated Dividend Stocks List",
-    "description": "Complete directory of dividend stocks with Buy or Strong Buy analyst ratings",
-    "url": "https://stocknear.com/list/top-rated-dividend-stocks",
-    "breadcrumb": {
+    name: "Top-Rated Dividend Stocks List",
+    description:
+      "Complete directory of dividend stocks with Buy or Strong Buy analyst ratings",
+    url: "https://stocknear.com/list/top-rated-dividend-stocks",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Stock Lists",
-          "item": "https://stocknear.com/list"
+          position: 2,
+          name: "Stock Lists",
+          item: "https://stocknear.com/list",
         },
         {
           "@type": "ListItem",
-          "position": 3,
-          "name": "Top-Rated Dividend Stocks",
-          "item": "https://stocknear.com/list/top-rated-dividend-stocks"
-        }
-      ]
+          position: 3,
+          name: "Top-Rated Dividend Stocks",
+          item: "https://stocknear.com/list/top-rated-dividend-stocks",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "High-Quality Dividend Stocks Directory",
-      "description": "List of dividend stocks with Buy or Strong Buy analyst ratings and sustainable yields",
-      "numberOfItems": data?.getDividendStocks?.length || 0
-    }
+      name: "High-Quality Dividend Stocks Directory",
+      description:
+        "List of dividend stocks with Buy or Strong Buy analyst ratings and sustainable yields",
+      numberOfItems: data?.getDividendStocks?.length || 0,
+    },
   }}
 />
 
 <section class="w-full overflow-hidden m-auto">
-
   <Infobox
     text="Comprehensive list of high-quality dividend stocks with Buy or Strong Buy analyst ratings. Each stock has consensus ratings from at least 10 analysts, dividend yields of 2% or higher, and payout ratios below 60% for sustainable income generation."
   />

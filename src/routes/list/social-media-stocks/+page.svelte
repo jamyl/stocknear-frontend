@@ -14,49 +14,50 @@
 </script>
 
 <SEO
-  title="Social Media Stocks List - Social Media Company Stocks | Stocknear"
+  title="Social Media Stocks List - Social Media Company Stocks "
   description="Complete list of social media company stocks including Meta, X (Twitter), Snap, Pinterest and other social networking platforms. Analyze market cap, revenue, and growth metrics of social media investments."
   keywords="social media stocks, social media company stocks, META stock, SNAP stock, PINS stock, social networking stocks, social platform stocks, digital media stocks"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Social Media Stocks List",
-    "description": "Complete directory of social media companies and social networking platforms",
-    "url": "https://stocknear.com/list/social-media-stocks",
-    "breadcrumb": {
+    name: "Social Media Stocks List",
+    description:
+      "Complete directory of social media companies and social networking platforms",
+    url: "https://stocknear.com/list/social-media-stocks",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Stock Lists",
-          "item": "https://stocknear.com/list"
+          position: 2,
+          name: "Stock Lists",
+          item: "https://stocknear.com/list",
         },
         {
           "@type": "ListItem",
-          "position": 3,
-          "name": "Social Media Stocks",
-          "item": "https://stocknear.com/list/social-media-stocks"
-        }
-      ]
+          position: 3,
+          name: "Social Media Stocks",
+          item: "https://stocknear.com/list/social-media-stocks",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "Social Media Companies Directory",
-      "description": "List of social media and social networking companies with market capitalization data",
-      "numberOfItems": rawData?.length || 0
-    }
+      name: "Social Media Companies Directory",
+      description:
+        "List of social media and social networking companies with market capitalization data",
+      numberOfItems: rawData?.length || 0,
+    },
   }}
 />
 
 <section class="w-full overflow-hidden m-auto">
-
   <Infobox
     text="Comprehensive list of social media company stocks including Meta, Snap, Pinterest, and other companies that own social networks or have significant social media operations. Analyze the performance of leading social networking platforms and digital media companies."
   />

@@ -102,49 +102,50 @@
 </script>
 
 <SEO
-  title="Bitcoin ETFs List - Complete Bitcoin Spot ETF Directory | Stocknear"
+  title="Bitcoin ETFs List - Complete Bitcoin Spot ETF Directory "
   description="Comprehensive list of Bitcoin ETFs trading on US stock exchanges. Compare Bitcoin spot ETFs, expense ratios, assets under management, and real-time performance. Track BITO, BTCO, HODL and more Bitcoin exchange-traded funds."
   keywords="bitcoin ETFs, bitcoin ETF list, spot bitcoin ETF, BITO ETF, bitcoin exchange traded funds, crypto ETFs, bitcoin investment funds, bitcoin ETF comparison, BTCO ETF, HODL ETF"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Bitcoin ETFs List",
-    "description": "Complete directory of Bitcoin exchange-traded funds available on US stock exchanges",
-    "url": "https://stocknear.com/list/bitcoin-etfs",
-    "breadcrumb": {
+    name: "Bitcoin ETFs List",
+    description:
+      "Complete directory of Bitcoin exchange-traded funds available on US stock exchanges",
+    url: "https://stocknear.com/list/bitcoin-etfs",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Stock Lists",
-          "item": "https://stocknear.com/list"
+          position: 2,
+          name: "Stock Lists",
+          item: "https://stocknear.com/list",
         },
         {
           "@type": "ListItem",
-          "position": 3,
-          "name": "Bitcoin ETFs",
-          "item": "https://stocknear.com/list/bitcoin-etfs"
-        }
-      ]
+          position: 3,
+          name: "Bitcoin ETFs",
+          item: "https://stocknear.com/list/bitcoin-etfs",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "Bitcoin ETF Directory",
-      "description": "List of Bitcoin exchange-traded funds with performance metrics and expense ratios",
-      "numberOfItems": rawData?.length || 0
-    }
+      name: "Bitcoin ETF Directory",
+      description:
+        "List of Bitcoin exchange-traded funds with performance metrics and expense ratios",
+      numberOfItems: rawData?.length || 0,
+    },
   }}
 />
 
 <section class="w-full overflow-hidden m-auto">
-
   <Infobox
     text="Comprehensive list of Bitcoin ETFs available for trading on the US stock market, offering investors exposure to the cryptocurrency's price movements."
   />

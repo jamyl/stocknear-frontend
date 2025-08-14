@@ -17,38 +17,38 @@
 </script>
 
 <SEO
-  title="Stock Market Analysis - All US Stock Tickers & Real-Time Quotes | Stocknear"
+  title="Stock Market Analysis - All US Stock Tickers & Real-Time Quotes "
   description="Complete list of all US stock ticker symbols with real-time quotes, market data, and analysis tools. Access comprehensive stock analysis for NYSE, NASDAQ stocks including TSLA, NVDA, AAPL and thousands more."
   keywords="stock tickers, stock symbols, stock list, US stocks, NYSE stocks, NASDAQ stocks, stock market, stock quotes, stock analysis, all stocks, stock screener"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "All US Stock Tickers",
-    "description": "Complete list of US stock ticker symbols with analysis tools",
-    "url": "https://stocknear.com/stocks",
-    "breadcrumb": {
+    name: "All US Stock Tickers",
+    description: "Complete list of US stock ticker symbols with analysis tools",
+    url: "https://stocknear.com/stocks",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Stocks",
-          "item": "https://stocknear.com/stocks"
-        }
-      ]
+          position: 2,
+          name: "Stocks",
+          item: "https://stocknear.com/stocks",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "US Stock Tickers",
-      "description": "List of all US stock ticker symbols",
-      "numberOfItems": rawData?.length || 0
-    }
+      name: "US Stock Tickers",
+      description: "List of all US stock ticker symbols",
+      numberOfItems: rawData?.length || 0,
+    },
   }}
 />
 

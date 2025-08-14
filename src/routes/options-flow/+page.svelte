@@ -961,48 +961,48 @@
 </script>
 
 <SEO
-  title="Options Flow - Real-Time Unusual Options Activity & Smart Money Tracking | Stocknear"
+  title="Options Flow - Real-Time Unusual Options Activity & Smart Money Tracking "
   description="Track real-time options flow and unusual options activity from institutional traders. Monitor smart money movements, large block trades, and options sweeps for TSLA, NVDA, SPY and all US stocks. Free options flow scanner with live alerts."
   keywords="options flow, unusual options activity, smart money, options sweeps, institutional trading, options scanner, block trades, options alerts, dark pool options, call flow, put flow"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Options Flow Scanner",
-    "description": "Real-time options flow tracking and unusual activity scanner",
-    "url": "https://stocknear.com/options-flow",
-    "applicationCategory": "FinanceApplication",
-    "operatingSystem": "Any",
-    "breadcrumb": {
+    name: "Options Flow Scanner",
+    description: "Real-time options flow tracking and unusual activity scanner",
+    url: "https://stocknear.com/options-flow",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Any",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Options Flow",
-          "item": "https://stocknear.com/options-flow"
-        }
-      ]
+          position: 2,
+          name: "Options Flow",
+          item: "https://stocknear.com/options-flow",
+        },
+      ],
     },
-    "offers": {
+    offers: {
       "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD",
-      "description": "Free real-time options flow tracking"
+      price: "0",
+      priceCurrency: "USD",
+      description: "Free real-time options flow tracking",
     },
-    "featureList": [
+    featureList: [
       "Real-time options flow",
       "Unusual activity detection",
       "Smart money tracking",
       "Block trade monitoring",
       "Options sweep alerts",
-      "Institutional flow analysis"
-    ]
+      "Institutional flow analysis",
+    ],
   }}
 />
 

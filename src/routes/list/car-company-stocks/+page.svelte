@@ -14,7 +14,7 @@
 </script>
 
 <SEO
-  title="Car Company Stocks List - Top Auto Manufacturers | Stocknear"
+  title="Car Company Stocks List - Top Auto Manufacturers "
   description="Complete list of car company and automaker stocks ranked by market capitalization. Analyze Tesla, Toyota, Ford, GM and other automotive industry leaders with market cap, revenue, and performance metrics."
   keywords="car company stocks, auto stocks, automotive stocks, car manufacturer stocks, TSLA stock, F stock, GM stock, TM stock, auto industry stocks, vehicle manufacturer stocks"
   structuredData={{
@@ -58,7 +58,6 @@
 />
 
 <section class="w-full overflow-hidden m-auto">
-
   <Infobox
     text="Comprehensive list of car company and automaker stocks ranked by market capitalization. Includes major automotive manufacturers like Tesla, Toyota, Ford, General Motors, and other leading vehicle companies. Compare financial metrics, market performance, and industry positioning."
   />

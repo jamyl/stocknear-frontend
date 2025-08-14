@@ -14,7 +14,7 @@
 </script>
 
 <SEO
-  title="Highest Income Tax Companies - US Companies That Pay Most Taxes | Stocknear"
+  title="Highest Income Tax Companies - US Companies That Pay Most Taxes "
   description="List of US companies paying the highest income taxes ranked by corporate tax payments. Discover which public companies contribute most in federal income tax expenses and corporate tax rates."
   keywords="highest income tax companies, companies paying most taxes, corporate tax payments, income tax expense, corporate tax rates, highest corporate taxes, US tax paying companies"
   structuredData={{

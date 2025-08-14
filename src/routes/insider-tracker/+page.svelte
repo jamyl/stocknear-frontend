@@ -165,45 +165,45 @@
 </script>
 
 <SEO
-  title="Insider Trading Tracker - Real-Time Corporate Insider Buys & Sells | Stocknear"
+  title="Insider Trading Tracker - Real-Time Corporate Insider Buys & Sells "
   description="Track real-time insider trading activity from corporate executives, directors, and institutional investors. Monitor insider buys, sells, and ownership changes across all US stocks. Free insider trading tracker with alerts."
   keywords="insider trading tracker, insider trading data, insider buys, insider sells, corporate insider trading, executive trading, insider transactions, insider ownership, insider trading alerts"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Insider Trading Tracker",
-    "description": "Real-time corporate insider trading activity tracker",
-    "url": "https://stocknear.com/insider-tracker",
-    "applicationCategory": "FinanceApplication",
-    "breadcrumb": {
+    name: "Insider Trading Tracker",
+    description: "Real-time corporate insider trading activity tracker",
+    url: "https://stocknear.com/insider-tracker",
+    applicationCategory: "FinanceApplication",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Insider Tracker",
-          "item": "https://stocknear.com/insider-tracker"
-        }
-      ]
+          position: 2,
+          name: "Insider Tracker",
+          item: "https://stocknear.com/insider-tracker",
+        },
+      ],
     },
-    "offers": {
+    offers: {
       "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
+      price: "0",
+      priceCurrency: "USD",
     },
-    "featureList": [
+    featureList: [
       "Real-time insider trading data",
       "Insider buy/sell tracking",
       "Executive transaction alerts",
       "Ownership change monitoring",
-      "Insider trading analysis"
-    ]
+      "Insider trading analysis",
+    ],
   }}
 />
 

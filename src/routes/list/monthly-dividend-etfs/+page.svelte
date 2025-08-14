@@ -112,49 +112,50 @@
 </script>
 
 <SEO
-  title="Monthly Dividend ETFs List - High-Yield Income ETFs | Stocknear"
+  title="Monthly Dividend ETFs List - High-Yield Income ETFs "
   description="Complete list of monthly dividend ETFs that pay dividends every month. Compare yields, expense ratios, and performance of JEPI, QYLD, DIVO and other monthly income exchange-traded funds. Consistent monthly cash flow for income investors."
   keywords="monthly dividend ETFs, monthly dividend ETF list, JEPI ETF, QYLD ETF, DIVO ETF, monthly income ETFs, high yield monthly ETFs, monthly cash flow, income investing ETFs, dividend paying ETFs monthly"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Monthly Dividend ETFs List",
-    "description": "Complete directory of monthly dividend exchange-traded funds that provide consistent monthly income",
-    "url": "https://stocknear.com/list/monthly-dividend-etfs",
-    "breadcrumb": {
+    name: "Monthly Dividend ETFs List",
+    description:
+      "Complete directory of monthly dividend exchange-traded funds that provide consistent monthly income",
+    url: "https://stocknear.com/list/monthly-dividend-etfs",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Stock Lists",
-          "item": "https://stocknear.com/list"
+          position: 2,
+          name: "Stock Lists",
+          item: "https://stocknear.com/list",
         },
         {
           "@type": "ListItem",
-          "position": 3,
-          "name": "Monthly Dividend ETFs",
-          "item": "https://stocknear.com/list/monthly-dividend-etfs"
-        }
-      ]
+          position: 3,
+          name: "Monthly Dividend ETFs",
+          item: "https://stocknear.com/list/monthly-dividend-etfs",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "Monthly Dividend ETF Directory",
-      "description": "List of exchange-traded funds that pay dividends monthly for consistent income",
-      "numberOfItems": rawData?.length || 0
-    }
+      name: "Monthly Dividend ETF Directory",
+      description:
+        "List of exchange-traded funds that pay dividends monthly for consistent income",
+      numberOfItems: rawData?.length || 0,
+    },
   }}
 />
 
 <section class="w-full overflow-hidden m-auto">
-
   <Infobox
     text="Comprehensive list of monthly dividend ETFs that provide regular monthly income distributions. These exchange-traded funds pay dividends twelve times per year, offering consistent cash flow for income-focused investors. Popular monthly dividend ETFs include JEPI, QYLD, and DIVO."
   />

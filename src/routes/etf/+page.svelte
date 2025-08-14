@@ -106,38 +106,39 @@
 </script>
 
 <SEO
-  title="ETF Analysis - All Exchange-Traded Funds List & Real-Time Data | Stocknear"
+  title="ETF Analysis - All Exchange-Traded Funds List & Real-Time Data "
   description="Complete list of all ETF ticker symbols with real-time quotes, holdings analysis, and performance metrics. Track popular ETFs like SPY, QQQ, IWM and hundreds more with comprehensive ETF analysis tools."
   keywords="ETF list, ETF tickers, exchange-traded funds, ETF analysis, SPY ETF, QQQ ETF, ETF holdings, ETF performance, ETF dividends, index funds"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "All ETF Tickers",
-    "description": "Complete list of exchange-traded fund (ETF) ticker symbols with analysis",
-    "url": "https://stocknear.com/etf",
-    "breadcrumb": {
+    name: "All ETF Tickers",
+    description:
+      "Complete list of exchange-traded fund (ETF) ticker symbols with analysis",
+    url: "https://stocknear.com/etf",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "ETFs",
-          "item": "https://stocknear.com/etf"
-        }
-      ]
+          position: 2,
+          name: "ETFs",
+          item: "https://stocknear.com/etf",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "ETF Tickers",
-      "description": "List of all exchange-traded fund ticker symbols",
-      "numberOfItems": rawData?.length || 0
-    }
+      name: "ETF Tickers",
+      description: "List of all exchange-traded fund ticker symbols",
+      numberOfItems: rawData?.length || 0,
+    },
   }}
 />
 

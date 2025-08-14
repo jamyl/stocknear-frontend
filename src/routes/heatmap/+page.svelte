@@ -138,46 +138,47 @@
 </script>
 
 <SEO
-  title="Stock Market Heatmap - S&P 500 Visual Performance Map | Stocknear"
+  title="Stock Market Heatmap - S&P 500 Visual Performance Map "
   description="Interactive S&P 500 stock market heatmap showing real-time performance of stocks, sectors, and industries. Visualize market trends, sector rotation, and stock performance with color-coded heat map. Free market visualization tool."
   keywords="stock market heatmap, S&P 500 heatmap, market visualization, sector heatmap, stock performance map, market trends visualization, sector rotation map, stock heat map"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Stock Market Heatmap",
-    "description": "Interactive S&P 500 market heatmap for visualizing stock and sector performance",
-    "url": "https://stocknear.com/heatmap",
-    "applicationCategory": "FinanceApplication",
-    "breadcrumb": {
+    name: "Stock Market Heatmap",
+    description:
+      "Interactive S&P 500 market heatmap for visualizing stock and sector performance",
+    url: "https://stocknear.com/heatmap",
+    applicationCategory: "FinanceApplication",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Heatmap",
-          "item": "https://stocknear.com/heatmap"
-        }
-      ]
+          position: 2,
+          name: "Heatmap",
+          item: "https://stocknear.com/heatmap",
+        },
+      ],
     },
-    "offers": {
+    offers: {
       "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
+      price: "0",
+      priceCurrency: "USD",
     },
-    "featureList": [
+    featureList: [
       "Interactive S&P 500 heatmap",
       "Real-time stock performance visualization",
       "Sector and industry performance",
       "Color-coded market trends",
       "Multiple time periods",
-      "Drill-down capabilities"
-    ]
+      "Drill-down capabilities",
+    ],
   }}
 />
 

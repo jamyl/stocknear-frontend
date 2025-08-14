@@ -291,7 +291,7 @@
 </script>
 
 <SEO
-  title="Congress Trading Tracker - Real-Time Politicians Stock Trades | Stocknear"
+  title="Congress Trading Tracker - Real-Time Politicians Stock Trades "
   description="Track real-time stock trades by US Congress members, senators, and politicians. Monitor Nancy Pelosi trades, senate stock purchases, and congressional insider trading. Free politician trading tracker with detailed transaction history."
   keywords="congress trading, nancy pelosi trades, politician stock trades, senate trades, congressional trading, insider trading congress, political stock tracker, us politicians trading, pelosi portfolio, congress stock trades"
   structuredData={{

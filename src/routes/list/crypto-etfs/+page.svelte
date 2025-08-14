@@ -120,49 +120,50 @@
 </script>
 
 <SEO
-  title="Crypto ETFs List - Complete Cryptocurrency ETF Directory | Stocknear"
+  title="Crypto ETFs List - Complete Cryptocurrency ETF Directory "
   description="Comprehensive list of cryptocurrency ETFs trading on US stock exchanges. Compare Bitcoin, Ethereum, and blockchain ETFs with expense ratios, assets under management, and real-time performance. Track BITO, ETHE, BLOK and more crypto funds."
   keywords="crypto ETFs, cryptocurrency ETFs, crypto ETF list, bitcoin ETFs, ethereum ETFs, blockchain ETFs, crypto investment funds, cryptocurrency exchange traded funds, BITO ETF, ETHE ETF, BLOK ETF"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Crypto ETFs List",
-    "description": "Complete directory of cryptocurrency exchange-traded funds available on US stock exchanges",
-    "url": "https://stocknear.com/list/crypto-etfs",
-    "breadcrumb": {
+    name: "Crypto ETFs List",
+    description:
+      "Complete directory of cryptocurrency exchange-traded funds available on US stock exchanges",
+    url: "https://stocknear.com/list/crypto-etfs",
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Stock Lists",
-          "item": "https://stocknear.com/list"
+          position: 2,
+          name: "Stock Lists",
+          item: "https://stocknear.com/list",
         },
         {
           "@type": "ListItem",
-          "position": 3,
-          "name": "Crypto ETFs",
-          "item": "https://stocknear.com/list/crypto-etfs"
-        }
-      ]
+          position: 3,
+          name: "Crypto ETFs",
+          item: "https://stocknear.com/list/crypto-etfs",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "Cryptocurrency ETF Directory",
-      "description": "List of cryptocurrency exchange-traded funds with performance metrics and expense ratios",
-      "numberOfItems": rawData?.length || 0
-    }
+      name: "Cryptocurrency ETF Directory",
+      description:
+        "List of cryptocurrency exchange-traded funds with performance metrics and expense ratios",
+      numberOfItems: rawData?.length || 0,
+    },
   }}
 />
 
 <section class="w-full overflow-hidden m-auto">
-
   <Infobox
     text="Comprehensive list of cryptocurrency ETFs that are currently active. These exchange-traded funds provide exposure to Bitcoin, Ethereum, and the crypto industry generally."
   />
