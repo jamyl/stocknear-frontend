@@ -265,8 +265,30 @@
 </script>
 
 <SEO
-  title="Stock Price Alert - Get Instant Notifications"
-  description="Set up stock price alerts and receive instant notifications when your target price is reached. Stay ahead in the market with real-time updates."
+  title="Stock Price Alerts - Real-Time Price Notifications & Market Updates"
+  description="Create custom stock price alerts and get instant notifications when your target prices are hit. Track earnings, news, and price movements for your watchlist with real-time market data."
+  keywords="stock price alerts, price notifications, stock alerts, price targets, earnings calendar, stock news feed, real-time alerts, market notifications, stock watchlist, price monitoring"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Price Alerts - Stocknear",
+    description:
+      "Real-time stock price alert system with instant notifications",
+    applicationCategory: "FinanceApplication",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    featureList: [
+      "Custom price alerts",
+      "Real-time notifications",
+      "Earnings calendar integration",
+      "News feed monitoring",
+      "Multiple condition types",
+      "Volume tracking",
+    ],
+  }}
 />
 
 <section

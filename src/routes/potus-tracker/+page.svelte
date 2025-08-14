@@ -392,8 +392,30 @@
 </script>
 
 <SEO
-  title="POTUS Tracker: Real-Time Presidential Schedule, Executive Orders & Legislation"
-  description="Track the President of the United States in real-time. Get updates on the POTUS schedule, executive orders, signed legislation, and official events."
+  title="POTUS Tracker: Real-Time Presidential Schedule, Executive Orders & Market Impact"
+  description="Track President Trump's daily schedule, executive orders, and Truth Social posts. Monitor real-time market reactions to presidential actions with S&P 500 and sector performance analytics."
+  keywords="POTUS tracker, Trump schedule, executive orders, presidential actions, market impact, Truth Social posts, S&P 500 performance, sector analysis, Trump administration, presidential calendar"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "POTUS Tracker - Stocknear",
+    description:
+      "Real-time tracking of presidential activities and their market impact",
+    applicationCategory: "FinanceApplication",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    featureList: [
+      "Presidential schedule tracking",
+      "Executive order monitoring",
+      "Truth Social post analysis",
+      "Market performance correlation",
+      "Sector impact analysis",
+      "Real-time updates",
+    ],
+  }}
 />
 
 <section
