@@ -37,46 +37,49 @@
 
 <SEO
   title={timePeriod === "gainers"
-    ? `Top Stock Gainers Today - Biggest Winners & Best Performing Stocks | Stocknear`
-    : `Top Stock Gainers ${timePeriod} - Best Performing Stocks & Winners | Stocknear`}
-  description={timePeriod === "gainers" 
+    ? `Top Stock Gainers Today - Biggest Winners & Best Performing Stocks `
+    : `Top Stock Gainers ${timePeriod} - Best Performing Stocks & Winners `}
+  description={timePeriod === "gainers"
     ? "Track today's biggest stock market gainers and winners. Monitor stocks with highest percentage gains, top performers by volume, market cap, and price movements. Free real-time stock gainers list."
     : `Find the best performing stocks and biggest gainers over the past ${timePeriod}. Track winning stocks, percentage gains, and top performers with detailed market data and analysis.`}
   keywords="stock gainers, biggest stock winners, top performing stocks, best stocks today, stock market winners, stock gainers list, top gainers, winning stocks"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": timePeriod === "gainers" ? "Today's Top Stock Gainers" : `Top Stock Gainers - ${timePeriod}`,
-    "description": "List of top performing stocks and biggest market gainers",
-    "url": `https://stocknear.com/market-mover/gainers${timePeriod === "gainers" ? "" : "/" + timePeriod}`,
-    "breadcrumb": {
+    name:
+      timePeriod === "gainers"
+        ? "Today's Top Stock Gainers"
+        : `Top Stock Gainers - ${timePeriod}`,
+    description: "List of top performing stocks and biggest market gainers",
+    url: `https://stocknear.com/market-mover/gainers${timePeriod === "gainers" ? "" : "/" + timePeriod}`,
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Market Mover",
-          "item": "https://stocknear.com/market-mover"
+          position: 2,
+          name: "Market Mover",
+          item: "https://stocknear.com/market-mover",
         },
         {
           "@type": "ListItem",
-          "position": 3,
-          "name": "Gainers",
-          "item": "https://stocknear.com/market-mover/gainers"
-        }
-      ]
+          position: 3,
+          name: "Gainers",
+          item: "https://stocknear.com/market-mover/gainers",
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "Stock Gainers List",
-      "description": "Top performing stocks with highest percentage gains"
-    }
+      name: "Stock Gainers List",
+      description: "Top performing stocks with highest percentage gains",
+    },
   }}
 />
 

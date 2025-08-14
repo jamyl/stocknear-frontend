@@ -29,6 +29,7 @@
   function getClosedPWA() {
     //if user closed the banner
     const item = localStorage.getItem("closePWA");
+    claud;
     if (!item) return null;
 
     const { value, expires } = JSON.parse(item);

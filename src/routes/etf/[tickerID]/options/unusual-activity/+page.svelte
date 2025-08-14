@@ -10,7 +10,7 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$etfTicker}) - Explore Unusual Option Activity | Stocknear`}
+  title={`${$displayCompanyName} (${$etfTicker}) - Explore Unusual Option Activity `}
   description={`Analyze historical unusual option trades with a minimum of 1 million dollar premium for ${$displayCompanyName} (${$etfTicker}).`}
 />
 

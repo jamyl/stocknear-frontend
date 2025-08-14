@@ -19,55 +19,57 @@
 </script>
 
 <SEO
-  title={`${data?.getParams} Stocks List - Sector Analysis | Stocknear`}
+  title={`${data?.getParams
+    ?.split(" ")
+    ?.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    ?.join(" ")} Stocks List - Sector Analysis`}
   description={`Complete list of ${data?.getParams} sector stocks with ${rawData?.length} companies, combined market cap of ${abbreviateNumber(totalMarketCap)} and total revenue of ${abbreviateNumber(totalRevenue)}. Analyze sector performance, trends, and leading companies.`}
   keywords={`${data?.getParams?.toLowerCase()} stocks, ${data?.getParams?.toLowerCase()} sector, ${data?.getParams?.toLowerCase()} companies, sector analysis, ${data?.getParams?.toLowerCase()} investments`}
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": `${data?.getParams} Sector Stocks`,
-    "description": `Complete directory of companies in the ${data?.getParams} sector`,
-    "url": `https://stocknear.com/list/sector/${data?.getParams?.toLowerCase()?.replace(/\s+/g, '-')}`,
-    "breadcrumb": {
+    name: `${data?.getParams} Sector Stocks`,
+    description: `Complete directory of companies in the ${data?.getParams} sector`,
+    url: `https://stocknear.com/list/sector/${data?.getParams?.toLowerCase()?.replace(/\s+/g, "-")}`,
+    breadcrumb: {
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://stocknear.com"
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Stock Lists",
-          "item": "https://stocknear.com/list"
+          position: 2,
+          name: "Stock Lists",
+          item: "https://stocknear.com/list",
         },
         {
           "@type": "ListItem",
-          "position": 3,
-          "name": "Sector Stocks",
-          "item": "https://stocknear.com/list/sector"
+          position: 3,
+          name: "Sector Stocks",
+          item: "https://stocknear.com/list/sector",
         },
         {
           "@type": "ListItem",
-          "position": 4,
-          "name": `${data?.getParams}`,
-          "item": `https://stocknear.com/list/sector/${data?.getParams?.toLowerCase()?.replace(/\s+/g, '-')}`
-        }
-      ]
+          position: 4,
+          name: `${data?.getParams}`,
+          item: `https://stocknear.com/list/sector/${data?.getParams?.toLowerCase()?.replace(/\s+/g, "-")}`,
+        },
+      ],
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": `${data?.getParams} Sector Directory`,
-      "description": `List of companies in the ${data?.getParams} sector with market capitalization and financial metrics`,
-      "numberOfItems": rawData?.length || 0
-    }
+      name: `${data?.getParams} Sector Directory`,
+      description: `List of companies in the ${data?.getParams} sector with market capitalization and financial metrics`,
+      numberOfItems: rawData?.length || 0,
+    },
   }}
 />
 
 <section class="w-full overflow-hidden m-auto">
-
   <Infobox
     text={`Comprehensive analysis of the ${data?.getParams} sector with ${rawData?.length} publicly traded companies. Combined market capitalization of ${abbreviateNumber(totalMarketCap)} and total revenue of ${abbreviateNumber(totalRevenue)}. Track sector performance, trends, and leading market players.`}
   />
