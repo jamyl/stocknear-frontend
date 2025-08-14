@@ -3400,6 +3400,7 @@ const handleKeyDown = (event) => {
                   ? row?.label?.slice(0, 30)?.replace("[%]", "") + "..."
                   : row?.label?.replace("[%]", "")}
                 <InfoModal
+                  id={row?.rule}
                   title={row?.label?.replace("[%]", "")}
                   callAPI={true}
                   parameter={row?.rule}

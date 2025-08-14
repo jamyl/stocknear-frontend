@@ -693,6 +693,7 @@
             </h2>
             <div class="ml-1 -mt-3">
               <InfoModal
+                id="opra-data-info"
                 title="OPRA Data EOD delayed"
                 content="Options data from the Options Price Reporting Authority (OPRA) provided by Intrinio.<br>
 					You're viewing End-of-Day (EOD) delayed options data."
@@ -752,6 +753,7 @@
               >
                 <span>Implied Volatility (30d)</span>
                 <InfoModal
+                  id="iv-30d-info"
                   content="Implied Volatility (IV) estimates how much the market expects a stock to move over the next 30 days. 
               A higher IV suggests more expected movement (often bearish fear or bullish excitement), while a lower IV suggests less expected movement."
                 />
@@ -767,6 +769,7 @@
               >
                 <span>IV Rank</span>
                 <InfoModal
+                  id="iv-rank-info"
                   content="IV Rank shows how current Implied Volatility (IV) compares to its past levels.  
 High IV Rank means IV is high compared to the past — often seen as bearish (fear) or an opportunity to sell options.  
 Low IV Rank means IV is low — often seen as bullish (calm) or an opportunity to buy options."
@@ -784,6 +787,7 @@ Low IV Rank means IV is low — often seen as bullish (calm) or an opportunity t
               >
                 <span>Historical Volatility</span>
                 <InfoModal
+                  id="historical-vol-info"
                   content="Historical Volatility shows how much a stock’s price fluctuated over the past 30 days.  
               High volatility means the stock experienced large price swings — often considered riskier.  
               Low volatility means the stock moved more steadily — often considered less risky."
@@ -803,6 +807,7 @@ Low IV Rank means IV is low — often seen as bullish (calm) or an opportunity t
               >
                 <span>IV Low</span>
                 <InfoModal
+                  id="iv-low-info"
                   content="IV Low shows the lowest Implied Volatility (IV) level reached in the past 12 months.  
               A very low IV can signal calm markets or complacency — often seen as bullish for the stock but may indicate limited option premiums."
                 />
@@ -818,6 +823,7 @@ Low IV Rank means IV is low — often seen as bullish (calm) or an opportunity t
               >
                 <span>IV High</span>
                 <InfoModal
+                  id="iv-high-info"
                   content="IV High shows the highest Implied Volatility (IV) level reached in the past 12 months.  
             A very high IV can signal fear or uncertainty — often seen as bearish for the stock but may offer higher option premiums."
                 />
@@ -857,6 +863,7 @@ Low IV Rank means IV is low — often seen as bullish (calm) or an opportunity t
               >
                 <span>Today's Open Interest</span>
                 <InfoModal
+                  id="oi-today-info"
                   content="Open Interest (OI) is the total number of outstanding options contracts (both calls and puts) that are still open.  
               High OI means more market activity and liquidity.  
               Low OI means less interest and lower liquidity."
@@ -873,6 +880,7 @@ Low IV Rank means IV is low — often seen as bullish (calm) or an opportunity t
               >
                 <span>Put-Call Ratio</span>
                 <InfoModal
+                  id="oi-pc-ratio-info"
                   content="The Open Interest (OI) Put-Call Ratio compares the number of open put contracts to open call contracts.  
 A high ratio (>1) suggests more puts than calls — often seen as bearish.  
 A low ratio (<1) suggests more calls than puts — often seen as bullish."
@@ -890,6 +898,7 @@ A low ratio (<1) suggests more calls than puts — often seen as bullish."
               >
                 <span>Put Open Interest</span>
                 <InfoModal
+                  id="put-oi-info"
                   content="Put Open Interest is the total number of open put option contracts on a stock.  
             High put OI suggests more traders are buying protection or betting on a decline — often seen as bearish.  
             Low put OI suggests less demand for downside protection — often seen as bullish or neutral."
@@ -907,6 +916,7 @@ A low ratio (<1) suggests more calls than puts — often seen as bullish."
               >
                 <span>Call Open Interest</span>
                 <InfoModal
+                  id="call-oi-info"
                   content="Call Open Interest is the total number of open call option contracts on a stock.  
             High call OI suggests more traders expect the stock to rise or are speculating — often seen as bullish.  
             Low call OI suggests less demand for upside bets — often seen as bearish or neutral."
@@ -924,6 +934,7 @@ A low ratio (<1) suggests more calls than puts — often seen as bullish."
               >
                 <span>Open Interest Avg (30-day)</span>
                 <InfoModal
+                  id="oi-avg-info"
                   content="The average Open Interest over the past 30 days shows typical market activity in options contracts."
                 />
               </div>
@@ -939,6 +950,7 @@ A low ratio (<1) suggests more calls than puts — often seen as bullish."
               >
                 <span>Today vs Open Interest Avg (30-day)</span>
                 <InfoModal
+                  id="oi-today-vs-avg-info"
                   content="This compares today's Open Interest to the 30-day average.  
             Higher today’s OI than average suggests increased trader interest or unusual activity — possibly signaling a bigger move.  
             Lower today’s OI than average suggests less activity or fading interest."
@@ -977,6 +989,7 @@ A low ratio (<1) suggests more calls than puts — often seen as bullish."
               >
                 <span>Today's Volume</span>
                 <InfoModal
+                  id="vol-today-info"
                   content="Today's Volume is the total number of options contracts (calls and puts) traded during the current trading day.  
               High volume shows strong market activity and interest.  
               Low volume suggests less trading and lower interest."
@@ -993,6 +1006,7 @@ A low ratio (<1) suggests more calls than puts — often seen as bullish."
               >
                 <span>Put-Call Ratio</span>
                 <InfoModal
+                  id="vol-pc-ratio-info"
                   content="The Put-Call Ratio compares the volume of traded put options to call options during a period.  
 A high ratio (>1) means more puts traded — often seen as bearish sentiment.  
 A low ratio (<1) means more calls traded — often seen as bullish sentiment."
@@ -1010,6 +1024,7 @@ A low ratio (<1) means more calls traded — often seen as bullish sentiment."
               >
                 <span>Put Volume</span>
                 <InfoModal
+                  id="put-vol-info"
                   content="Put Volume is the total number of put option contracts traded today.  
               High put volume suggests many traders are buying protection or betting on a decline — often seen as bearish.  
               Low put volume suggests less demand for downside protection — often seen as bullish or neutral."
@@ -1027,6 +1042,7 @@ A low ratio (<1) means more calls traded — often seen as bullish sentiment."
               >
                 <span>Call Volume</span>
                 <InfoModal
+                  id="call-vol-info"
                   content="Call Volume is the total number of call option contracts traded today.  
               High call volume suggests many traders expect the stock to rise or are speculating — often seen as bullish.  
               Low call volume suggests less demand for upside bets — often seen as bearish or neutral."
@@ -1044,6 +1060,7 @@ A low ratio (<1) means more calls traded — often seen as bullish sentiment."
               >
                 <span>Volume Avg (30-day)</span>
                 <InfoModal
+                  id="vol-avg-info"
                   content="The average Volume over the past 30 days shows typical market activity in options contracts."
                 />
               </div>
@@ -1059,6 +1076,7 @@ A low ratio (<1) means more calls traded — often seen as bullish sentiment."
               >
                 <span>Today vs Volume Avg (30-day)</span>
                 <InfoModal
+                  id="vol-today-vs-avg-info"
                   content="This compares today's trading volume to the 30-day average volume.  
 Higher volume today than average suggests increased trader interest or unusual activity — possibly signaling a bigger move.  
 Lower volume today than average suggests less activity or fading interest."
