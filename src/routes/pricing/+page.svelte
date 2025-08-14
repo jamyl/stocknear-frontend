@@ -181,7 +181,7 @@
       </h1>
     </div>
 
-    <Discount />
+    <!--<Discount />-->
 
     <div class="flex flex-row items-center justify-center">
       <div class="flex flex-row items-center ml-auto">
