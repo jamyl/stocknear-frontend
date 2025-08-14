@@ -8,8 +8,27 @@
 </script>
 
 <SEO
-  title="Daily Delta Exposure"
-  description={`Analyze daily delta exposure for ${$displayCompanyName} (${$etfTicker}). Access historical volume, open interest trends, and save options contracts for detailed analysis and insights.`}
+  title={`${$displayCompanyName} (${$etfTicker}) ETF Daily Delta Exposure Analysis - Options Greeks`}
+  description={`Track daily delta exposure for ${$displayCompanyName} (${$etfTicker}) ETF options. Analyze delta-hedging flows, market maker positioning, and systematic options activity affecting ETF price movements. Essential for understanding ETF options market structure and institutional flows.`}
+  keywords={`${$etfTicker} delta exposure, ${$displayCompanyName} ETF delta, ETF options greeks, delta hedging, ETF market makers, options flow analysis, ETF systematic trading`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "AnalysisNewsArticle",
+    headline: `${$displayCompanyName} (${$etfTicker}) ETF Delta Exposure Analysis`,
+    description: "Daily delta exposure analysis for ETF options trading",
+    about: {
+      "@type": "FinancialProduct",
+      name: `${$displayCompanyName}`,
+      tickerSymbol: $etfTicker,
+      category: "Exchange-Traded Fund",
+    },
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    url: `https://stocknear.com/etf/${$etfTicker}/options/dex`,
+  }}
 />
 
 <section class="w-full overflow-hidden min-h-screen pb-40">

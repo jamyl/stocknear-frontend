@@ -106,15 +106,14 @@
 </script>
 
 <SEO
-  title="ETF Analysis - All Exchange-Traded Funds List & Real-Time Data "
-  description="Complete list of all ETF ticker symbols with real-time quotes, holdings analysis, and performance metrics. Track popular ETFs like SPY, QQQ, IWM and hundreds more with comprehensive ETF analysis tools."
-  keywords="ETF list, ETF tickers, exchange-traded funds, ETF analysis, SPY ETF, QQQ ETF, ETF holdings, ETF performance, ETF dividends, index funds"
+  title="Complete ETF Directory - All {rawData?.length || 0} Exchange-Traded Funds with Real-Time Analysis"
+  description="Comprehensive ETF database featuring {rawData?.length || 0} exchange-traded funds with real-time quotes, expense ratios, AUM, and holdings analysis. Compare ETF performance, track popular funds like SPY, QQQ, and IWM with advanced portfolio diversification tools."
+  keywords="ETF directory, exchange-traded funds list, ETF analysis, ETF expense ratios, ETF holdings, portfolio diversification, passive investing, index funds, ETF screener, fund comparison, asset allocation, SPY ETF, QQQ ETF, sector ETFs, bond ETFs"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "All ETF Tickers",
-    description:
-      "Complete list of exchange-traded fund (ETF) ticker symbols with analysis",
+    name: "Complete ETF Directory",
+    description: "Comprehensive database of {rawData?.length || 0} exchange-traded funds with analysis tools and real-time data",
     url: "https://stocknear.com/etf",
     breadcrumb: {
       "@type": "BreadcrumbList",
@@ -128,17 +127,23 @@
         {
           "@type": "ListItem",
           position: 2,
-          name: "ETFs",
+          name: "ETF Directory",
           item: "https://stocknear.com/etf",
         },
       ],
     },
     mainEntity: {
       "@type": "ItemList",
-      name: "ETF Tickers",
-      description: "List of all exchange-traded fund ticker symbols",
+      name: "Exchange-Traded Funds Directory",
+      description: "Complete catalog of ETF ticker symbols with expense ratios, assets under management, and performance metrics",
       numberOfItems: rawData?.length || 0,
     },
+    about: {
+      "@type": "FinancialProduct",
+      name: "Exchange-Traded Funds",
+      description: "Investment funds traded on stock exchanges like individual stocks, offering diversified exposure to various asset classes",
+      category: "Investment Fund"
+    }
   }}
 />
 

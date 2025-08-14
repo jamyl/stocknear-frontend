@@ -126,8 +126,80 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Ratios and Metrics Statement`}
-  description={`Financial ratios and valuation metrics for ${$displayCompanyName} (${$stockTicker}). Includes annual, quarterly and trailing numbers with history and charts.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Financial Ratios & Valuation Metrics Analysis - P/E, ROE, Debt Ratios & Profitability`}
+  description={`Comprehensive financial ratio analysis for ${$displayCompanyName} (${$stockTicker}) with key valuation metrics including P/E ratio, PEG ratio, ROE, ROA, debt-to-equity, current ratio, and profitability margins. Track ${$stockTicker} financial health with price-to-book, price-to-sales, dividend yield, and operational efficiency ratios over multiple periods.`}
+  keywords={`${$stockTicker} financial ratios, ${$displayCompanyName} valuation metrics, ${$stockTicker} P/E ratio, ROE analysis, debt-to-equity ratio, profitability ratios, valuation analysis, financial metrics, investment ratios, liquidity ratios, efficiency ratios, dividend yield`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "WebPage", "AnalysisNewsArticle"],
+    name: `${$displayCompanyName} (${$stockTicker}) Financial Ratios Analysis`,
+    headline: `${$displayCompanyName} Valuation & Financial Metrics - Comprehensive Ratio Analysis`,
+    description: `Detailed financial ratio analysis for ${$displayCompanyName} (${$stockTicker}) including valuation, profitability, liquidity, and efficiency metrics`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/financials/ratios`,
+
+    author: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://stocknear.com/favicon.png",
+      },
+    },
+    dateModified: new Date().toISOString(),
+    datePublished: new Date().toISOString(),
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+    about: {
+      "@type": "Thing",
+      name: "Financial Ratio Analysis",
+      description:
+        "Comprehensive analysis of valuation metrics, profitability ratios, and financial health indicators",
+    },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Stocks",
+          item: "https://stocknear.com/stocks",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: `${$displayCompanyName} (${$stockTicker})`,
+          item: `https://stocknear.com/stocks/${$stockTicker}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
+          name: "Financial Statements",
+          item: `https://stocknear.com/stocks/${$stockTicker}/financials`,
+        },
+        {
+          "@type": "ListItem",
+          position: 5,
+          name: "Financial Ratios",
+          item: `https://stocknear.com/stocks/${$stockTicker}/financials/ratios`,
+        },
+      ],
+    },
+  }}
 />
 
 <FinancialSection {data} title="Ratios and Metrics" {statementConfig} />

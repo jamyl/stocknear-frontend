@@ -10,8 +10,28 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$indexTicker?.toUpperCase()}) Options Max Pain Chart`}
-  description={`View the Max Pain chart for ${$displayCompanyName} (${$indexTicker?.toUpperCase()}) to analyze options strike price pressure and market sentiment.`}
+  title={`${$displayCompanyName} (${$indexTicker?.toUpperCase()}) Index Options Max Pain Analysis - Market Sentiment & Strike Pressure`}
+  description={`Comprehensive max pain analysis for ${$displayCompanyName} (${$indexTicker?.toUpperCase()}) index options. Identify optimal expiration levels, market maker positioning, and systematic hedging pressure affecting index movements. Essential for understanding broad market sentiment and institutional options flow.`}
+  keywords={`${$indexTicker?.toUpperCase()} max pain, ${$displayCompanyName} index options, market sentiment analysis, options strike pressure, index options max pain, systematic hedging analysis`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "AnalysisNewsArticle",
+    headline: `${$displayCompanyName} (${$indexTicker?.toUpperCase()}) Index Options Max Pain Analysis`,
+    description:
+      "Max pain analysis for index options and market sentiment tracking",
+    about: {
+      "@type": "FinancialProduct",
+      name: `${$displayCompanyName}`,
+      tickerSymbol: $indexTicker?.toUpperCase(),
+      category: "Market Index",
+    },
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    url: `https://stocknear.com/index/${$indexTicker}/options/max-pain`,
+  }}
 />
 
 <section class="w-full overflow-hidden min-h-screen">

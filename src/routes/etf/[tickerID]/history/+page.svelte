@@ -7,8 +7,28 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$etfTicker}) Stock Price History`}
-  description={`Get a complete stock price history for ${$displayCompanyName} (${$etfTicker}), starting from its first trading day. Includes open, high, low, close and volume.`}
+  title={`${$displayCompanyName} (${$etfTicker}) ETF Historical Price Data - Complete Trading History & Performance`}
+  description={`Complete historical price data for ${$displayCompanyName} (${$etfTicker}) ETF from inception to present. Analyze daily open, high, low, close prices and trading volume. Track ETF performance trends, price movements, and volatility patterns for investment research and backtesting strategies.`}
+  keywords={`${$etfTicker} historical prices, ${$displayCompanyName} price history, ETF historical data, ETF performance history, ETF price chart, historical ETF quotes, ETF backtesting data, investment analysis, price trends`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    name: `${$displayCompanyName} (${$etfTicker}) Historical Price Data`,
+    description:
+      "Complete historical trading data for ETF analysis and research",
+    url: `https://stocknear.com/etf/${$etfTicker}/history`,
+    about: {
+      "@type": "FinancialProduct",
+      name: `${$displayCompanyName}`,
+      tickerSymbol: $etfTicker,
+      category: "Exchange-Traded Fund",
+    },
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+  }}
 />
 
 <History {data} ticker={$etfTicker} />

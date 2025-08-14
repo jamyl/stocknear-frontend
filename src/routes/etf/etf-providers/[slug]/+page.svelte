@@ -134,8 +134,44 @@
 </script>
 
 <SEO
-  title={`${etfProviderName} ETF List: Complete Guide to ${etfProviderData?.length} Exchange Traded Funds`}
-  description={`Explore ${etfProviderName}'s complete ETF lineup of ${etfProviderData?.length} funds with $${abbreviateNumber(totalAssets)} AUM. Compare expense ratios, assets, and performance metrics to find the right ETF for your portfolio.`}
+  title={`${etfProviderName} ETFs - Complete Directory of ${rawData?.length || 0} Exchange-Traded Funds`}
+  description={`Comprehensive analysis of all ${rawData?.length || 0} ${etfProviderName} ETFs with ${abbreviateNumber(totalAssets)} total AUM and ${avgExpenseRatio?.toFixed(2)}% average expense ratio. Compare fund performance, holdings, costs, and asset allocation across ${etfProviderName}'s complete ETF lineup for optimal portfolio construction.`}
+  keywords={`${etfProviderName} ETFs, ${etfProviderName} funds, ${etfProviderName} expense ratios, ${etfProviderName} fund comparison, ETF provider analysis, fund lineup, ETF selection`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `${etfProviderName} ETF Directory`,
+    description: `Complete catalog of ${etfProviderName} exchange-traded funds`,
+    url: `https://stocknear.com/etf/etf-providers/${data?.getProviderName}`,
+    about: {
+      "@type": "Organization",
+      name: etfProviderName,
+      description: "Investment management company providing exchange-traded funds"
+    },
+    mainEntity: {
+      "@type": "ItemList",
+      name: `${etfProviderName} ETFs`,
+      description: `Exchange-traded funds managed by ${etfProviderName}`,
+      numberOfItems: rawData?.length || 0
+    },
+    additionalProperty: [
+      {
+        "@type": "PropertyValue",
+        name: "Total Assets Under Management",
+        value: abbreviateNumber(totalAssets)
+      },
+      {
+        "@type": "PropertyValue",
+        name: "Number of Funds",
+        value: rawData?.length || 0
+      },
+      {
+        "@type": "PropertyValue",
+        name: "Average Expense Ratio",
+        value: avgExpenseRatio?.toFixed(2) + "%"
+      }
+    ]
+  }}
 />
 
 <section class="w-full overflow-hidden m-auto">

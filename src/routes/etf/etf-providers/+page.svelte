@@ -84,8 +84,27 @@
 </script>
 
 <SEO
-  title="Largest ETF Providers by Assets Under Management"
-  description="A complete list of all the companies that provide exchange-traded funds (ETFs) that are actively traded on the U.S. stock market."
+  title="Top ETF Providers Directory - Leading Fund Companies by Assets Under Management"
+  description="Comprehensive directory of leading ETF providers ranked by assets under management (AUM). Compare expense ratios, fund counts, and average holdings across major ETF companies including Vanguard, BlackRock, State Street, and other top fund managers."
+  keywords="ETF providers, ETF companies, fund managers, BlackRock ETFs, Vanguard ETFs, State Street ETFs, ETF sponsors, fund companies by AUM, ETF manager comparison, ETF industry leaders"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "ETF Providers Directory",
+    description: "Complete directory of exchange-traded fund providers and sponsors",
+    url: "https://stocknear.com/etf/etf-providers",
+    mainEntity: {
+      "@type": "ItemList",
+      name: "ETF Fund Managers",
+      description: "Leading ETF providers ranked by assets under management",
+      numberOfItems: etfProviderList?.length || 0
+    },
+    about: {
+      "@type": "FinancialService",
+      name: "ETF Management Services",
+      description: "Investment management companies providing exchange-traded funds"
+    }
+  }}
 />
 
 <section class="w-full overflow-hidden m-auto">

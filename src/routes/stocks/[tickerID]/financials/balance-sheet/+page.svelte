@@ -173,8 +173,80 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Balance Sheet Statement`}
-  description={`Detailed balance sheet statements for ${$displayCompanyName} (${$stockTicker}), including cash, debt, assets, liabilities, and book value.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Balance Sheet Analysis - Assets, Liabilities & Financial Position`}
+  description={`Comprehensive balance sheet analysis for ${$displayCompanyName} (${$stockTicker}) with detailed breakdown of assets, liabilities, shareholders equity, debt levels, and financial position. Track ${$stockTicker} financial health with cash positions, working capital, debt-to-equity ratios, and asset quality metrics over multiple periods.`}
+  keywords={`${$stockTicker} balance sheet, ${$displayCompanyName} assets, ${$stockTicker} liabilities, balance sheet analysis, shareholders equity, debt analysis, working capital, financial position, asset quality, cash position, debt-to-equity ratio, book value`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "WebPage", "AnalysisNewsArticle"],
+    name: `${$displayCompanyName} (${$stockTicker}) Balance Sheet Analysis`,
+    headline: `${$displayCompanyName} Financial Position - Balance Sheet & Asset Analysis`,
+    description: `Detailed balance sheet analysis for ${$displayCompanyName} (${$stockTicker}) including assets, liabilities, equity, and financial position metrics`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/financials/balance-sheet`,
+
+    author: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://stocknear.com/favicon.png",
+      },
+    },
+    dateModified: new Date().toISOString(),
+    datePublished: new Date().toISOString(),
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+    about: {
+      "@type": "Thing",
+      name: "Balance Sheet Analysis",
+      description:
+        "Financial statement analysis focused on assets, liabilities, and financial position",
+    },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Stocks",
+          item: "https://stocknear.com/stocks",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: `${$displayCompanyName} (${$stockTicker})`,
+          item: `https://stocknear.com/stocks/${$stockTicker}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
+          name: "Financial Statements",
+          item: `https://stocknear.com/stocks/${$stockTicker}/financials`,
+        },
+        {
+          "@type": "ListItem",
+          position: 5,
+          name: "Balance Sheet",
+          item: `https://stocknear.com/stocks/${$stockTicker}/financials/balance-sheet`,
+        },
+      ],
+    },
+  }}
 />
 
 <FinancialSection {data} title="Balance Sheet Statement" {statementConfig} />

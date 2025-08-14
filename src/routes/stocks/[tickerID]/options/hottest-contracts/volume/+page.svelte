@@ -9,8 +9,39 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) | Explore the Hottest Options Contracts`}
-  description={`Analyze historical volume, open interest, and trends in option chains for ${$displayCompanyName} (${$stockTicker}). Discover actionable insights for trading decisions.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Highest Volume Options | Top Trading Activity & Flow Analysis`}
+  description={`Track the highest volume options contracts for ${$displayCompanyName} (${$stockTicker}). Real-time analysis of most actively traded options with volume trends, trading patterns, and institutional flow insights for professional options traders.`}
+  keywords={`${$stockTicker} highest volume options, ${$displayCompanyName} top volume contracts, most traded options, options volume leaders, ${$stockTicker} options activity, high volume options trading, options flow analysis, institutional options activity`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/options/hottest-contracts/volume`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "DataFeed"],
+    name: `${$displayCompanyName} Highest Volume Options`,
+    description: `Real-time tracking of highest volume options contracts for ${$displayCompanyName} (${$stockTicker})`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/options/hottest-contracts/volume`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "Highest volume options tracking",
+      "Real-time volume analysis",
+      "Trading activity insights",
+      "Volume trend identification",
+      "Institutional flow detection",
+      "Options activity ranking",
+      "Volume-based momentum analysis",
+      "Professional trading tools",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+  }}
 />
 
 <section class="w-full overflow-hidden min-h-screen pb-40">

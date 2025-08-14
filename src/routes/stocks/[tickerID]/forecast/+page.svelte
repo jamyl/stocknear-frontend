@@ -753,49 +753,93 @@
 </script>
 
 <SEO
-  title={`${$stockTicker} Stock Forecast - ${$displayCompanyName} Price Predictions & Analyst Targets`}
-  description={`${$stockTicker} stock forecast and price predictions for ${$displayCompanyName}. Get AI-powered forecasts, analyst price targets, earnings estimates, and future stock price projections for ${$stockTicker}. See what Wall Street analysts expect for ${$displayCompanyName} stock.`}
-  keywords={`${$stockTicker} forecast, ${$stockTicker} price prediction, ${$stockTicker} stock forecast, ${$displayCompanyName} forecast, ${$stockTicker} price target, ${$stockTicker} analyst ratings, stock prediction, ${$stockTicker} future price, ${$stockTicker} 2024 forecast, ${$stockTicker} 2025 forecast`}
+  title={`${$stockTicker} Stock Forecast & Price Predictions - ${$displayCompanyName} Analyst Targets & Earnings Estimates`}
+  description={`Professional ${$stockTicker} stock forecast and price predictions for ${$displayCompanyName}. Get comprehensive analyst price targets, earnings estimates, revenue forecasts, and consensus ratings from Wall Street experts. Track ${$stockTicker} future price projections with ${numOfAnalyst || 0} analyst recommendations and historical accuracy data.`}
+  keywords={`${$stockTicker} stock forecast, ${$displayCompanyName} price prediction, ${$stockTicker} analyst targets, Wall Street analyst ratings, ${$stockTicker} earnings forecast, stock price predictions, ${$stockTicker} consensus rating, financial forecasting, investment research, ${$stockTicker} future price, analyst estimates, stock recommendations`}
   type="article"
   structuredData={{
     "@context": "https://schema.org",
-    "@type": ["Article", "FinancialProduct"],
-    "headline": `${$stockTicker} Stock Forecast - ${$displayCompanyName} Price Predictions`,
-    "name": `${$stockTicker} Stock Forecast`,
-    "description": `Comprehensive stock forecast and price predictions for ${$displayCompanyName} (${$stockTicker}) with analyst targets and AI insights`,
-    "url": `https://stocknear.com/stocks/${$stockTicker}/forecast`,
-    "image": `https://stocknear.com/logo/${$stockTicker}.png`,
-    "dateModified": new Date().toISOString(),
-    "datePublished": new Date().toISOString(),
-    "author": {
+    "@type": ["Article", "FinancialProduct", "AnalysisNewsArticle"],
+    headline: `${$stockTicker} Stock Forecast - Professional Price Predictions & Analyst Analysis`,
+    name: `${$displayCompanyName} (${$stockTicker}) Stock Forecast`,
+    description: `Comprehensive stock forecast analysis for ${$displayCompanyName} (${$stockTicker}) with ${numOfAnalyst || 0} analyst price targets, earnings estimates, and professional investment insights`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/forecast`,
+
+    dateModified: new Date().toISOString(),
+    datePublished: new Date().toISOString(),
+    author: {
       "@type": "Organization",
-      "name": "Stocknear",
-      "url": "https://stocknear.com"
+      name: "Stocknear",
+      url: "https://stocknear.com",
+      description: "Professional stock market analysis platform",
     },
-    "publisher": {
+    publisher: {
       "@type": "Organization",
-      "name": "Stocknear",
-      "url": "https://stocknear.com",
-      "logo": {
+      name: "Stocknear",
+      url: "https://stocknear.com",
+      logo: {
         "@type": "ImageObject",
-        "url": "https://stocknear.com/favicon.png"
-      }
+        url: "https://stocknear.com/favicon.png",
+      },
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "FinancialProduct",
-      "name": `${$displayCompanyName} Stock Forecast`,
-      "description": `Stock price forecast and predictions for ${$displayCompanyName} (${$stockTicker})`,
-      "category": "Stock Forecast",
-      "provider": {
+      name: `${$displayCompanyName} Stock Forecast Analysis`,
+      description: `Professional stock price forecast and predictions for ${$displayCompanyName} (${$stockTicker}) with analyst consensus and earnings estimates`,
+      category: "Stock Market Analysis",
+      provider: {
         "@type": "Organization",
-        "name": "Stocknear"
-      }
+        name: "Stocknear",
+      },
+      offers:
+        numOfAnalyst > 0
+          ? {
+              "@type": "Offer",
+              price: avgPriceTarget || 0,
+              priceCurrency: "USD",
+              description: `Average analyst price target: $${avgPriceTarget || 0}`,
+              priceRange: `$${lowPriceTarget || 0} - $${highPriceTarget || 0}`,
+            }
+          : undefined,
     },
-    "about": {
+    about: {
       "@type": "Corporation",
-      "name": $displayCompanyName,
-      "tickerSymbol": $stockTicker
-    }
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Stocks",
+          item: "https://stocknear.com/stocks",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: `${$displayCompanyName} (${$stockTicker})`,
+          item: `https://stocknear.com/stocks/${$stockTicker}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
+          name: "Stock Forecast",
+          item: `https://stocknear.com/stocks/${$stockTicker}/forecast`,
+        },
+      ],
+    },
+    significantLink: [
+      `https://stocknear.com/stocks/${$stockTicker}/forecast/ai`,
+      `https://stocknear.com/stocks/${$stockTicker}/forecast/analyst`,
+    ],
   }}
 />
 

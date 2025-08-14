@@ -79,8 +79,39 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Q${quarter} ${year} · Earnings Call Transcript · Stocknear`}
-  description={`Get the latest Earnings Call Transcript of ${$displayCompanyName} (${$stockTicker}) for different years and quarters.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Earnings Call Transcripts | Quarterly Conference Call Analysis`}
+  description={`Complete earnings call transcripts for ${$displayCompanyName} (${$stockTicker}). Access quarterly conference call recordings, management commentary, Q&A sessions, and analyst discussions with searchable transcript analysis and key insights.`}
+  keywords={`${$stockTicker} earnings call transcript, ${$displayCompanyName} conference call, quarterly earnings transcript, ${$stockTicker} management commentary, earnings call analysis, conference call recording, quarterly results discussion`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/insider/transcripts`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "Article"],
+    name: `${$displayCompanyName} Earnings Call Transcripts`,
+    description: `Professional earnings call transcript analysis for ${$displayCompanyName} (${$stockTicker})`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/insider/transcripts`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "Earnings call transcripts",
+      "Conference call analysis",
+      "Management commentary",
+      "Q&A session coverage",
+      "Analyst discussion tracking",
+      "Quarterly results analysis",
+      "Searchable transcript text",
+      "Key insights extraction",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+  }}
 />
 
 <section class="w-full overflow-hidden min-h-screen mb-40 sm:mb-0">

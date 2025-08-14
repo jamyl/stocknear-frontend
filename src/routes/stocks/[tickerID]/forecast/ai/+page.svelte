@@ -539,8 +539,45 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Stock Forecast & Analyst Ratings | AI Insights`}
-  description={`Discover our AI-powered forecast for ${$displayCompanyName} (${$stockTicker}). Get in-depth analyst ratings, price targets, upgrades, and downgrades from top Wall Street experts. Stay ahead of market trends and make smarter investment decisions.`}
+  title={`${$displayCompanyName} (${$stockTicker}) AI Stock Forecast | Machine Learning Price Predictions`}
+  description={`Advanced AI-powered stock forecast for ${$displayCompanyName} (${$stockTicker}). Machine learning price predictions, algorithmic analysis, trend forecasting, and technical indicators with real-time market sentiment and momentum analysis.`}
+  keywords={`${$stockTicker} AI forecast, ${$displayCompanyName} stock prediction, machine learning stock analysis, AI price target, ${$stockTicker} algorithmic forecast, stock prediction model, AI trading signals, predictive stock analysis`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/forecast/ai`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "SoftwareApplication"],
+    name: `${$displayCompanyName} AI Stock Forecast`,
+    description: `Advanced AI-powered forecasting and prediction analysis for ${$displayCompanyName} (${$stockTicker})`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/forecast/ai`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "AI-powered price predictions",
+      "Machine learning analysis",
+      "Algorithmic forecasting",
+      "Technical indicator analysis",
+      "Market sentiment analysis",
+      "Trend prediction models",
+      "Risk assessment algorithms",
+      "Automated trading signals",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+    about: {
+      "@type": "Thing",
+      name: "AI Stock Forecasting",
+      description:
+        "Advanced artificial intelligence and machine learning for stock price prediction",
+    },
+  }}
 />
 
 <section class="w-full overflow-hidden h-full">

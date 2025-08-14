@@ -10,8 +10,39 @@
 </script>
 
 <SEO
-  title="Gamma Exposure by Expiry"
-  description={`Analyze Gamma Exposure by expiry for ${$displayCompanyName} (${$stockTicker}). Access historical volume, open interest trends, and save options contracts for detailed analysis and insights.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Gamma Exposure by Expiry | GEX Expiration Analysis`}
+  description={`Comprehensive gamma exposure (GEX) analysis by expiration date for ${$displayCompanyName} (${$stockTicker}) options. Track dealer gamma positioning and volatility suppression zones across different expiry dates. Advanced options Greeks calendar analysis.`}
+  keywords={`${$stockTicker} gamma exposure expiry, ${$displayCompanyName} GEX by expiration, options gamma flow by expiry, dealer gamma positioning expiry, volatility suppression by expiry, ${$stockTicker} options Greeks expiry, gamma exposure calendar, options volatility expiration`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/options/gex/expiry`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "DataVisualization"],
+    name: `${$displayCompanyName} Gamma Exposure by Expiry`,
+    description: `Professional gamma exposure tracking by expiration date for ${$displayCompanyName} (${$stockTicker}) options`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/options/gex/expiry`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "Gamma exposure by expiry tracking",
+      "Expiration gamma analysis",
+      "Volatility suppression by expiry",
+      "Dealer gamma positioning by expiry",
+      "Time decay gamma impact",
+      "Options calendar gamma analysis",
+      "Expiry-based volatility zones",
+      "Gamma roll risk assessment",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+  }}
 />
 
 <section class="w-full overflow-hidden min-h-screen pb-40">

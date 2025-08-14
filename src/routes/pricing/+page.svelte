@@ -117,7 +117,7 @@
 
 <svelte:head>
   <script>
-    window.lemonSqueezyAffiliateConfig = { store: "stocknear" };
+    window.lemonSqueezyAffiliateConfig = { store: "Stocknear" };
   </script>
   <script src="https://lmsqueezy.com/affiliate.js" defer></script>
 </svelte:head>

@@ -87,8 +87,28 @@
 </script>
 
 <SEO
-  title="New Launches of ETFs"
-  description="A list of the 100 most recently launched ETFs on the US stock market, sorted by the inception date."
+  title="New ETF Launches - Recently Listed Exchange-Traded Funds Directory"
+  description="Complete directory of {etfData?.length || 100} newest ETFs launched on US markets, sorted by inception date. Discover emerging investment themes, innovative fund structures, and latest ETF innovations from leading providers. Track new fund launches for early investment opportunities."
+  keywords="new ETF launches, recent ETFs, newest exchange-traded funds, ETF innovations, new fund launches, emerging ETFs, latest ETFs, ETF inception dates, new investment opportunities"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "New ETF Launches Directory",
+    description: "Recently launched exchange-traded funds sorted by inception date",
+    url: "https://stocknear.com/etf/new-launches",
+    mainEntity: {
+      "@type": "ItemList",
+      name: "Recent ETF Launches",
+      description: "Newest exchange-traded funds available for trading",
+      numberOfItems: etfData?.length || 0
+    },
+    about: {
+      "@type": "FinancialProduct",
+      name: "Exchange-Traded Funds",
+      description: "Investment funds providing diversified market exposure",
+      category: "Investment Fund"
+    }
+  }}
 />
 
 <section

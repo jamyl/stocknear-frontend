@@ -41,8 +41,75 @@ ${paragraphs.join("\n")}
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Company Profile & Overview`}
-  description={`Company profile for ${$displayCompanyName} (${$stockTicker}) with a description, list of executives, contact details and other key facts.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Company Profile - Business Overview, Management Team & Corporate Information`}
+  description={`Comprehensive company profile for ${$displayCompanyName} (${$stockTicker}) including business description, industry analysis, management team, executive leadership, corporate governance, and key business metrics. Access detailed information about ${$stockTicker} operations, business model, competitive positioning, and strategic initiatives.`}
+  keywords={`${$stockTicker} company profile, ${$displayCompanyName} business overview, ${$stockTicker} management team, company information, business description, executive leadership, corporate governance, ${$displayCompanyName} industry, business model, company analysis`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["Organization", "Corporation", "WebPage"],
+    "name": $displayCompanyName,
+    "alternateName": $stockTicker,
+    "tickerSymbol": $stockTicker,
+    "description": `Company profile and business overview for ${$displayCompanyName} (${$stockTicker})`,
+    "url": `https://stocknear.com/stocks/${$stockTicker}/profile`,
+    "logo": `https://stocknear.com/logo/${$stockTicker}.png`,
+    "foundingDate": rawData?.ipoDate || undefined,
+    "numberOfEmployees": rawData?.fullTimeEmployees || undefined,
+    "industry": rawData?.industry || undefined,
+    "sector": rawData?.sector || undefined,
+    "address": rawData?.address ? {
+      "@type": "PostalAddress",
+      "streetAddress": rawData.address,
+      "addressLocality": rawData?.city,
+      "addressRegion": rawData?.state,
+      "postalCode": rawData?.zip,
+      "addressCountry": rawData?.country
+    } : undefined,
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": rawData?.phone,
+      "contactType": "customer service",
+      "url": rawData?.website
+    },
+    "sameAs": [
+      rawData?.website,
+      `https://stocknear.com/stocks/${$stockTicker}`
+    ].filter(Boolean),
+    "mainEntity": {
+      "@type": "Corporation",
+      "name": $displayCompanyName,
+      "tickerSymbol": $stockTicker,
+    },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Stocks",
+          "item": "https://stocknear.com/stocks"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": `${$displayCompanyName} (${$stockTicker})`,
+          "item": `https://stocknear.com/stocks/${$stockTicker}`
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Company Profile",
+          "item": `https://stocknear.com/stocks/${$stockTicker}/profile`
+        }
+      ]
+    }
+  }}
 />
 
 <section class="w-full overflow-hidden h-full">

@@ -16,8 +16,27 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$etfTicker}) Dark Pool Trading Insights & Data`}
-  description={`Explore exclusive dark pool trading data for ${$displayCompanyName} (${$etfTicker}). Get insights into hidden market activity, stock price movements, institutional trades, financials, and key statistics.`}
+  title={`${$displayCompanyName} (${$etfTicker}) ETF Dark Pool Analysis - Hidden Institutional Trading Data`}
+  description={`Comprehensive dark pool trading analysis for ${$displayCompanyName} (${$etfTicker}) ETF. Discover hidden institutional trading activity, large block transactions, and dark pool volume patterns affecting ETF price movements. Essential data for fund managers and institutional investors.`}
+  keywords={`${$etfTicker} dark pool, ETF institutional trading, ${$displayCompanyName} hidden volume, ETF dark pool data, institutional ETF trades, block trading, ETF liquidity analysis, market microstructure, ETF trading patterns`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "AnalysisNewsArticle",
+    headline: `${$displayCompanyName} (${$etfTicker}) ETF Dark Pool Trading Analysis`,
+    description:
+      "Institutional trading activity and dark pool data analysis for ETF",
+    about: {
+      "@type": "FinancialProduct",
+      name: `${$displayCompanyName} (${$etfTicker})`,
+      category: "Exchange-Traded Fund",
+    },
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    url: `https://stocknear.com/etf/${$etfTicker}/dark-pool`,
+  }}
 />
 
 <section class="w-full overflow-hidden h-full">

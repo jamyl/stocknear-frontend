@@ -225,8 +225,39 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Analyst Ratings · Stocknear`}
-  description={`A list of analyst ratings for ${$displayCompanyName} (${$stockTicker})} stock. See upgrades, downgrades, price targets and more from top Wall Street stock analysts.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Analyst Ratings | Price Targets & Recommendations`}
+  description={`Comprehensive analyst ratings and price targets for ${$displayCompanyName} (${$stockTicker}). Track Wall Street analyst upgrades, downgrades, consensus ratings, and professional forecasts from top investment firms and research houses.`}
+  keywords={`${$stockTicker} analyst ratings, ${$displayCompanyName} price targets, Wall Street recommendations, ${$stockTicker} analyst upgrades, stock analyst opinions, price target consensus, ${$stockTicker} analyst forecasts, investment research ratings`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/forecast/analyst`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "Review"],
+    name: `${$displayCompanyName} Analyst Ratings`,
+    description: `Professional analyst ratings and price targets for ${$displayCompanyName} (${$stockTicker})`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/forecast/analyst`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "Analyst ratings tracking",
+      "Price target analysis",
+      "Consensus ratings",
+      "Upgrade/downgrade alerts",
+      "Research firm opinions",
+      "Investment recommendations",
+      "Rating history tracking",
+      "Analyst accuracy metrics",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+  }}
 />
 
 <section class=" overflow-hidden h-full min-h-screen mb-40 sm:mb-0 w-full">

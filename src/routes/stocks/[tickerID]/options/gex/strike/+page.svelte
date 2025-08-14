@@ -8,8 +8,39 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Gamma Exposure by Strike Price`}
-  description={`Discover detailed Gamma Exposure analysis by strike price for ${$displayCompanyName} (${$stockTicker}). Explore historical volume, open interest, and save individual options contracts for in-depth insights.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Gamma Exposure by Strike | GEX Strike Analysis & Volatility`}
+  description={`Advanced gamma exposure (GEX) analysis by strike price for ${$displayCompanyName} (${$stockTicker}) options. Track dealer gamma positioning, volatility suppression zones, and market maker hedging across strike prices. Professional gamma flow analysis.`}
+  keywords={`${$stockTicker} gamma exposure strike, ${$displayCompanyName} GEX by strike price, options gamma flow by strike, dealer gamma positioning strike, volatility suppression strike, ${$stockTicker} options volatility strike, gamma exposure strike price, options gamma hedging strike`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/options/gex/strike`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "DataVisualization"],
+    name: `${$displayCompanyName} Gamma Exposure by Strike`,
+    description: `Professional gamma exposure tracking by strike price for ${$displayCompanyName} (${$stockTicker}) options`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/options/gex/strike`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "Gamma exposure by strike tracking",
+      "Strike price gamma analysis",
+      "Volatility suppression by strike",
+      "Dealer gamma positioning by strike",
+      "Strike-based gamma hedging",
+      "Gamma concentration analysis",
+      "Strike price volatility zones",
+      "Gamma-based support/resistance",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+  }}
 />
 
 <section class="w-full overflow-hidden min-h-screen pb-40">

@@ -179,8 +179,45 @@
 </script>
 
 <SEO
-  title={`Price Reaction ${$displayCompanyName} (${$stockTicker})`}
-  description={`Analyze the historical price reaction of ${$displayCompanyName} (${$stockTicker}) following earnings releases to understand market trends and investor sentiment.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Earnings Price Reaction | Historical Impact & Volatility Analysis`}
+  description={`Advanced earnings price reaction analysis for ${$displayCompanyName} (${$stockTicker}). Track historical stock performance around earnings releases, volatility impact, EPS beats, and post-earnings trends for strategic trading insights.`}
+  keywords={`${$stockTicker} earnings reaction, ${$displayCompanyName} earnings impact, stock price reaction earnings, earnings volatility analysis, ${$stockTicker} EPS beats, earnings surprise impact, post earnings drift, earnings trading strategy`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/statistics/price-reaction`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "DataAnalysis"],
+    name: `${$displayCompanyName} Earnings Price Reaction Analysis`,
+    description: `Professional earnings impact analysis and price reaction tracking for ${$displayCompanyName} (${$stockTicker})`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/statistics/price-reaction`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "Earnings price reaction analysis",
+      "Historical volatility tracking",
+      "EPS beat rate analysis",
+      "Revenue surprise tracking",
+      "Post-earnings drift analysis",
+      "Pre-earnings price action",
+      "Volatility impact assessment",
+      "Earnings trading insights",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+    about: {
+      "@type": "Thing",
+      name: "Earnings Price Reaction Analysis",
+      description:
+        "Professional analysis of stock price reactions to earnings announcements and surprises",
+    },
+  }}
 />
 
 <section class=" w-full overflow-hidden min-h-screen h-full">

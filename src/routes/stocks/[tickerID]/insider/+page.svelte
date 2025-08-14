@@ -533,8 +533,74 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Insider Trading Transactions by Executives & Key Insiders | Stocknear`}
-  description={`Stay up-to-date with the latest insider trading activity of ${$displayCompanyName} (${$stockTicker}). View real-time SEC filings, executive and officer trades, transaction details, and insider holdings on Stocknear.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Insider Trading Analysis - Executive Transactions & SEC Filings Tracker`}
+  description={`Professional insider trading analysis for ${$displayCompanyName} (${$stockTicker}) with real-time SEC filings, executive transactions, and institutional insider activity. Track ${$stockTicker} insider sentiment through purchase/sale patterns, insider ownership changes, and key executive trading behavior. Essential intelligence for understanding management confidence and insider positioning.`}
+  keywords={`${$stockTicker} insider trading, ${$displayCompanyName} insider transactions, SEC filings, executive trades, insider ownership, management trading, ${$stockTicker} insider activity, insider sentiment, executive stock sales, insider purchases, Form 4 filings, insider analysis`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "WebPage", "AnalysisNewsArticle"],
+    name: `${$displayCompanyName} (${$stockTicker}) Insider Trading Analysis`,
+    headline: `${$displayCompanyName} Insider Trading Intelligence - Executive Transactions & SEC Filing Analysis`,
+    description: `Comprehensive insider trading analysis for ${$displayCompanyName} (${$stockTicker}) including executive transactions, SEC filings, and insider sentiment tracking`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/insider`,
+
+    author: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://stocknear.com/favicon.png",
+      },
+    },
+    dateModified: new Date().toISOString(),
+    datePublished: new Date().toISOString(),
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+    about: {
+      "@type": "Thing",
+      name: "Insider Trading Analysis",
+      description:
+        "Analysis of corporate insider trading activity, SEC filings, and executive transaction patterns",
+    },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Stocks",
+          item: "https://stocknear.com/stocks",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: `${$displayCompanyName} (${$stockTicker})`,
+          item: `https://stocknear.com/stocks/${$stockTicker}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
+          name: "Insider Trading",
+          item: `https://stocknear.com/stocks/${$stockTicker}/insider`,
+        },
+      ],
+    },
+  }}
 />
 
 <section class="w-full overflow-hidden h-full">

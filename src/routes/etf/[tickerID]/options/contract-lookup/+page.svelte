@@ -9,8 +9,28 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$etfTicker}) | In-Depth Options Contract Analysis`}
-  description={`Explore detailed options contract data for ${$displayCompanyName} (${$etfTicker}). Analyze historical volume, open interest, and trends to uncover actionable trading insights.`}
+  title={`${$displayCompanyName} (${$etfTicker}) ETF Options Contract Lookup - Detailed Contract Analysis`}
+  description={`Advanced ETF options contract analysis for ${$displayCompanyName} (${$etfTicker}). Research individual options contracts with historical volume, open interest trends, and pricing data. Essential tool for ETF options traders and systematic strategies.`}
+  keywords={`${$etfTicker} options contracts, ${$displayCompanyName} ETF options lookup, options contract analysis, ETF options data, options research tool, ETF derivatives analysis`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: `${$displayCompanyName} (${$etfTicker}) Options Contract Lookup`,
+    description: "ETF options contract research and analysis tool",
+    url: `https://stocknear.com/etf/${$etfTicker}/options/contract-lookup`,
+    applicationCategory: "Financial Analysis Tool",
+    about: {
+      "@type": "FinancialProduct",
+      name: `${$displayCompanyName}`,
+      tickerSymbol: $etfTicker,
+      category: "Exchange-Traded Fund",
+    },
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+  }}
 />
 
 <section class="w-full overflow-hidden min-h-screen pb-40">

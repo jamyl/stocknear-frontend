@@ -176,8 +176,45 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) US Congress & Senate Trading · Stocknear`}
-  description={`Get the latest US congress & senate trading of ${$displayCompanyName} (${$stockTicker}) from democrates and republicans.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Congress Trading | Political Insider Activity & Disclosure`}
+  description={`Track U.S. Congress and Senate trading activity for ${$displayCompanyName} (${$stockTicker}). Monitor political insider transactions, disclosure filings, and trading patterns from elected officials with detailed transaction history and analysis.`}
+  keywords={`${$stockTicker} congress trading, ${$displayCompanyName} political insider trading, senate stock trading, congress stock disclosure, ${$stockTicker} politician trades, political insider activity, congress trading tracker`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/insider/congress-trading`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "Dataset"],
+    name: `${$displayCompanyName} Congress Trading Activity`,
+    description: `Professional tracking of U.S. Congress and Senate trading activity for ${$displayCompanyName} (${$stockTicker})`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/insider/congress-trading`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "Congress trading tracking",
+      "Senate transaction monitoring",
+      "Political insider disclosure",
+      "Transaction history analysis",
+      "Buy/sell ratio tracking",
+      "Party affiliation analysis",
+      "Trading pattern identification",
+      "Disclosure timeline tracking",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+    about: {
+      "@type": "Thing",
+      name: "Political Insider Trading",
+      description:
+        "Professional tracking of elected officials' stock trading activity and disclosure requirements",
+    },
+  }}
 />
 
 <section class="w-full overflow-hidden min-h-screen h-full">

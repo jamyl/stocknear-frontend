@@ -179,25 +179,22 @@
   structuredData={{
     "@context": "https://schema.org",
     "@type": "Dataset",
-    "name": "IPO Statistics and Market Data",
-    "description": "Historical initial public offering statistics and performance data for US stock market",
-    "url": "https://stocknear.com/ipos/statistics",
-    "creator": {
+    name: "IPO Statistics and Market Data",
+    description:
+      "Historical initial public offering statistics and performance data for US stock market",
+    url: "https://stocknear.com/ipos/statistics",
+    creator: {
       "@type": "Organization",
-      "name": "Stocknear"
+      name: "Stocknear",
     },
-    "temporalCoverage": "2015/2025",
-    "spatialCoverage": "United States",
-    "variableMeasured": [
-      "Number of IPOs",
-      "IPO Performance",
-      "Market Trends"
-    ],
-    "distribution": {
+    temporalCoverage: "2015/2025",
+    spatialCoverage: "United States",
+    variableMeasured: ["Number of IPOs", "IPO Performance", "Market Trends"],
+    distribution: {
       "@type": "DataDownload",
-      "contentUrl": "https://stocknear.com/ipos/statistics",
-      "encodingFormat": "text/html"
-    }
+      contentUrl: "https://stocknear.com/ipos/statistics",
+      encodingFormat: "text/html",
+    },
   }}
 />
 

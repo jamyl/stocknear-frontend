@@ -274,8 +274,55 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$etfTicker}) Holdings List`}
-  description={`Get the Holdings List of ${$displayCompanyName} (${$etfTicker}).`}
+  title={`${$displayCompanyName} (${$etfTicker}) ETF Holdings & Portfolio Analysis - Complete Fund Breakdown`}
+  description={`Detailed holdings analysis for ${$displayCompanyName} (${$etfTicker}) ETF featuring {rawData?.length || 0} individual holdings with sector allocation, top holdings weightings, and portfolio diversification metrics. Analyze ETF composition, sector exposure, and asset allocation for informed investment decisions.`}
+  keywords={`${$etfTicker} holdings, ${$displayCompanyName} portfolio, ETF composition, ETF sector allocation, top ETF holdings, fund holdings analysis, ETF diversification, asset allocation, sector weightings, portfolio analysis, ETF breakdown`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "FinancialProduct",
+    name: `${$displayCompanyName} (${$etfTicker}) Holdings Analysis`,
+    description: "Complete breakdown of ETF holdings and sector allocation",
+    category: "Exchange-Traded Fund",
+    url: `https://stocknear.com/etf/${$etfTicker}/holdings`,
+    about: {
+      "@type": "InvestmentFund",
+      name: `${$displayCompanyName}`,
+      tickerSymbol: $etfTicker,
+      category: "Exchange-Traded Fund",
+      numberOfHoldings: rawData?.length || 0,
+      assetClass: data?.getETFProfile?.at(0)?.assetClass || "Equity",
+    },
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    additionalProperty: [
+      {
+        "@type": "PropertyValue",
+        name: "Total Holdings",
+        value: rawData?.length || 0,
+      },
+      {
+        "@type": "PropertyValue",
+        name: "Top 10 Concentration",
+        value:
+          rawData
+            ?.slice(0, 10)
+            ?.reduce((acc, item) => acc + (item?.weightPercentage || 0), 0)
+            ?.toFixed(2) + "%",
+      },
+      ...(data?.getETFProfile?.at(0)?.expenseRatio
+        ? [
+            {
+              "@type": "PropertyValue",
+              name: "Expense Ratio",
+              value: data.getETFProfile.at(0).expenseRatio.toFixed(4) + "%",
+            },
+          ]
+        : []),
+    ],
+  }}
 />
 
 <section

@@ -116,8 +116,80 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Cash Flow Statement`}
-  description={`Detailed cash flow statements for ${$displayCompanyName} (${$stockTicker}), including operating cash flow, capex and free cash flow.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Cash Flow Statement Analysis - Operating Cash Flow, CapEx & Free Cash Flow`}
+  description={`Comprehensive cash flow statement analysis for ${$displayCompanyName} (${$stockTicker}) with detailed breakdown of operating cash flow, capital expenditures, free cash flow, and cash generation patterns. Track ${$stockTicker} cash management with investing activities, financing activities, and working capital changes over multiple periods.`}
+  keywords={`${$stockTicker} cash flow, ${$displayCompanyName} free cash flow, ${$stockTicker} operating cash flow, cash flow statement, capital expenditures, cash flow analysis, free cash flow yield, working capital, cash generation, investing activities, financing activities`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "WebPage", "AnalysisNewsArticle"],
+    name: `${$displayCompanyName} (${$stockTicker}) Cash Flow Statement Analysis`,
+    headline: `${$displayCompanyName} Cash Generation - Cash Flow Statement & Free Cash Flow Analysis`,
+    description: `Detailed cash flow statement analysis for ${$displayCompanyName} (${$stockTicker}) including operating, investing, and financing cash flows`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/financials/cash-flow`,
+
+    author: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://stocknear.com/favicon.png",
+      },
+    },
+    dateModified: new Date().toISOString(),
+    datePublished: new Date().toISOString(),
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+    about: {
+      "@type": "Thing",
+      name: "Cash Flow Statement Analysis",
+      description:
+        "Financial statement analysis focused on cash generation and cash flow patterns",
+    },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Stocks",
+          item: "https://stocknear.com/stocks",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: `${$displayCompanyName} (${$stockTicker})`,
+          item: `https://stocknear.com/stocks/${$stockTicker}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
+          name: "Financial Statements",
+          item: `https://stocknear.com/stocks/${$stockTicker}/financials`,
+        },
+        {
+          "@type": "ListItem",
+          position: 5,
+          name: "Cash Flow Statement",
+          item: `https://stocknear.com/stocks/${$stockTicker}/financials/cash-flow`,
+        },
+      ],
+    },
+  }}
 />
 
 <FinancialSection {data} title="Cash Flow Statement" {statementConfig} />

@@ -10,8 +10,45 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Volatility`}
-  description={`Track volatility and implied volatility trends with our interactive chart. Analyze price movements, 30-day implied volatility, and realized volatility to make data-driven trading decisions.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Volatility Analysis | Implied vs Realized Volatility Charts`}
+  description={`Advanced volatility analysis for ${$displayCompanyName} (${$stockTicker}) with implied volatility (IV) vs realized volatility tracking. Monitor IV crush opportunities, volatility skew, and trading ranges with professional volatility indicators and historical comparisons.`}
+  keywords={`${$stockTicker} volatility analysis, ${$displayCompanyName} implied volatility, IV vs realized volatility, ${$stockTicker} volatility skew, IV crush analysis, options volatility, volatility trading, ${$stockTicker} VIX analysis`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/options/volatility`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "DataVisualization"],
+    name: `${$displayCompanyName} Volatility Analysis`,
+    description: `Professional volatility tracking and analysis for ${$displayCompanyName} (${$stockTicker}) options`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/options/volatility`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "Implied volatility tracking",
+      "Realized volatility analysis",
+      "IV vs RV comparison",
+      "Volatility skew analysis",
+      "IV crush identification",
+      "Historical volatility trends",
+      "Volatility percentiles",
+      "Professional volatility indicators",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+    about: {
+      "@type": "Thing",
+      name: "Volatility Analysis",
+      description:
+        "Advanced analysis of implied and realized volatility for options trading",
+    },
+  }}
 />
 
 <section class="w-full overflow-hidden min-h-screen">

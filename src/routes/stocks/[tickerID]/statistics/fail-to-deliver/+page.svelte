@@ -141,8 +141,45 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Fail-to-Deliver Shares`}
-  description={`Historical Fail-to-Deliver shares of ${$displayCompanyName}.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Fail-to-Deliver (FTD) Analysis | Settlement Risk & Short Interest`}
+  description={`Comprehensive fail-to-deliver (FTD) analysis for ${$displayCompanyName} (${$stockTicker}). Track settlement failures, delivery issues, and potential short squeeze indicators with historical FTD data and volume ratios for informed trading decisions.`}
+  keywords={`${$stockTicker} fail to deliver, ${$displayCompanyName} FTD analysis, settlement failures, delivery issues, ${$stockTicker} FTD shares, short squeeze indicators, settlement risk analysis, fail to deliver data, FTD volume ratio`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/statistics/fail-to-deliver`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "Dataset"],
+    name: `${$displayCompanyName} Fail-to-Deliver Analysis`,
+    description: `Professional fail-to-deliver tracking and analysis for ${$displayCompanyName} (${$stockTicker})`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/statistics/fail-to-deliver`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "Fail-to-deliver tracking",
+      "FTD volume ratio analysis",
+      "Settlement risk assessment",
+      "Historical FTD trends",
+      "Short squeeze indicators",
+      "Delivery failure patterns",
+      "Clearing efficiency metrics",
+      "Market structure analysis",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+    about: {
+      "@type": "Thing",
+      name: "Fail-to-Deliver Analysis",
+      description:
+        "Professional analysis of settlement failures and delivery issues in stock trading",
+    },
+  }}
 />
 
 <section class=" w-full overflow-hidden h-full">

@@ -8,8 +8,28 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$etfTicker}) Options Overview`}
-  description={`View comprehensive ${$displayCompanyName} (${$etfTicker}) options with our latest charts on volume, open interest, max pain, and implied volatility.`}
+  title={`${$displayCompanyName} (${$etfTicker}) ETF Options Analysis - Chain Data, Volume & Implied Volatility`}
+  description={`Professional ETF options analysis for ${$displayCompanyName} (${$etfTicker}) with real-time options chain data, volume tracking, open interest analysis, max pain calculations, and implied volatility trends. Monitor ETF options flow, institutional activity, and hedging patterns for systematic trading strategies.`}
+  keywords={`${$etfTicker} ETF options, ${$displayCompanyName} options chain, ETF options trading, ETF options volume, ETF implied volatility, ETF max pain, ETF options analysis, ETF hedging, systematic options trading, ETF derivatives`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "FinancialProduct",
+    name: `${$displayCompanyName} (${$etfTicker}) ETF Options`,
+    description: "ETF options analysis with chain data and trading metrics",
+    category: "ETF Options",
+    url: `https://stocknear.com/etf/${$etfTicker}/options`,
+    about: {
+      "@type": "InvestmentFund",
+      name: `${$displayCompanyName}`,
+      tickerSymbol: $etfTicker,
+      category: "Exchange-Traded Fund",
+    },
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+  }}
 />
 
 <section class="w-full overflow-hidden min-h-screen">

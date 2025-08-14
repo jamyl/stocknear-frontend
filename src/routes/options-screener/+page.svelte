@@ -1157,22 +1157,24 @@
 
 <SEO
   title="Advanced Options Screener - Free Options Filter & Analysis Tool"
-  description="Powerful options screener with {allRows?.length || 'comprehensive'} filtering criteria. Screen options by implied volatility, open interest, volume, Greeks, and expiration dates. Find high-probability options trades with real-time options chain data."
+  description="Powerful options screener with {allRows?.length ||
+    'comprehensive'} filtering criteria. Screen options by implied volatility, open interest, volume, Greeks, and expiration dates. Find high-probability options trades with real-time options chain data."
   keywords="options screener, free options screener, options filter, options scanner, implied volatility screener, options chain analysis, high volume options, options trading tool, Greeks screener, open interest analysis"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "Options Screener Tool",
-    "description": "Advanced options screening and filtering platform with real-time options market data",
-    "url": "https://stocknear.com/options-screener",
-    "applicationCategory": "FinanceApplication",
-    "operatingSystem": "Any",
-    "offers": {
+    name: "Options Screener Tool",
+    description:
+      "Advanced options screening and filtering platform with real-time options market data",
+    url: "https://stocknear.com/options-screener",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Any",
+    offers: {
       "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
+      price: "0",
+      priceCurrency: "USD",
     },
-    "featureList": [
+    featureList: [
       "Multi-criteria options filtering",
       "Implied volatility screening",
       "Open interest analysis",
@@ -1180,13 +1182,13 @@
       "Greeks-based screening",
       "Expiration date filtering",
       "Real-time options data",
-      "Custom screening strategies"
+      "Custom screening strategies",
     ],
-    "softwareRequirements": "Web Browser",
-    "provider": {
+    softwareRequirements: "Web Browser",
+    provider: {
       "@type": "Organization",
-      "name": "Stocknear"
-    }
+      name: "Stocknear",
+    },
   }}
 />
 

@@ -190,8 +190,39 @@
 </script>
 
 <SEO
-  title={`${removeCompanyStrings($displayCompanyName)} Business Metrics & Revenue Breakdown`}
-  description={`View unique business metrics for ${$displayCompanyName} (${$stockTicker}) stock, including revenue by segment, gross margin by type, gross profit by type.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Business Metrics | Revenue Breakdown & Segment Analysis`}
+  description={`Comprehensive business metrics and segment analysis for ${$displayCompanyName} (${$stockTicker}). Track revenue by segment, gross margin analysis, profit breakdown by division, and detailed business unit performance with historical trends.`}
+  keywords={`${$stockTicker} business metrics, ${$displayCompanyName} revenue breakdown, segment analysis, ${$stockTicker} revenue by segment, business unit performance, gross margin analysis, ${$stockTicker} profit breakdown, segment revenue trends`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/metrics/revenue`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "Dataset"],
+    name: `${$displayCompanyName} Business Metrics`,
+    description: `Professional business metrics and segment analysis for ${$displayCompanyName} (${$stockTicker})`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/metrics/revenue`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "Revenue segment analysis",
+      "Business unit breakdown",
+      "Gross margin analysis",
+      "Profit by division",
+      "Historical segment trends",
+      "Performance metrics tracking",
+      "Business unit comparison",
+      "Revenue contribution analysis",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+  }}
 />
 
 <section class=" w-full overflow-hidden h-full">

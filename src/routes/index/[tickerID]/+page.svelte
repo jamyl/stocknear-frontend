@@ -703,8 +703,45 @@
 </script>
 
 <SEO
-  title={`${$indexTicker} ${$currentPortfolioPrice !== null && $currentPortfolioPrice !== 0 ? $currentPortfolioPrice : data?.getStockQuote?.price?.toFixed(2)} ${displayLegend?.change >= 0 ? "▲" : "▼"} ${displayLegend?.change}%`}
-  description={`Get a real-time ${data?.companyName} (${$indexTicker}) stock chart, price quote with breaking news, financials, statistics, charts and more.`}
+  title={`${data?.companyName} (${$indexTicker}) Index - Real-Time Price ${$currentPortfolioPrice !== null && $currentPortfolioPrice !== 0 ? "$" + $currentPortfolioPrice : "$" + data?.getStockQuote?.price?.toFixed(2)} ${displayLegend?.change >= 0 ? "▲" : "▼"} ${displayLegend?.change}% - Market Index Analysis`}
+  description={`Complete ${data?.companyName} (${$indexTicker}) index analysis with real-time price ${$currentPortfolioPrice !== null && $currentPortfolioPrice !== 0 ? "$" + $currentPortfolioPrice : "$" + data?.getStockQuote?.price?.toFixed(2)}, market cap weighting, index constituents, and sector allocation. Track index performance, volatility patterns, and market representation for strategic asset allocation.`}
+  keywords={`${$indexTicker} index, ${data?.companyName}, market index analysis, index constituents, market cap weighted index, sector allocation, index performance, market representation, benchmark analysis, index tracking`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "FinancialProduct",
+    "@id": `https://stocknear.com/index/${$indexTicker}`,
+    name: `${data?.companyName} (${$indexTicker})`,
+    description: "Stock market index representing a basket of securities",
+    category: "Market Index",
+    url: `https://stocknear.com/index/${$indexTicker}`,
+    identifier: {
+      "@type": "PropertyValue",
+      propertyID: "Index Symbol",
+      value: $indexTicker,
+    },
+    offers: {
+      "@type": "Offer",
+      price:
+        $currentPortfolioPrice !== null && $currentPortfolioPrice !== 0
+          ? $currentPortfolioPrice
+          : data?.getStockQuote?.price?.toFixed(2),
+      priceCurrency: "USD",
+      priceValidUntil: new Date(Date.now() + 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+    },
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    about: {
+      "@type": "Thing",
+      name: "Stock Market Index",
+      description:
+        "Benchmark index representing market performance across constituent securities",
+    },
+  }}
 />
 
 <section class=" min-h-screen pb-40 overflow-hidden w-full">

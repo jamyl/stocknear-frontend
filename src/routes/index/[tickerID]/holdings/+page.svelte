@@ -274,8 +274,48 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$indexTicker}) Holdings List`}
-  description={`Get the Holdings List of ${$displayCompanyName} (${$indexTicker}).`}
+  title={`${$displayCompanyName} (${$indexTicker}) Index Constituents & Holdings Analysis - Complete Market Index Breakdown`}
+  description={`Comprehensive analysis of ${$displayCompanyName} (${$indexTicker}) index constituents featuring {rawData?.length || 0} holdings with market cap weightings, sector allocation, and constituent performance. Analyze index composition, sector exposure, and market representation for benchmark tracking and asset allocation strategies.`}
+  keywords={`${$indexTicker} constituents, ${$displayCompanyName} holdings, index components, market cap weighted index, sector allocation, index composition, benchmark analysis, constituent weightings, index breakdown`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "FinancialProduct",
+    name: `${$displayCompanyName} (${$indexTicker}) Index Constituents`,
+    description: "Complete breakdown of index holdings and sector allocation",
+    category: "Market Index",
+    url: `https://stocknear.com/index/${$indexTicker}/holdings`,
+    about: {
+      "@type": "Thing",
+      name: `${$displayCompanyName}`,
+      description: "Market index tracking constituent securities",
+      additionalProperty: [
+        {
+          "@type": "PropertyValue",
+          name: "Number of Constituents",
+          value: rawData?.length || 0,
+        },
+        {
+          "@type": "PropertyValue",
+          name: "Index Type",
+          value: "Market Cap Weighted",
+        },
+        {
+          "@type": "PropertyValue",
+          name: "Top 10 Concentration",
+          value:
+            rawData
+              ?.slice(0, 10)
+              ?.reduce((acc, item) => acc + (item?.weightPercentage || 0), 0)
+              ?.toFixed(2) + "%",
+        },
+      ],
+    },
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+  }}
 />
 
 <section

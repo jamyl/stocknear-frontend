@@ -17,14 +17,16 @@
 </script>
 
 <SEO
-  title="Stock Market Analysis - All US Stock Tickers & Real-Time Quotes "
-  description="Complete list of all US stock ticker symbols with real-time quotes, market data, and analysis tools. Access comprehensive stock analysis for NYSE, NASDAQ stocks including TSLA, NVDA, AAPL and thousands more."
-  keywords="stock tickers, stock symbols, stock list, US stocks, NYSE stocks, NASDAQ stocks, stock market, stock quotes, stock analysis, all stocks, stock screener"
+  title="Complete Stock Market Directory - All US Stock Tickers with Real-Time Analysis"
+  description="Comprehensive directory of {rawData?.length ||
+    5000}+ US stock ticker symbols with real-time quotes, financial analysis, and investment research tools. Search NYSE, NASDAQ, and all major exchanges including blue-chip stocks, growth stocks, and dividend stocks for complete market coverage."
+  keywords="stock tickers list, US stock symbols directory, NYSE stocks, NASDAQ stocks, stock market database, real-time stock quotes, financial analysis tools, stock screener, investment research, market capitalization data, stock fundamentals, equity analysis, trading symbols"
   structuredData={{
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "All US Stock Tickers",
-    description: "Complete list of US stock ticker symbols with analysis tools",
+    name: "Complete US Stock Market Directory",
+    description:
+      "Comprehensive database of all US stock ticker symbols with advanced analysis tools and real-time market data",
     url: "https://stocknear.com/stocks",
     breadcrumb: {
       "@type": "BreadcrumbList",
@@ -38,16 +40,30 @@
         {
           "@type": "ListItem",
           position: 2,
-          name: "Stocks",
+          name: "Stock Market Directory",
           item: "https://stocknear.com/stocks",
         },
       ],
     },
     mainEntity: {
       "@type": "ItemList",
-      name: "US Stock Tickers",
-      description: "List of all US stock ticker symbols",
+      name: "US Stock Market Ticker Directory",
+      description:
+        "Complete database of US stock ticker symbols with financial analysis and market data",
       numberOfItems: rawData?.length || 0,
+      itemListElement:
+        rawData?.slice(0, 10)?.map((stock, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: stock.symbol,
+          description: `${stock.name} (${stock.symbol}) - Market Cap: ${stock.marketCap ? "$" + (stock.marketCap / 1e9).toFixed(1) + "B" : "N/A"}`,
+          url: `https://stocknear.com/stocks/${stock.symbol}`,
+        })) || [],
+    },
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      description: "Advanced stock market analysis platform",
     },
   }}
 />

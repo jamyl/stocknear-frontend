@@ -182,8 +182,26 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$etfTicker}) US Congress & Senate Trading`}
-  description={`Get the latest US congress & senate trading of ${$displayCompanyName} (${$etfTicker}) from democrates and republicans.`}
+  title={`${$displayCompanyName} (${$etfTicker}) ETF Congressional Trading Tracker - Political Investment Activity`}
+  description={`Track US Congress and Senate trading activity for ${$displayCompanyName} (${$etfTicker}) ETF. Monitor politician trades, party breakdown, and institutional investment patterns from Democratic and Republican legislators. Essential data for understanding political sentiment toward ETF sectors and themes.`}
+  keywords={`${$etfTicker} congress trading, ${$displayCompanyName} political trades, ETF congressional activity, politician ETF trades, senate ETF trading, congress stock trades, political investment tracking, ETF politician activity`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "AnalysisNewsArticle",
+    headline: `${$displayCompanyName} (${$etfTicker}) ETF Congressional Trading Activity`,
+    description: "Analysis of US Congress and Senate trading activity for ETF",
+    about: {
+      "@type": "FinancialProduct",
+      name: `${$displayCompanyName} (${$etfTicker})`,
+      category: "Exchange-Traded Fund",
+    },
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    url: `https://stocknear.com/etf/${$etfTicker}/insider`,
+  }}
 />
 
 <section class="w-full overflow-hidden min-h-screen h-full">

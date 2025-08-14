@@ -583,8 +583,45 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Market Cap & Net Worth`}
-  description={`Historical Market Cap of ${$displayCompanyName}.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Market Cap Analysis | Historical Valuation & Growth Trends`}
+  description={`Comprehensive market capitalization analysis for ${$displayCompanyName} (${$stockTicker}). Track historical market cap trends, valuation growth, size classification, and year-over-year changes with detailed charts and quarterly data.`}
+  keywords={`${$stockTicker} market cap, ${$displayCompanyName} market capitalization, company valuation, ${$stockTicker} net worth, market cap history, valuation trends, company size analysis, ${$stockTicker} enterprise value, market cap growth`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/statistics/market-cap`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "Dataset"],
+    name: `${$displayCompanyName} Market Cap Analysis`,
+    description: `Professional market capitalization tracking and valuation analysis for ${$displayCompanyName} (${$stockTicker})`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/statistics/market-cap`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "Market cap tracking",
+      "Historical valuation analysis",
+      "Size classification",
+      "Growth trend analysis",
+      "Quarterly market cap data",
+      "Year-over-year comparisons",
+      "Valuation metrics",
+      "Market cap charts",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+    about: {
+      "@type": "Thing",
+      name: "Market Capitalization Analysis",
+      description:
+        "Professional analysis of company market value and valuation trends",
+    },
+  }}
 />
 
 <section class=" w-full overflow-hidden h-full">

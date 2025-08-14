@@ -16,8 +16,8 @@
 </script>
 
 <SEO
-  title="{article?.title}"
-  description="{article?.abstract}"
+  title={article?.title}
+  description={article?.abstract}
   keywords="stock analysis, investment insights, {article?.title?.toLowerCase()}, financial analysis, market analysis, investment strategy, stock research"
   image={article?.cover
     ? getImageURL(article?.collectionId, article?.id, article?.cover)
@@ -25,32 +25,35 @@
   structuredData={{
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": article?.title,
-    "description": article?.abstract,
-    "image": article?.cover ? getImageURL(article?.collectionId, article?.id, article?.cover) : "https://stocknear.com/pwa-512x512.png",
-    "author": {
+    headline: article?.title,
+    description: article?.abstract,
+    image: article?.cover
+      ? getImageURL(article?.collectionId, article?.id, article?.cover)
+      : "https://stocknear.com/pwa-512x512.png",
+    author: {
       "@type": "Organization",
-      "name": "Stocknear",
-      "url": "https://stocknear.com"
+      name: "Stocknear",
+      url: "https://stocknear.com",
     },
-    "publisher": {
+    publisher: {
       "@type": "Organization",
-      "name": "Stocknear",
-      "url": "https://stocknear.com",
-      "logo": {
+      name: "Stocknear",
+      url: "https://stocknear.com",
+      logo: {
         "@type": "ImageObject",
-        "url": "https://stocknear.com/pwa-512x512.png"
-      }
+        url: "https://stocknear.com/pwa-512x512.png",
+      },
     },
-    "datePublished": article?.created,
-    "dateModified": article?.updated,
-    "mainEntityOfPage": {
+    datePublished: article?.created,
+    dateModified: article?.updated,
+    mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://stocknear.com/blog/article/${data?.getParams}`
+      "@id": `https://stocknear.com/blog/article/${data?.getParams}`,
     },
-    "articleSection": "Finance",
-    "articleBody": article?.abstract,
-    "wordCount": article?.description?.replace(/<[^>]*>/g, '')?.split(' ')?.length || 0
+    articleSection: "Finance",
+    articleBody: article?.abstract,
+    wordCount:
+      article?.description?.replace(/<[^>]*>/g, "")?.split(" ")?.length || 0,
   }}
 />
 

@@ -8,8 +8,30 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$indexTicker}) Options Overview`}
-  description={`View comprehensive ${$displayCompanyName} (${$indexTicker}) options with our latest charts on volume, open interest, max pain, and implied volatility.`}
+  title={`${$displayCompanyName} (${$indexTicker}) Index Options Analysis - Market Index Derivatives & Hedging Tools`}
+  description={`Professional index options analysis for ${$displayCompanyName} (${$indexTicker}) with real-time options chain data, volatility analysis, and institutional hedging patterns. Track market-wide options flow, systematic hedging activity, and index volatility for portfolio risk management and market timing strategies.`}
+  keywords={`${$indexTicker} index options, ${$displayCompanyName} options analysis, index derivatives, market hedging, index volatility, systematic options trading, portfolio hedging, market index options`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "FinancialProduct",
+    name: `${$displayCompanyName} (${$indexTicker}) Index Options`,
+    description:
+      "Index options analysis for market hedging and portfolio management",
+    category: "Index Options",
+    url: `https://stocknear.com/index/${$indexTicker}/options`,
+    about: {
+      "@type": "Thing",
+      name: `${$displayCompanyName}`,
+      description:
+        "Market index with derivative instruments for hedging and speculation",
+      category: "Market Index",
+    },
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+  }}
 />
 
 <section class="w-full overflow-hidden min-h-screen">

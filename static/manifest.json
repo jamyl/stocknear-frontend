@@ -1,11 +1,11 @@
 {
-  "name": "Stocknear",
-  "short_name": "Stocknear",
+  "name":  "Stocknear",
+  "short_name":  "Stocknear",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#09090B",
   "theme_color": "#09090B",
-  "description": "Clear & Simple Market Insight",
+  "description": "Advanced Stock Analysis & Financial Data Platform",
   "icons": [
     {
       "src": "/pwa-64x64.png",

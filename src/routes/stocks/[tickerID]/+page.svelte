@@ -703,50 +703,102 @@
 </script>
 
 <SEO
-  title={`${data?.companyName} (${$stockTicker}) Stock Analysis - ${$currentPortfolioPrice !== null && $currentPortfolioPrice !== 0 ? $currentPortfolioPrice : data?.getStockQuote?.price?.toFixed(2)} ${displayLegend?.change >= 0 ? "▲" : "▼"} ${displayLegend?.change}%`}
-  description={`Real-time ${data?.companyName} (${$stockTicker}) stock analysis with live price ${$currentPortfolioPrice !== null && $currentPortfolioPrice !== 0 ? $currentPortfolioPrice : data?.getStockQuote?.price?.toFixed(2)}, financial data, earnings forecast, options flow, and technical analysis. Get comprehensive ${$stockTicker} insights on Stocknear.`}
-  keywords={`${$stockTicker}, ${data?.companyName}, ${$stockTicker} stock, ${$stockTicker} analysis, ${$stockTicker} forecast, ${$stockTicker} price, ${$stockTicker} earnings, stock analysis, financial data, options flow`}
+  title={`${data?.companyName} (${$stockTicker}) Stock Analysis - Real-Time Price ${$currentPortfolioPrice !== null && $currentPortfolioPrice !== 0 ? "$" + $currentPortfolioPrice : "$" + data?.getStockQuote?.price?.toFixed(2)} ${displayLegend?.change >= 0 ? "▲" : "▼"} ${displayLegend?.change}% Live Trading Data`}
+  description={`Complete ${data?.companyName} (${$stockTicker}) stock analysis with real-time price ${$currentPortfolioPrice !== null && $currentPortfolioPrice !== 0 ? "$" + $currentPortfolioPrice : "$" + data?.getStockQuote?.price?.toFixed(2)}, earnings forecasts, financial statements, options flow analysis, and technical indicators. Market cap ${data?.getStockQuote?.marketCap ? "$" + (data.getStockQuote.marketCap / 1e9).toFixed(1) + "B" : "N/A"}. Professional-grade investment research and trading insights for ${$stockTicker} stock.`}
+  keywords={`${$stockTicker} stock analysis, ${data?.companyName} stock price, ${$stockTicker} real-time quotes, ${$stockTicker} earnings forecast, ${$stockTicker} financial data, ${$stockTicker} options analysis, ${$stockTicker} technical analysis, ${$stockTicker} investment research, stock market analysis, equity research, financial statements analysis, earnings reports, options flow`}
   type="article"
   structuredData={{
     "@context": "https://schema.org",
-    "@type": ["FinancialProduct", "Article"],
-    "name": `${data?.companyName} (${$stockTicker})`,
-    "identifier": $stockTicker,
-    "headline": `${data?.companyName} (${$stockTicker}) Stock Analysis`,
-    "description": `Real-time analysis and financial data for ${data?.companyName} (${$stockTicker})`,
-    "url": `https://stocknear.com/stocks/${$stockTicker}`,
-    "image": `https://stocknear.com/logo/${$stockTicker}.png`,
-    "author": {
+    "@type": ["FinancialProduct", "Article", "WebPage"],
+    name: `${data?.companyName} (${$stockTicker}) Stock Analysis`,
+    identifier: $stockTicker,
+    headline: `${data?.companyName} (${$stockTicker}) - Complete Stock Analysis & Real-Time Data`,
+    description: `Comprehensive stock analysis for ${data?.companyName} (${$stockTicker}) including real-time price data, financial statements, earnings forecasts, and technical indicators`,
+    url: `https://stocknear.com/stocks/${$stockTicker}`,
+
+    author: {
       "@type": "Organization",
-      "name": "Stocknear",
-      "url": "https://stocknear.com"
+      name: "Stocknear",
+      url: "https://stocknear.com",
+      description: "Professional stock market analysis platform",
     },
-    "publisher": {
+    publisher: {
       "@type": "Organization",
-      "name": "Stocknear",
-      "url": "https://stocknear.com",
-      "logo": {
+      name: "Stocknear",
+      url: "https://stocknear.com",
+      logo: {
         "@type": "ImageObject",
-        "url": "https://stocknear.com/favicon.png"
-      }
+        url: "https://stocknear.com/favicon.png",
+      },
     },
-    "dateModified": new Date().toISOString(),
-    "datePublished": new Date().toISOString(),
-    "mainEntity": {
+    dateModified: new Date().toISOString(),
+    datePublished: new Date().toISOString(),
+    mainEntity: {
       "@type": "Corporation",
-      "name": data?.companyName,
-      "tickerSymbol": $stockTicker,
-      "url": data?.website
+      name: data?.companyName,
+      tickerSymbol: $stockTicker,
+      url: data?.website,
+      description: `Publicly traded corporation listed under ticker symbol ${$stockTicker}`,
     },
-    "about": {
+    about: {
       "@type": "FinancialProduct",
-      "name": `${data?.companyName} Stock`,
-      "category": "Stock",
-      "provider": {
+      name: `${data?.companyName} Common Stock`,
+      category: "Equity Security",
+      identifier: $stockTicker,
+      provider: {
         "@type": "Organization",
-        "name": data?.companyName
-      }
-    }
+        name: data?.companyName,
+      },
+      offers: {
+        "@type": "Offer",
+        price:
+          $currentPortfolioPrice !== null && $currentPortfolioPrice !== 0
+            ? $currentPortfolioPrice
+            : data?.getStockQuote?.price,
+        priceCurrency: "USD",
+        priceValidUntil: new Date(
+          Date.now() + 24 * 60 * 60 * 1000,
+        ).toISOString(),
+        availability: "https://schema.org/InStock",
+      },
+    },
+    financialData: {
+      "@type": "MonetaryAmount",
+      currency: "USD",
+      value: {
+        marketCap: data?.getStockQuote?.marketCap,
+        price:
+          $currentPortfolioPrice !== null && $currentPortfolioPrice !== 0
+            ? $currentPortfolioPrice
+            : data?.getStockQuote?.price,
+        eps: data?.getStockQuote?.eps,
+        peRatio: data?.getStockQuote?.pe,
+        volume: data?.getStockQuote?.volume,
+      },
+    },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Stocks",
+          item: "https://stocknear.com/stocks",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: `${data?.companyName} (${$stockTicker})`,
+          item: `https://stocknear.com/stocks/${$stockTicker}`,
+        },
+      ],
+    },
   }}
 />
 

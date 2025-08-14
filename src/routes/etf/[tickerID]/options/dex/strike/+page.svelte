@@ -8,8 +8,27 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$etfTicker}) Delta Exposure by Strike Price`}
-  description={`Discover detailed Delta Exposure analysis by strike price for ${$displayCompanyName} (${$etfTicker}). Explore historical volume, open interest, and save individual options contracts for in-depth insights.`}
+  title={`${$displayCompanyName} (${$etfTicker}) ETF Delta Exposure by Strike Price - Greeks Analysis`}
+  description={`Comprehensive delta exposure analysis by strike price for ${$displayCompanyName} (${$etfTicker}) ETF options. Identify delta concentration levels, market maker hedging points, and systematic flow patterns across different strike prices for ETF derivatives trading.`}
+  keywords={`${$etfTicker} delta by strike, ${$displayCompanyName} ETF options strikes, delta exposure analysis, ETF options greeks, strike price analysis, ETF delta hedging`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "AnalysisNewsArticle",
+    headline: `${$displayCompanyName} (${$etfTicker}) Delta Exposure by Strike Price`,
+    description: "ETF options delta exposure breakdown by strike price levels",
+    about: {
+      "@type": "FinancialProduct",
+      name: `${$displayCompanyName}`,
+      tickerSymbol: $etfTicker,
+      category: "Exchange-Traded Fund",
+    },
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    url: `https://stocknear.com/etf/${$etfTicker}/options/dex/strike`,
+  }}
 />
 
 <section class="w-full overflow-hidden min-h-screen pb-40">

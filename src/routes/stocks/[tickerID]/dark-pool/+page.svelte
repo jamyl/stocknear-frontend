@@ -16,8 +16,74 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Dark Pool Trading Insights & Data`}
-  description={`Explore exclusive dark pool trading data for ${$displayCompanyName} (${$stockTicker}). Get insights into hidden market activity, stock price movements, institutional trades, financials, and key statistics.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Dark Pool Trading Analysis - Institutional Block Trading Data & Hidden Market Activity`}
+  description={`Professional dark pool trading analysis for ${$displayCompanyName} (${$stockTicker}). Track institutional block trades, hidden market activity, volume distribution, and institutional sentiment. Access real-time dark pool data showing where big money is trading ${$stockTicker} away from public markets. Essential for understanding institutional positioning and market impact.`}
+  keywords={`${$stockTicker} dark pool, ${$displayCompanyName} institutional trading, ${$stockTicker} block trades, dark pool analysis, institutional sentiment, hidden trading volume, off-exchange trading, market microstructure, institutional flow, dark liquidity, alternative trading systems, ATS trading data`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "AnalysisNewsArticle", "WebPage"],
+    name: `${$displayCompanyName} (${$stockTicker}) Dark Pool Analysis`,
+    headline: `${$displayCompanyName} Dark Pool Trading Data & Institutional Block Analysis`,
+    description: `Professional analysis of dark pool trading activity for ${$displayCompanyName} (${$stockTicker}) including institutional block trades and hidden market flows`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/dark-pool`,
+
+    author: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://stocknear.com/favicon.png",
+      },
+    },
+    dateModified: new Date().toISOString(),
+    datePublished: new Date().toISOString(),
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+    about: {
+      "@type": "Thing",
+      name: "Dark Pool Trading",
+      description:
+        "Private exchanges for institutional block trading away from public markets",
+    },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://stocknear.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Stocks",
+          item: "https://stocknear.com/stocks",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: `${$displayCompanyName} (${$stockTicker})`,
+          item: `https://stocknear.com/stocks/${$stockTicker}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
+          name: "Dark Pool Analysis",
+          item: `https://stocknear.com/stocks/${$stockTicker}/dark-pool`,
+        },
+      ],
+    },
+  }}
 />
 
 <section class="w-full overflow-hidden h-full">

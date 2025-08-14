@@ -8,8 +8,45 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) 13F Institute Ownership`}
-  description={`Get the latest 13F Institute Ownership of ${$displayCompanyName} (${$stockTicker}).`}
+  title={`${$displayCompanyName} (${$stockTicker}) 13F Institutional Ownership | Holdings & Changes Analysis`}
+  description={`Comprehensive 13F institutional ownership analysis for ${$displayCompanyName} (${$stockTicker}). Track hedge fund holdings, institutional investor positions, ownership changes, and smart money movements with detailed quarterly filings analysis.`}
+  keywords={`${$stockTicker} institutional ownership, ${$displayCompanyName} 13F filings, hedge fund holdings, institutional investors, ${$stockTicker} ownership changes, smart money tracking, institutional positions, 13F analysis`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/insider/institute`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "Dataset"],
+    name: `${$displayCompanyName} 13F Institutional Ownership`,
+    description: `Professional 13F filing analysis and institutional ownership tracking for ${$displayCompanyName} (${$stockTicker})`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/insider/institute`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "13F filing analysis",
+      "Institutional ownership tracking",
+      "Hedge fund holdings",
+      "Position size changes",
+      "Smart money analysis",
+      "Quarterly filing updates",
+      "Ownership concentration",
+      "Institutional investor profiles",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+    about: {
+      "@type": "Thing",
+      name: "13F Institutional Analysis",
+      description:
+        "Professional analysis of institutional ownership and 13F SEC filings",
+    },
+  }}
 />
 
 <section class="w-full overflow-hidden h-full">

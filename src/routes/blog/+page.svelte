@@ -20,25 +20,25 @@
   structuredData={{
     "@context": "https://schema.org",
     "@type": "Blog",
-    "name": "Stock Analysis Blog",
-    "description": "Expert investment insights and stock market analysis blog",
-    "url": "https://stocknear.com/blog",
-    "author": {
+    name: "Stock Analysis Blog",
+    description: "Expert investment insights and stock market analysis blog",
+    url: "https://stocknear.com/blog",
+    author: {
       "@type": "Organization",
-      "name": "Stocknear",
-      "url": "https://stocknear.com"
+      name: "Stocknear",
+      url: "https://stocknear.com",
     },
-    "publisher": {
+    publisher: {
       "@type": "Organization",
-      "name": "Stocknear",
-      "url": "https://stocknear.com"
+      name: "Stocknear",
+      url: "https://stocknear.com",
     },
-    "mainEntity": {
+    mainEntity: {
       "@type": "ItemList",
-      "name": "Blog Posts",
-      "description": "Stock analysis and investment insight articles",
-      "numberOfItems": allBlogPosts?.length || 0
-    }
+      name: "Blog Posts",
+      description: "Stock analysis and investment insight articles",
+      numberOfItems: allBlogPosts?.length || 0,
+    },
   }}
 />
 

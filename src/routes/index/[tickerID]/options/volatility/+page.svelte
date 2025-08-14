@@ -10,8 +10,27 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$indexTicker}) Volatility · Stocknear`}
-  description={`Track volatility and implied volatility trends with our interactive chart. Analyze price movements, 30-day implied volatility, and realized volatility to make data-driven trading decisions.`}
+  title={`${$displayCompanyName} (${$indexTicker}) Index Volatility Analysis - Market Fear & Greed Indicator`}
+  description={`Comprehensive volatility analysis for ${$displayCompanyName} (${$indexTicker}) index tracking market fear, implied volatility trends, and systematic risk patterns. Monitor VIX-style volatility indicators, term structure analysis, and market stress levels for portfolio risk management and market timing.`}
+  keywords={`${$indexTicker} volatility, ${$displayCompanyName} index volatility, market volatility analysis, implied volatility, realized volatility, market fear indicator, volatility trading, systematic risk`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "AnalysisNewsArticle",
+    headline: `${$displayCompanyName} (${$indexTicker}) Index Volatility Analysis`,
+    description: "Index volatility tracking and market risk analysis",
+    about: {
+      "@type": "FinancialProduct",
+      name: `${$displayCompanyName}`,
+      tickerSymbol: $indexTicker,
+      category: "Market Index",
+    },
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    url: `https://stocknear.com/index/${$indexTicker}/options/volatility`,
+  }}
 />
 
 <section class="w-full overflow-hidden min-h-screen pb-40">

@@ -305,8 +305,45 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Revenue, Sales & Growth Trends`}
-  description={`Explore the historical revenue, sales performance, and growth trends of ${$displayCompanyName} (${$stockTicker}). Get in-depth financial insights.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Revenue Analysis | Historical Sales Growth & Trends`}
+  description={`Comprehensive revenue analysis for ${$displayCompanyName} (${$stockTicker}). Track historical sales performance, revenue growth trends, quarterly revenue data, and year-over-year comparisons with detailed financial insights and charts.`}
+  keywords={`${$stockTicker} revenue analysis, ${$displayCompanyName} sales performance, revenue growth trends, ${$stockTicker} quarterly revenue, historical sales data, revenue growth rate, ${$stockTicker} sales trends, company revenue history`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/statistics/revenue`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "Dataset"],
+    name: `${$displayCompanyName} Revenue Analysis`,
+    description: `Professional revenue tracking and sales performance analysis for ${$displayCompanyName} (${$stockTicker})`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/statistics/revenue`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "Historical revenue analysis",
+      "Sales growth tracking",
+      "Quarterly revenue data",
+      "Revenue trend analysis",
+      "Year-over-year comparisons",
+      "Sales performance metrics",
+      "Revenue growth rate calculation",
+      "Financial performance charts",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+    about: {
+      "@type": "Thing",
+      name: "Revenue Analysis",
+      description:
+        "Professional analysis of company revenue trends and sales performance",
+    },
+  }}
 />
 
 <section class="w-full overflow-hidden min-h-screen">

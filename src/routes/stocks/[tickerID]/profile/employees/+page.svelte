@@ -278,8 +278,39 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Number of Employees ${historyList?.at(-1)?.date?.slice(0, 4)} - ${historyList?.at(0)?.date?.slice(0, 4)}`}
-  description={`Current and historical number of employees for ${$displayCompanyName} (${$stockTicker}) with related statistics, a chart and a data table.`}
+  title={`${$displayCompanyName} (${$stockTicker}) Employee Count | Workforce Growth & Hiring Trends`}
+  description={`Comprehensive employee count analysis for ${$displayCompanyName} (${$stockTicker}). Track workforce growth, hiring trends, headcount changes, and employment statistics with historical data and growth rate calculations.`}
+  keywords={`${$stockTicker} employee count, ${$displayCompanyName} workforce, company headcount, ${$stockTicker} hiring trends, employee growth rate, workforce analysis, ${$stockTicker} employment statistics, company size employees`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/profile/employees`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "Dataset"],
+    name: `${$displayCompanyName} Employee Analysis`,
+    description: `Professional workforce analysis and employee count tracking for ${$displayCompanyName} (${$stockTicker})`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/profile/employees`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "Employee count tracking",
+      "Workforce growth analysis",
+      "Hiring trend monitoring",
+      "Headcount change tracking",
+      "Employment statistics",
+      "Growth rate calculations",
+      "Historical workforce data",
+      "Company size analysis",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+  }}
 />
 
 <section class="w-full overflow-hidden h-full">

@@ -538,12 +538,45 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Short Interest – Historical & Latest Data`}
-  description={`
-    View ${$displayCompanyName}'s short interest trends: 
-    historical short interest levels, days to cover, short % of float & outstanding, 
-    and month‑over‑month changes. Get the full dataset and insights.
-  `}
+  title={`${$displayCompanyName} (${$stockTicker}) Short Interest Analysis | Historical Data & Squeeze Indicators`}
+  description={`Comprehensive short interest analysis for ${$displayCompanyName} (${$stockTicker}). Track short position changes, days to cover, short ratio, float percentage, and historical trends. Advanced short squeeze detection and bearish sentiment analysis tools.`}
+  keywords={`${$stockTicker} short interest, ${$displayCompanyName} short squeeze, days to cover, short float percentage, ${$stockTicker} short ratio, short position analysis, short interest history, bearish sentiment analysis, squeeze indicators`}
+  type="website"
+  url={`https://stocknear.com/stocks/${$stockTicker}/statistics/short-interest`}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "Dataset"],
+    name: `${$displayCompanyName} Short Interest Analysis`,
+    description: `Professional short interest tracking and squeeze analysis for ${$displayCompanyName} (${$stockTicker})`,
+    url: `https://stocknear.com/stocks/${$stockTicker}/statistics/short-interest`,
+    applicationCategory: "FinanceApplication",
+    featureList: [
+      "Short interest tracking",
+      "Days to cover analysis",
+      "Short float percentage",
+      "Historical short data",
+      "Short squeeze indicators",
+      "Bearish sentiment analysis",
+      "Short ratio calculations",
+      "Position change tracking",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+    mainEntity: {
+      "@type": "Corporation",
+      name: $displayCompanyName,
+      tickerSymbol: $stockTicker,
+    },
+    about: {
+      "@type": "Thing",
+      name: "Short Interest Analysis",
+      description:
+        "Professional analysis of short positions and squeeze potential",
+    },
+  }}
 />
 
 <section class=" w-full overflow-hidden h-full">
