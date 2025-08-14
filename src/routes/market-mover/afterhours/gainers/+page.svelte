@@ -25,19 +25,22 @@
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Top After-Hours Stock Gainers Today",
-    "description": "Real-time list of the best performing stocks in after-hours trading, featuring stocks with highest percentage increases during extended hours.",
-    "url": "https://stocknear.com/market-mover/afterhours/gainers",
-    "mainEntity": {
+    name: "Top After-Hours Stock Gainers Today",
+    description:
+      "Real-time list of the best performing stocks in after-hours trading, featuring stocks with highest percentage increases during extended hours.",
+    url: "https://stocknear.com/market-mover/afterhours/gainers",
+    mainEntity: {
       "@type": "ItemList",
-      "name": "After-Hours Stock Gainers",
-      "description": "Top performing stocks in after-hours trading by percentage increase"
+      name: "After-Hours Stock Gainers",
+      description:
+        "Top performing stocks in after-hours trading by percentage increase",
     },
-    "about": {
+    about: {
       "@type": "Thing",
-      "name": "After-Hours Stock Trading Gainers",
-      "description": "Stocks with highest percentage price increases during after-hours extended hours trading"
-    }
+      name: "After-Hours Stock Trading Gainers",
+      description:
+        "Stocks with highest percentage price increases during after-hours extended hours trading",
+    },
   };
 </script>
 

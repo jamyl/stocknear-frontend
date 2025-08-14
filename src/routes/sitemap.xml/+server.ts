@@ -1,29 +1,43 @@
 import { convertToSlug } from "$lib/utils";
 
-// Static pages with proper priority and changefreq settings
+// Static pages with optimized priority and changefreq settings for financial platform
 const pages = [
+  // Core platform pages - Highest priority
   { title: "/", priority: 1.0, changefreq: "daily" },
+  { title: "/stocks", priority: 0.95, changefreq: "daily" },
+  { title: "/etf", priority: 0.95, changefreq: "daily" },
+  { title: "/stock-screener", priority: 0.9, changefreq: "daily" },
+  { title: "/options-screener", priority: 0.9, changefreq: "daily" },
+  
+  // Real-time data pages - High priority, frequent updates
+  { title: "/market-news", priority: 0.9, changefreq: "hourly" },
+  { title: "/options-flow", priority: 0.85, changefreq: "hourly" },
+  { title: "/dark-pool-flow", priority: 0.85, changefreq: "hourly" },
+  { title: "/market-flow", priority: 0.85, changefreq: "hourly" },
+  { title: "/heatmap", priority: 0.8, changefreq: "hourly" },
+  
+  // Analysis and research tools - High priority
   { title: "/chat", priority: 0.9, changefreq: "weekly" },
   { title: "/compare", priority: 0.8, changefreq: "weekly" },
-  { title: "/stocks", priority: 0.9, changefreq: "daily" },
-  { title: "/etf", priority: 0.9, changefreq: "daily" },
-  { title: "/stock-screener", priority: 0.9, changefreq: "daily" },
-  { title: "/market-news", priority: 0.9, changefreq: "hourly" },
-  { title: "/earnings-calendar", priority: 0.8, changefreq: "daily" },
+  { title: "/backtesting", priority: 0.85, changefreq: "weekly" },
+  
+  // Financial calendars - High priority for investors
+  { title: "/earnings-calendar", priority: 0.85, changefreq: "daily" },
   { title: "/economic-calendar", priority: 0.8, changefreq: "daily" },
-  { title: "/dividends-calendar", priority: 0.7, changefreq: "daily" },
-  { title: "/options-flow", priority: 0.8, changefreq: "hourly" },
-  { title: "/dark-pool-flow", priority: 0.8, changefreq: "hourly" },
+  { title: "/dividends-calendar", priority: 0.75, changefreq: "daily" },
+  
+  // Tracking and analytics - Medium-high priority
   { title: "/insider-tracker", priority: 0.8, changefreq: "daily" },
-  { title: "/politicians", priority: 0.7, changefreq: "daily" },
-  { title: "/analysts", priority: 0.7, changefreq: "daily" },
-  { title: "/hedge-funds", priority: 0.7, changefreq: "weekly" },
-  { title: "/heatmap", priority: 0.7, changefreq: "hourly" },
-  { title: "/market-flow", priority: 0.8, changefreq: "hourly" },
+  { title: "/politicians", priority: 0.75, changefreq: "daily" },
+  { title: "/analysts", priority: 0.75, changefreq: "daily" },
+  { title: "/hedge-funds", priority: 0.75, changefreq: "weekly" },
   { title: "/ipos", priority: 0.7, changefreq: "daily" },
-  { title: "/reddit-tracker", priority: 0.6, changefreq: "hourly" },
-  { title: "/options-calculator", priority: 0.6, changefreq: "monthly" },
-  { title: "/blog", priority: 0.7, changefreq: "daily" },
+  { title: "/reddit-tracker", priority: 0.65, changefreq: "hourly" },
+  
+  // Educational and tools - Medium priority
+  { title: "/blog", priority: 0.75, changefreq: "daily" },
+  { title: "/learning-center", priority: 0.7, changefreq: "weekly" },
+  { title: "/options-calculator", priority: 0.65, changefreq: "monthly" },
   // Market movers - high priority, frequent updates
   { title: "/market-mover/gainers", priority: 0.8, changefreq: "hourly" },
   { title: "/market-mover/losers", priority: 0.8, changefreq: "hourly" },
@@ -78,12 +92,35 @@ const pages = [
   { title: "/affiliate-program", priority: 0.3, changefreq: "monthly" },
   // Special trackers
   { title: "/potus-tracker", priority: 0.6, changefreq: "daily" },
-  // Sub-pages
+  // Sub-pages and specialized tools
   { title: "/market-news/general", priority: 0.7, changefreq: "hourly" },
-  { title: "/ipos/news", priority: 0.6, changefreq: "daily" },
+  { title: "/ipos/news", priority: 0.65, changefreq: "daily" },
+  { title: "/ipos/statistics", priority: 0.6, changefreq: "weekly" },
   { title: "/politicians/flow-data", priority: 0.6, changefreq: "daily" },
-  { title: "/analysts/top-stocks", priority: 0.6, changefreq: "daily" },
-  { title: "/analysts/analyst-flow", priority: 0.6, changefreq: "daily" },
+  { title: "/analysts/top-stocks", priority: 0.65, changefreq: "daily" },
+  { title: "/analysts/analyst-flow", priority: 0.65, changefreq: "daily" },
+  
+  // FAQ and AI Agents - Important for user guidance
+  { title: "/faq", priority: 0.5, changefreq: "monthly" },
+  { title: "/faq/ai-agents", priority: 0.6, changefreq: "monthly" },
+  
+  // Market-cap and sector analysis pages
+  { title: "/list/market-cap/mega-cap-stocks", priority: 0.65, changefreq: "weekly" },
+  { title: "/list/market-cap/large-cap-stocks", priority: 0.65, changefreq: "weekly" },
+  { title: "/list/dividend/dividend-aristocrats", priority: 0.7, changefreq: "monthly" },
+  { title: "/list/dividend/dividend-kings", priority: 0.7, changefreq: "monthly" },
+  
+  // Popular ETF and crypto lists
+  { title: "/list/bitcoin-etfs", priority: 0.7, changefreq: "daily" },
+  { title: "/list/ethereum-etfs", priority: 0.65, changefreq: "daily" },
+  { title: "/list/crypto-etfs", priority: 0.65, changefreq: "daily" },
+  
+  // High-interest stock lists
+  { title: "/list/magnificent-seven", priority: 0.8, changefreq: "daily" },
+  { title: "/list/most-shorted-stocks", priority: 0.75, changefreq: "daily" },
+  { title: "/list/penny-stocks", priority: 0.7, changefreq: "daily" },
+  { title: "/list/overbought-stocks", priority: 0.65, changefreq: "daily" },
+  { title: "/list/oversold-stocks", priority: 0.65, changefreq: "daily" },
 ];
 
 const website = "https://stocknear.com";
@@ -151,11 +188,13 @@ export async function GET({ locals, setHeaders, url }) {
   const { apiKey, apiURL, pb } = locals;
   
   try {
-    // Set cache headers for better performance
+    // Set optimized cache headers for better SEO performance
     setHeaders({
-      'Content-Type': 'application/xml',
-      'Cache-Control': 'public, max-age=3600, s-maxage=7200', // Cache for 1 hour client, 2 hours CDN
-      'X-Robots-Tag': 'noindex' // Prevent sitemap from being indexed
+      'Content-Type': 'application/xml; charset=utf-8',
+      'Cache-Control': 'public, max-age=1800, s-maxage=3600', // 30min client, 1hr CDN - better for real-time data
+      'X-Robots-Tag': 'noindex, nofollow', // Prevent sitemap from being indexed but allow following
+      'Vary': 'Accept-Encoding',
+      'ETag': `"sitemap-${Date.now()}"` // Better cache validation
     });
 
     // Check if this is a specific sitemap request
