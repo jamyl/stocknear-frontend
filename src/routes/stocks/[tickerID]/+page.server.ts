@@ -1,87 +1,83 @@
 import { error, fail, redirect } from "@sveltejs/kit";
-import { validateData } from "$lib/utils";
+import { validateData, checkDisposableEmail, validateReturnUrl } from "$lib/utils";
 import { loginUserSchema, registerUserSchema } from "$lib/schemas";
 
 export const actions = {
-  login: async ({ request, locals }) => {
-    const { formData, errors } = await validateData(
-      await request.formData(),
-      loginUserSchema,
-    );
+    login: async ({ request, locals, url, cookies }) => {
+        const { formData, errors } = await validateData(
+            await request.formData(),
+            loginUserSchema
+        );
 
-    if (errors) {
-      return fail(400, {
-        data: formData,
-        errors: errors.fieldErrors,
-      });
-    }
+        if (errors) {
+            return fail(400, {
+                data: formData,
+                errors: errors.fieldErrors
+            });
+        }
 
-    try {
-      await locals.pb
-        .collection("users")
-        .authWithPassword(formData.email, formData.password);
+        try {
+            await locals.pb.collection('users')
+                .authWithPassword(formData.email, formData.password);
+        } catch (err: any) {
+            console.log('Error: ', err);
+            throw error(err.status || 500, err.message || 'Login failed');
+        }
 
-      /*	
-			if (!locals.pb?.authStore?.model?.verified) {
-				locals.pb.authStore.clear();
-				return {
-					notVerified: true,
-				};
-			}
-			*/
-    } catch (err) {
-      console.log("Error: ", err);
-      error(err.status, err.message);
-    }
+        // Get return URL from query or cookie
+        const returnUrl = url.searchParams.get('returnUrl') ||
+                          cookies.get('returnUrl') ||
+                          '/';
 
-    //redirect(302, "/");
-  },
+        // Remove cookie after use
+        cookies.delete('returnUrl', { path: '/' });
 
-  register: async ({ locals, request }) => {
-    const { formData, errors } = await validateData(
-      await request.formData(),
-      registerUserSchema,
-    );
+        // Validate and redirect
+        throw redirect(302, validateReturnUrl(returnUrl, url.origin));
+    },
 
-    if (errors) {
-      return fail(400, {
-        data: formData,
-        errors: errors.fieldErrors,
-      });
-    }
+    register: async ({ locals, request, url, cookies }) => {
+        const { formData, errors } = await validateData(
+            await request.formData(),
+            registerUserSchema
+        );
 
-    try {
-      let newUser = await locals.pb.collection("users").create(formData);
+        if (errors) {
+            return fail(400, {
+                data: formData,
+                errors: errors.fieldErrors
+            });
+        }
 
-      await locals.pb.collection("users").update(newUser?.id, {
-        'credits': 10,
-      });
-      
-      /*
-await locals.pb?.collection('users').update(
-				newUser?.id, {
-					'freeTrial' : true,
-					'tier': 'Pro', //Give new users a free trial for the Pro Subscription
-			});
-*/
+        const isEmailDisposable = await checkDisposableEmail(formData?.email);
+        if (isEmailDisposable === 'true') {
+            throw error(400, 'Disposable Email Addresses not allowed!');
+        }
 
-      await locals.pb.collection("users").requestVerification(formData.email);
-    } catch (err) {
-      console.log("Error: ", err);
-      error(err.status, err.message);
-    }
+        try {
+            const newUser = await locals.pb.collection('users').create(formData);
+            await locals.pb.collection('users').update(newUser?.id, {
+                credits: 10
+            });
+            await locals.pb.collection('users').requestVerification(formData.email);
+            await locals.pb.collection('users')
+                .authWithPassword(formData.email, formData.password);
+        } catch (err: any) {
+            console.log('Error: ', err);
+            throw error(err.status || 500, err.message || 'Registration failed');
+        }
 
-    try {
-      await locals.pb
-        .collection("users")
-        .authWithPassword(formData.email, formData.password);
-    } catch (err) {
-      console.log("Error: ", err);
-      error(err.status, err.message);
-    }
+        // Get return URL from query or cookie
+        const returnUrl = url.searchParams.get('returnUrl') ||
+                          cookies.get('returnUrl') ||
+                          '/profile';
 
-    //redirect(303, "/");
-  },
+        // Remove cookie
+        cookies.delete('returnUrl', { path: '/' });
+
+        // Validate and redirect
+        throw redirect(302, validateReturnUrl(returnUrl, url.origin));
+    },
 
    oauth2: async ({ url, locals, request, cookies }) => {
 

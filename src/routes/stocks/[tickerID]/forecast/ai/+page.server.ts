@@ -1,37 +1,8 @@
-
 import { error, fail, redirect } from "@sveltejs/kit";
 import { validateData, checkDisposableEmail, validateReturnUrl } from "$lib/utils";
 import { loginUserSchema, registerUserSchema } from "$lib/schemas";
 
-export const load = async ({ locals, params }) => {
-  const { apiKey, apiURL, user } = locals;
 
-  const getData = async () => {
-    const postData = {
-      params: params.tickerID,
-      category: "expiry",
-      type: "gex",
-    };
-
-    const response = await fetch(apiURL + "/options-gex-dex", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-KEY": apiKey,
-      },
-      body: JSON.stringify(postData),
-    });
-  const output = await response.json();
-  
-    return output;
-  }; 
-
-
-  // Make sure to return a promise
-  return {
-    getData: await getData(),
-  };
-};
 
 export const actions = {
     login: async ({ request, locals, url, cookies }) => {
