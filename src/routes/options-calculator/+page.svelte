@@ -764,8 +764,48 @@
 </script>
 
 <SEO
-  title="Options Calculator: Calculate Options Profit, Breakeven, and Risk-Reward"
-  description="Use our free Options Calculator to calculate potential profit, breakeven prices, risk-reward ratios, and more for calls and puts. Perfect for traders and investors."
+  title="Options Calculator - Free Options Profit & Loss Calculator | Stocknear"
+  description="Free options calculator to calculate profit/loss, breakeven prices, Greeks, and risk-reward for calls and puts. Analyze option strategies, max profit, max loss, and probability of profit. Perfect for options trading."
+  keywords="options calculator, options profit calculator, options P&L calculator, breakeven calculator, options Greeks calculator, call calculator, put calculator, options strategy calculator, free options calculator"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Options Calculator",
+    "description": "Free options profit and loss calculator with Greeks and strategy analysis",
+    "url": "https://stocknear.com/options-calculator",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Any",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Options Calculator",
+          "item": "https://stocknear.com/options-calculator"
+        }
+      ]
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Options profit/loss calculator",
+      "Breakeven price calculator",
+      "Greeks calculator (Delta, Gamma, Theta, Vega)",
+      "Risk-reward analysis",
+      "Multiple options strategies",
+      "Real-time calculations"
+    ]
+  }}
 />
 
 <section

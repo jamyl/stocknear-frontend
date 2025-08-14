@@ -177,9 +177,39 @@
 </script>
 
 <SEO
-  title="All
-    listed Hedge Funds"
-  description="Find all listed Hedge Funds based on the US Market."
+  title="Hedge Fund Tracker - Top Hedge Fund Holdings & 13F Filings | Stocknear"
+  description="Track top hedge fund holdings, 13F filings, and institutional investor portfolios. Monitor what hedge funds are buying and selling with detailed position analysis. Free hedge fund tracking tool."
+  keywords="hedge fund tracker, hedge fund holdings, 13F filings, institutional investors, hedge fund positions, top hedge funds, institutional holdings, hedge fund portfolios, berkshire hathaway holdings"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Hedge Fund Tracker",
+    "description": "Comprehensive tracking of hedge fund holdings and institutional investments",
+    "url": "https://stocknear.com/hedge-funds",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Hedge Funds",
+          "item": "https://stocknear.com/hedge-funds"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Hedge Fund List",
+      "description": "List of hedge funds and institutional investors with their holdings",
+      "numberOfItems": rawData?.length || 0
+    }
+  }}
 />
 
 <section

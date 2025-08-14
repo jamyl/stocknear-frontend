@@ -32,8 +32,39 @@
 </script>
 
 <SEO
-  title="200 Most Recent IPOs"
-  description="Detailed information the last 200 IPOs (initial public offerings) on the stock market. Includes IPO prices, dates, total returns and more."
+  title="IPO Calendar - Recent & Upcoming IPOs | Initial Public Offerings | Stocknear"
+  description="Track recent and upcoming IPOs (Initial Public Offerings) with detailed analysis. Monitor IPO performance, prices, dates, and returns since listing. Free IPO calendar and tracker with comprehensive data."
+  keywords="IPO calendar, upcoming IPOs, recent IPOs, initial public offerings, IPO tracker, IPO performance, IPO prices, new stock listings, public offerings"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "IPO Calendar",
+    "description": "Comprehensive tracking of recent and upcoming Initial Public Offerings",
+    "url": "https://stocknear.com/ipos",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "IPOs",
+          "item": "https://stocknear.com/ipos"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "IPO List",
+      "description": "List of recent and upcoming Initial Public Offerings",
+      "numberOfItems": rawData?.length || 0
+    }
+  }}
 />
 
 <div class="w-full overflow-hidden m-auto">
