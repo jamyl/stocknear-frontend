@@ -131,8 +131,39 @@
 </script>
 
 <SEO
-  title="Top Wall Street Stock Analysts"
-  description="A list of the top Wall Street stock analysts, ranked by their success rate and average return per rating."
+  title="Top Wall Street Stock Analysts - Best Performing Equity Research"
+  description="Discover the top Wall Street stock analysts ranked by success rate and average returns. Track analyst ratings, price targets, and performance metrics from leading investment banks and research firms."
+  keywords="top wall street analysts, best stock analysts, analyst ratings, equity research analysts, analyst success rate, stock recommendations, analyst price targets, investment bank analysts, sell side research"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Top Wall Street Stock Analysts",
+    "description": "Comprehensive ranking of Wall Street equity research analysts by performance metrics",
+    "url": "https://stocknear.com/analysts",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Top Wall Street Analysts",
+          "item": "https://stocknear.com/analysts"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Wall Street Analyst Rankings",
+      "description": "List of equity research analysts ranked by success rate and average returns",
+      "numberOfItems": rawData?.length || 0
+    }
+  }}
 />
 
 <section

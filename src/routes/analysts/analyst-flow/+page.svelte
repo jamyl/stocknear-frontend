@@ -117,8 +117,45 @@
 </script>
 
 <SEO
-  title="Analyst Flow - Latest Wall Street Analyst Ratings & Insights"
-  description="Stay updated with the latest Wall Street analyst ratings, stock upgrades, downgrades, and price target changes. Get real-time insights to make informed investment decisions."
+  title="Analyst Flow - Latest Wall Street Analyst Ratings & Stock Recommendations"
+  description="Real-time Wall Street analyst ratings, stock upgrades, downgrades, and price target changes. Track the latest analyst recommendations, buy/sell ratings, and investment insights from top research firms."
+  keywords="analyst flow, latest analyst ratings, stock upgrades, stock downgrades, analyst price targets, Wall Street recommendations, real-time analyst activity, buy sell ratings, research analyst updates"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Analyst Flow - Latest Ratings",
+    "description": "Real-time feed of Wall Street analyst ratings and stock recommendations",
+    "url": "https://stocknear.com/analysts/analyst-flow",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Analysts",
+          "item": "https://stocknear.com/analysts"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Analyst Flow",
+          "item": "https://stocknear.com/analysts/analyst-flow"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Latest Analyst Ratings",
+      "description": "Real-time feed of analyst ratings and stock recommendations",
+      "numberOfItems": rawData?.length || 0
+    }
+  }}
 />
 
 <section

@@ -171,8 +171,32 @@
 </script>
 
 <SEO
-  title={`${analystName} - Analyst At ${companyName}`}
-  description={`${analystName} is a Wall Street analyst working for ${companyName}. ${analystName} has covered ${totalRatings} stocks with a ${successRate}% success rate and an average return of ${avgReturn}%.`}
+  title="{analystName} Stock Analyst Profile - {companyName} Research Coverage"
+  description="Detailed profile of {analystName}, equity research analyst at {companyName}. Track their stock ratings, price targets, success rate of {successRate}%, and average return of {avgReturn}% across {totalRatings} stock recommendations."
+  keywords="{analystName?.toLowerCase()}, {companyName?.toLowerCase()} analyst, {analystName?.toLowerCase()} stock picks, equity research analyst, stock analyst ratings, {companyName?.toLowerCase()} research, analyst price targets, Wall Street analyst profile"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": analystName,
+    "jobTitle": "Stock Analyst",
+    "worksFor": {
+      "@type": "Organization",
+      "name": companyName
+    },
+    "description": "Wall Street equity research analyst specializing in stock analysis and recommendations",
+    "url": "https://stocknear.com/analysts/{data?.getAnalystStats?.analystId}",
+    "hasCredential": {
+      "@type": "EducationalOccupationalCredential",
+      "credentialCategory": "Financial Analysis"
+    },
+    "knowsAbout": data?.getAnalystStats?.mainSectors || [],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": analystScore,
+      "bestRating": 5,
+      "worstRating": 1
+    }
+  }}
 />
 
 <section

@@ -27,8 +27,45 @@
 </script>
 
 <SEO
-  title="Top Analyst Strong Buy Stocks"
-  description="The top 100 Strong Buy stocks according to the best performing Wall Street analysts, with a rating of 5 stars."
+  title="Top Analyst Strong Buy Stocks - Best Stock Picks from 5-Star Analysts"
+  description="Discover the top Strong Buy stocks recommended by the best-performing Wall Street analysts with 4+ star ratings. Find high-conviction stock picks with strong upside potential and exceptional analyst accuracy."
+  keywords="top analyst strong buy stocks, best analyst stock picks, strong buy recommendations, 5 star analyst stocks, top-rated analyst picks, high conviction stock picks, Wall Street best buys, analyst strong buy list"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Top Analyst Strong Buy Stocks",
+    "description": "Strong Buy stock recommendations from top-performing Wall Street analysts",
+    "url": "https://stocknear.com/analysts/top-stocks",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://stocknear.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Analysts",
+          "item": "https://stocknear.com/analysts"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Top Analyst Stocks",
+          "item": "https://stocknear.com/analysts/top-stocks"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Top Analyst Strong Buy Stock List",
+      "description": "List of Strong Buy stocks recommended by top-performing Wall Street analysts",
+      "numberOfItems": rawData?.length || 0
+    }
+  }}
 />
 
 <section
