@@ -54,20 +54,7 @@
   }}
 />
 
-<section class="w-full max-w-3xl sm:max-w-[1400px] overflow-hidden min-h-screen pt-5 pb-40 px-3">
-  <div class="text-sm sm:text-[1rem] breadcrumbs">
-    <ul>
-      <li><a href="/" class="text-muted dark:text-gray-300">Home</a></li>
-      <li><a href="/list" class="text-muted dark:text-gray-300">Stock Lists</a></li>
-      <li class="text-muted dark:text-gray-300">Top-Rated Dividend Stocks</li>
-    </ul>
-  </div>
-
-  <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px] mt-5">
-    <h1 class="mb-1 text-2xl sm:text-3xl font-bold">
-      Top-Rated Dividend Stocks List
-    </h1>
-  </div>
+<section class="w-full overflow-hidden m-auto">
 
   <Infobox
     text="Comprehensive list of high-quality dividend stocks with Buy or Strong Buy analyst ratings. Each stock has consensus ratings from at least 10 analysts, dividend yields of 2% or higher, and payout ratios below 60% for sustainable income generation."

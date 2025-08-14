@@ -42,9 +42,7 @@
 
 <!--Start Market Cap Group-->
 
-<section
-  class="w-full max-w-3xl sm:max-w-[1400px] overflow-hidden min-h-screen pt-5 pb-40 px-3"
->
+<section class="w-full overflow-hidden m-auto">
   <div class="mt-5">
     <h2 class="mb-2 text-xl font-bold">Popular Lists</h2>
     <ul

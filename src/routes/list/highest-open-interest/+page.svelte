@@ -69,20 +69,7 @@
   }}
 />
 
-<section class="w-full max-w-3xl sm:max-w-[1400px] overflow-hidden min-h-screen pt-5 pb-40 px-3">
-  <div class="text-sm sm:text-[1rem] breadcrumbs">
-    <ul>
-      <li><a href="/" class="text-muted dark:text-gray-300">Home</a></li>
-      <li><a href="/list" class="text-muted dark:text-gray-300">Stock Lists</a></li>
-      <li class="text-muted dark:text-gray-300">Highest Open Interest</li>
-    </ul>
-  </div>
-
-  <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px] mt-5">
-    <h1 class="mb-1 text-2xl sm:text-3xl font-bold">
-      Highest Open Interest Stocks
-    </h1>
-  </div>
+<section class="w-full overflow-hidden m-auto">
 
   <Infobox
     text="These are US stocks with the highest options open interest (OI). Open interest represents the total number of outstanding options contracts available for trading, indicating market liquidity and investor interest."
