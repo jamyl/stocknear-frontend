@@ -703,8 +703,51 @@
 </script>
 
 <SEO
-  title={`${$stockTicker} ${$currentPortfolioPrice !== null && $currentPortfolioPrice !== 0 ? $currentPortfolioPrice : data?.getStockQuote?.price?.toFixed(2)} ${displayLegend?.change >= 0 ? "▲" : "▼"} ${displayLegend?.change}%`}
-  description={`Get a real-time ${data?.companyName} (${$stockTicker}) stock chart, price quote with breaking news, financials, statistics, charts and more.`}
+  title={`${data?.companyName} (${$stockTicker}) Stock Analysis - ${$currentPortfolioPrice !== null && $currentPortfolioPrice !== 0 ? $currentPortfolioPrice : data?.getStockQuote?.price?.toFixed(2)} ${displayLegend?.change >= 0 ? "▲" : "▼"} ${displayLegend?.change}%`}
+  description={`Real-time ${data?.companyName} (${$stockTicker}) stock analysis with live price ${$currentPortfolioPrice !== null && $currentPortfolioPrice !== 0 ? $currentPortfolioPrice : data?.getStockQuote?.price?.toFixed(2)}, financial data, earnings forecast, options flow, and technical analysis. Get comprehensive ${$stockTicker} insights on Stocknear.`}
+  keywords={`${$stockTicker}, ${data?.companyName}, ${$stockTicker} stock, ${$stockTicker} analysis, ${$stockTicker} forecast, ${$stockTicker} price, ${$stockTicker} earnings, stock analysis, financial data, options flow`}
+  type="article"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["FinancialProduct", "Article"],
+    "name": `${data?.companyName} (${$stockTicker})`,
+    "identifier": $stockTicker,
+    "headline": `${data?.companyName} (${$stockTicker}) Stock Analysis`,
+    "description": `Real-time analysis and financial data for ${data?.companyName} (${$stockTicker})`,
+    "url": `https://stocknear.com/stocks/${$stockTicker}`,
+    "image": `https://stocknear.com/logo/${$stockTicker}.png`,
+    "author": {
+      "@type": "Organization",
+      "name": "Stocknear",
+      "url": "https://stocknear.com"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Stocknear",
+      "url": "https://stocknear.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://stocknear.com/favicon.png"
+      }
+    },
+    "dateModified": new Date().toISOString(),
+    "datePublished": new Date().toISOString(),
+    "mainEntity": {
+      "@type": "Corporation",
+      "name": data?.companyName,
+      "tickerSymbol": $stockTicker,
+      "url": data?.website
+    },
+    "about": {
+      "@type": "FinancialProduct",
+      "name": `${data?.companyName} Stock`,
+      "category": "Stock",
+      "provider": {
+        "@type": "Organization",
+        "name": data?.companyName
+      }
+    }
+  }}
 />
 
 <section

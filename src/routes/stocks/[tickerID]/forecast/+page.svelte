@@ -753,8 +753,50 @@
 </script>
 
 <SEO
-  title={`${$displayCompanyName} (${$stockTicker}) Forecast Overview · Stocknear`}
-  description={`A list of analyst ratings for Advanced Micro Devices (AMD) stock. See upgrades, downgrades, price targets and more from top Wall Street stock analysts.`}
+  title={`${$stockTicker} Stock Forecast - ${$displayCompanyName} Price Predictions & Analyst Targets`}
+  description={`${$stockTicker} stock forecast and price predictions for ${$displayCompanyName}. Get AI-powered forecasts, analyst price targets, earnings estimates, and future stock price projections for ${$stockTicker}. See what Wall Street analysts expect for ${$displayCompanyName} stock.`}
+  keywords={`${$stockTicker} forecast, ${$stockTicker} price prediction, ${$stockTicker} stock forecast, ${$displayCompanyName} forecast, ${$stockTicker} price target, ${$stockTicker} analyst ratings, stock prediction, ${$stockTicker} future price, ${$stockTicker} 2024 forecast, ${$stockTicker} 2025 forecast`}
+  type="article"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": ["Article", "FinancialProduct"],
+    "headline": `${$stockTicker} Stock Forecast - ${$displayCompanyName} Price Predictions`,
+    "name": `${$stockTicker} Stock Forecast`,
+    "description": `Comprehensive stock forecast and price predictions for ${$displayCompanyName} (${$stockTicker}) with analyst targets and AI insights`,
+    "url": `https://stocknear.com/stocks/${$stockTicker}/forecast`,
+    "image": `https://stocknear.com/logo/${$stockTicker}.png`,
+    "dateModified": new Date().toISOString(),
+    "datePublished": new Date().toISOString(),
+    "author": {
+      "@type": "Organization",
+      "name": "Stocknear",
+      "url": "https://stocknear.com"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Stocknear",
+      "url": "https://stocknear.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://stocknear.com/favicon.png"
+      }
+    },
+    "mainEntity": {
+      "@type": "FinancialProduct",
+      "name": `${$displayCompanyName} Stock Forecast`,
+      "description": `Stock price forecast and predictions for ${$displayCompanyName} (${$stockTicker})`,
+      "category": "Stock Forecast",
+      "provider": {
+        "@type": "Organization",
+        "name": "Stocknear"
+      }
+    },
+    "about": {
+      "@type": "Corporation",
+      "name": $displayCompanyName,
+      "tickerSymbol": $stockTicker
+    }
+  }}
 />
 
 <section class="w-full overflow-hidden h-full">

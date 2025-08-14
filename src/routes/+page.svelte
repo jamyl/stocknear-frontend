@@ -61,15 +61,45 @@
 </script>
 
 <SEO
-  title="Free Online Stock Analysis for Investors"
-  description="Stocknear has everything you need to analyze stocks with help of AI, including detailed financial data, statistics, news and charts."
+  title="Stocknear - Advanced Stock Analysis & Financial Data Platform"
+  description="Free advanced stock analysis, AI-powered forecasting, options flow tracking, and comprehensive financial data for all US stocks. Get real-time insights for TSLA, NVDA, AAPL and thousands more with StockNear's powerful analysis tools."
+  keywords="stocknear, stock analysis, stock forecast, tsla forecast, nvda analysis, options flow, earnings analysis, financial data, stock screener, market analysis, AI stock predictions, dark pool data, insider trading, congress trading"
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Stocknear",
+    description:
+      "Advanced stock analysis and financial data platform with AI-powered insights",
+    url: "https://stocknear.com",
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Any",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    featureList: [
+      "Real-time stock analysis",
+      "AI-powered forecasting",
+      "Options flow tracking",
+      "Financial data analysis",
+      "Dark pool monitoring",
+      "Earnings analysis",
+      "Market insights",
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Stocknear",
+      url: "https://stocknear.com",
+    },
+  }}
 />
 
 <div class="w-full max-w-8xl overflow-hidden m-auto min-h-screen mb-16">
   {#if AppInstalled && !$closedPWA}
     <svelte:component this={AppInstalled} />
   {/if}
-
+  <!--
   {#if !["Pro", "Plus"].includes(data?.user?.tier)}
     <div class="flex justify-center mb-5 whitespace-nowrap mt-5 sm:mt-0">
       <a
@@ -87,6 +117,7 @@
       </a>
     </div>
   {/if}
+  -->
 
   <main id="main">
     <div
