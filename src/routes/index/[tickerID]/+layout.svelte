@@ -62,6 +62,48 @@
     }
   }
 
+  async function handleWatchlistButtonClick() {
+    if (!data?.user) {
+      // User not logged in, let the label handle opening login modal
+      return;
+    }
+    
+    if (!userWatchList || userWatchList?.length === 0) {
+      // No watchlists exist, create one and add ticker
+      try {
+        const response = await fetch("/api/update-watchlist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            watchListId: "default",
+            ticker: $indexTicker,
+            title: "My Watchlist",
+          }),
+        });
+        
+        const output = await response.json();
+        userWatchList = [output];
+        
+        toast.success("Ticker added to your Watchlist", {
+          style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+        });
+      } catch (error) {
+        console.error("Error creating watchlist:", error);
+        toast.error("Failed to add ticker to watchlist", {
+          style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+        });
+      }
+    } else {
+      // Watchlists exist, open modal
+      const modal = document.getElementById(
+        "addWatchListModal",
+      ) as HTMLInputElement;
+      if (modal) {
+        modal.checked = true;
+      }
+    }
+  }
+
   async function toggleUserWatchlist(watchListId: string) {
     try {
       // Find the index of the watchlist
@@ -356,8 +398,15 @@
                         <div
                           class="-mb-1 mt-6 flex sm:ml-auto w-full ml-auto gap-2 sm:right-5 sm:top-6 sm:mb-0 sm:mt-0 sm:w-auto lg:right-8"
                         >
-                          <label
-                            for={data?.user ? "addWatchListModal" : "userLogin"}
+                          <button
+                            on:click={() => {
+                              if (data?.user) {
+                                handleWatchlistButtonClick();
+                              } else {
+                                const modal = document.getElementById('userLogin');
+                                if (modal) modal.checked = true;
+                              }
+                            }}
                             class="inline-flex items-center justify-center gap-x-1.5 cursor-pointer transition-all whitespace-nowrap rounded bg-default sm:hover:bg-black dark:sm:hover:bg-[#2A2E39] border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-base font-semibold text-white shadow-xs lg:px-2.5 flex-1 md:flex-initial"
                             ><svg
                               class="size-5 flex-shrink-0"
@@ -374,7 +423,7 @@
                               ></path></svg
                             >
                             <span class="text-sm md:text-[1rem]">Watchlist</span
-                            ></label
+                            ></button
                           >
                           <label
                             on:click={() => ($openPriceAlert = true)}
