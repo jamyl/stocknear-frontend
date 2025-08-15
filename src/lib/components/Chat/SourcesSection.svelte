@@ -18,8 +18,8 @@
 {#if sources && sources.length > 0}
   <div class="w-full mt-6 pt-4 border-t border-gray-300 dark:border-gray-600">
     <div class="flex items-center gap-2 mb-4">
-      <h4 class="text-sm font-semibold">Sources</h4>
-      <span class="text-xs">({sources.length})</span>
+      <h3 class="text-[1rem] sm:text-lg font-semibold">Sources</h3>
+      <span class="text-sm">({sources.length})</span>
     </div>
 
     <!-- Row 1: Tickers side-by-side -->

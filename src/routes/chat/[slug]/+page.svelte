@@ -237,6 +237,16 @@
 
   function handleRelatedQuestionClick(event) {
     const { question } = event.detail;
+
+    // Add the question as a user message to the chat history
+    const userMessage = {
+      role: "user",
+      content: question,
+    };
+
+    // Add to messages array
+    messages = [...messages, userMessage];
+
     // Automatically send the question to the API
     llmChat(question);
   }
