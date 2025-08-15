@@ -343,6 +343,7 @@
               >
 
               <!-- Export to PDF Button - Show only for latest system message with content -->
+              <!--
               {#if message?.role === "system" && allMessages.length > 1 && onExportPDF && !isStreaming}
                 <button
                   type="button"
@@ -382,6 +383,7 @@
                   </div></button
                 >
               {/if}
+              -->
 
               {#if editable}
                 <button
