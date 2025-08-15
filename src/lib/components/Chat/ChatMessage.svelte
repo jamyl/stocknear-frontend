@@ -8,6 +8,7 @@
 
   //import CompareGraph from "$lib/components/Plot/CompareGraph.svelte";
   import SourcesSection from "$lib/components/Chat/SourcesSection.svelte";
+  import Related from "$lib/components/Chat/Related.svelte";
 
   export let message: {
     content: string;
@@ -19,6 +20,7 @@
       ticker?: string;
       timestamp?: string;
     }>;
+    relatedQuestions?: string[];
   };
   export let isLoading = false;
   export let isStreaming = false;
@@ -124,6 +126,11 @@
     if (intervalId) clearInterval(intervalId);
     if (typewriterInterval) clearInterval(typewriterInterval);
   });
+
+  function handleRelatedQuestionClick(event) {
+    // Dispatch event to parent component
+    dispatch("related-question", event.detail);
+  }
 
   function handleShare() {
     const url = $page?.url?.href;
@@ -289,6 +296,14 @@
           <!-- Sources Section - Perplexity Style -->
           {#if message?.sources && message?.sources?.length > 0 && !isStreaming}
             <SourcesSection sources={message.sources} />
+          {/if}
+
+          <!-- Related Questions Section -->
+          {#if message?.relatedQuestions && message?.relatedQuestions?.length > 0 && !isStreaming}
+            <Related
+              questions={message.relatedQuestions}
+              on:question-click={handleRelatedQuestionClick}
+            />
           {/if}
         </div>
         {#if message?.role === "system"}

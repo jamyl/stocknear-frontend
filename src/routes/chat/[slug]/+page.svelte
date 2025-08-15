@@ -23,6 +23,8 @@
   let messages = data?.getChat?.messages || [
     { content: "Hello! How can I help you today?", role: "system" },
   ];
+  
+  let relatedQuestions = [];
 
   let chatId = data?.getChat?.id;
   let editable = data?.getChat?.editable ?? false;
@@ -233,6 +235,25 @@
     }
   });
 
+  function handleRelatedQuestionClick(event) {
+    const { question } = event.detail;
+    // Set the editor text to the clicked question
+    if (editorView) {
+      const tr = editorView.state.tr.insertText(question, 0, editorView.state.doc.content.size);
+      editorView.dispatch(tr);
+      editorView.focus();
+      
+      // Optionally, automatically send the question
+      // Uncomment the next line if you want to auto-send
+      // llmChat(question);
+    }
+  }
+  
+  function handleMessageRelatedQuestion(event) {
+    // Handle related question click from ChatMessage component
+    handleRelatedQuestionClick(event);
+  }
+
   async function llmChat(userMessage?: string) {
     if (isLoading || isStreaming) {
       //making sure to not send another request when the llm is responding already
@@ -241,6 +262,8 @@
 
     isLoading = true;
     isStreaming = true;
+    // Clear related questions for new conversation
+    relatedQuestions = [];
     // Use provided message or input text
     const userQuery = userMessage || editorText?.trim();
 
@@ -320,6 +343,16 @@
               // Update the message with sources
               if (messages[idx]) {
                 messages[idx].sources = sourcesCollected;
+                messages = [...messages];
+              }
+            }
+            
+            // Handle related questions event
+            if (json?.event === "related_questions" && json?.questions) {
+              relatedQuestions = json.questions;
+              // Update the message with related questions
+              if (messages[idx]) {
+                messages[idx].relatedQuestions = json.questions;
                 messages = [...messages];
               }
             }
@@ -693,6 +726,7 @@
               {editable}
               on:rewrite={rewriteResponse}
               on:edit={editMessage}
+              on:related-question={handleMessageRelatedQuestion}
             />
           {:else}
             <ChatMessage
@@ -703,11 +737,12 @@
               {editable}
               on:rewrite={rewriteResponse}
               on:edit={editMessage}
+              on:related-question={handleMessageRelatedQuestion}
             />
           {/if}
         {/each}
+        
         <!-- sentinel div always at the bottom -->
-
         <div bind:this={bottomEl}></div>
       </div>
 
