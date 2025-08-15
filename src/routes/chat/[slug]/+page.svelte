@@ -739,6 +739,8 @@
               {isStreaming}
               {editable}
               isLatestSystemMessage={index === messages.length - 1}
+              allMessages={messages}
+              onExportPDF={exportToPDF}
               on:rewrite={rewriteResponse}
               on:edit={editMessage}
               on:related-question={handleMessageRelatedQuestion}
@@ -753,6 +755,8 @@
                 isStreaming}
               {editable}
               isLatestSystemMessage={index === messages.length - 1}
+              allMessages={messages}
+              onExportPDF={exportToPDF}
               on:rewrite={rewriteResponse}
               on:edit={editMessage}
               on:related-question={handleMessageRelatedQuestion}
@@ -764,19 +768,7 @@
         <div bind:this={bottomEl}></div>
       </div>
 
-      <!-- Floating PDF Export Button -->
-      {#if messages.length > 1}
-        <button
-          on:click={exportToPDF}
-          class="fixed top-20 right-6 z-10 p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-colors duration-200 flex items-center justify-center group"
-          title="Export chat to PDF"
-        >
-          <Download size={20} />
-          <span class="hidden group-hover:inline-block ml-2 whitespace-nowrap"
-            >Export PDF</span
-          >
-        </button>
-      {/if}
+      <!-- Export button moved to ChatMessage component -->
 
       <div
         class="bg-gray-50 dark:bg-[#2A2E39] fixed absolute bottom-10 sm:bottom-20 left-1/2 transform -translate-x-1/2 block p-3 min-w-[90vw] sm:min-w-0 sm:w-full sm:max-w-3xl border border-gray-300 dark:border-gray-600 shadow rounded-[8px] overflow-hidden"
