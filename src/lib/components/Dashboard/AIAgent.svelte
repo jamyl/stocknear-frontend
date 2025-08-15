@@ -9,17 +9,13 @@
   import { EditorState, Plugin } from "prosemirror-state";
   import { EditorView, Decoration, DecorationSet } from "prosemirror-view";
   import { keymap } from "prosemirror-keymap";
-  import {
-    agentOptions,
-    agentCategory,
-    getCreditFromQuery,
-    defaultChats,
-  } from "$lib/utils";
+  import { agentOptions, agentCategory, getCreditFromQuery } from "$lib/utils";
 
   import { schema } from "prosemirror-schema-basic";
 
   export let data;
   export let form;
+  export let randomChats;
 
   let editorDiv;
   let editorView;
@@ -31,10 +27,6 @@
   let selectedSuggestion = 0;
   let currentQuery = "";
   let isLoading = false;
-
-  const randomChats = defaultChats
-    ?.sort(() => 0.5 - Math.random())
-    ?.slice(0, 4);
 
   let agentNames = agentOptions?.map((item) => item?.name);
 
@@ -401,7 +393,7 @@
                 <DropdownMenu.Trigger asChild let:builder>
                   <Button
                     builders={[builder]}
-                    class="w-full border-gray-300 font-semibold dark:font-normal dark:border-gray-600 border bg-white dark:bg-[#2A2E39] sm:hover:bg-gray-100 dark:sm:hover:bg-primary ease-out  flex flex-row justify-between items-center px-3 py-2  rounded truncate"
+                    class="w-full border-gray-300 font-semibold dark:font-normal dark:border-gray-600 border bg-black  text-white dark:text-black dark:bg-white dark:sm:hover:bg-gray-100  ease-out  flex flex-row justify-between items-center px-3 py-2  rounded truncate"
                   >
                     <span class="truncate">@Agents</span>
                     <svg
@@ -420,6 +412,10 @@
                   </Button>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content
+                  side="bottom"
+                  align="start"
+                  sideOffset={10}
+                  alignOffset={0}
                   class="w-64 h-fit max-h-56 overflow-y-auto scroller"
                 >
                   {#if selectedGroup === "overview"}

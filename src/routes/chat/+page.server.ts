@@ -1,6 +1,8 @@
 import { error, fail, redirect } from "@sveltejs/kit";
 import { validateData } from "$lib/utils";
 import { loginUserSchema, registerUserSchema } from "$lib/schemas";
+  import { defaultChats } from "$lib/utils";
+
 
 export const load = async ({ locals }) => {
   const { pb, user } = locals;
@@ -29,6 +31,10 @@ export const load = async ({ locals }) => {
 
   return {
     getAllChats: await getAllChats(),
+        randomChats: defaultChats
+    ?.sort(() => 0.5 - Math.random())
+    ?.slice(0, 4)
+    
   };
 };
 

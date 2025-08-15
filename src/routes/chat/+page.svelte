@@ -11,7 +11,7 @@
   import { EditorState, Plugin } from "prosemirror-state";
   import { EditorView, Decoration, DecorationSet } from "prosemirror-view";
   import { keymap } from "prosemirror-keymap";
-  import { agentOptions, agentCategory, defaultChats } from "$lib/utils";
+  import { agentOptions, agentCategory } from "$lib/utils";
 
   import { schema } from "prosemirror-schema-basic";
 
@@ -57,9 +57,7 @@
     }
   };
 
-  const randomChats = defaultChats
-    ?.sort(() => 0.5 - Math.random())
-    ?.slice(0, 4);
+  const randomChats = data?.randomChats || [];
   let agentNames = agentOptions?.map((item) => item?.name);
 
   const editorHighlighter = new Plugin({

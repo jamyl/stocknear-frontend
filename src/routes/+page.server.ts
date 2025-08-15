@@ -1,5 +1,4 @@
-import { error, fail, redirect } from "@sveltejs/kit";
-import { allCards} from "$lib/utils";
+import { allCards, defaultChats} from "$lib/utils";
 
 /// Constants
 const CACHE_DURATION = 60 * 1000; // 60 seconds
@@ -105,7 +104,10 @@ export async function load({ locals }) {
 
   return {
     getDashboard: dashboardData,
-    selectedCards: pickRandomCards(allCards, user?.tier)
+    selectedCards: pickRandomCards(allCards, user?.tier),
+      randomChats: defaultChats
+    ?.sort(() => 0.5 - Math.random())
+    ?.slice(0, 4)
   };
 }
 
