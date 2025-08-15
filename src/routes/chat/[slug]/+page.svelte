@@ -3,10 +3,9 @@
 
   import Arrow from "lucide-svelte/icons/arrow-up";
   import Plus from "lucide-svelte/icons/plus";
-  import Download from "lucide-svelte/icons/download";
 
   import { getCreditFromQuery, agentOptions, agentCategory } from "$lib/utils";
-  import { downloadChatPDF } from "$lib/utils/pdfExport";
+  import { downloadChatPDF } from "$lib/pdfExport";
   import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
   import { Button } from "$lib/components/shadcn/button/index.js";
   import { goto } from "$app/navigation";
