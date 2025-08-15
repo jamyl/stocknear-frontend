@@ -23,16 +23,18 @@
     </div>
 
     <!-- Row 1: Tickers side-by-side -->
-    <div class="flex flex-wrap gap-2 mb-4">
-      {#each tickers as ticker}
-        <a
-          href={`/stocks/${ticker}`}
-          class="inline-block badge border-blue-100 dark:border-gray-800 bg-blue-50 dark:bg-primary font-semibold rounded-sm px-2 text-blue-700 dark:text-blue-400"
-        >
-          {ticker}
-        </a>
-      {/each}
-    </div>
+    {#if tickers?.length > 0}
+      <div class="flex flex-wrap gap-2 mb-4">
+        {#each tickers as ticker}
+          <a
+            href={`/stocks/${ticker}`}
+            class="inline-block badge border-blue-100 dark:border-gray-800 bg-blue-50 dark:bg-primary font-semibold rounded-sm px-2 text-blue-700 dark:text-blue-400"
+          >
+            {ticker}
+          </a>
+        {/each}
+      </div>
+    {/if}
 
     <!-- Row 2: Sources side-by-side -->
     <div
@@ -41,7 +43,7 @@
       {#each sources as source}
         <a
           href={source.url || "#"}
-          class="flex items-start gap-3 p-3 rounded-lg bg-gray-100 shadow dark:bg-primary hover:bg-gray-200 dark:hover:bg-secondary transition-all duration-150"
+          class="flex items-start gap-3 p-3 rounded bg-gray-100 shadow dark:bg-primary hover:bg-gray-200 dark:hover:bg-secondary transition-all duration-150"
           class:cursor-pointer={source.url}
           class:cursor-default={!source.url}
         >

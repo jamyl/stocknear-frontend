@@ -664,7 +664,9 @@
           among company executives and key stakeholders.
         </p>
 
-        <div class="w-full flex flex-row justify-between items-center">
+        <div
+          class="w-full flex flex-row justify-between items-center pb-2 pt-3"
+        >
           <h3 class="transactions-count-driver text-xl font-semibold">
             {(rawData?.length || 0)?.toLocaleString("en-US")} Transactions
           </h3>
@@ -726,7 +728,7 @@
         <!-- Chart Section -->
         {#if chartConfig}
           <div
-            class=" border border-gray-300 dark:border-gray-800 rounded mt-2 mb-4"
+            class=" border border-gray-300 dark:border-gray-800 rounded mb-4"
             use:highcharts={chartConfig}
           ></div>
         {/if}
