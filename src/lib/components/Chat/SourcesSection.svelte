@@ -1,49 +1,15 @@
 <script lang="ts">
   export let sources: Array<{
     name: string;
+    description?: string;
     function: string;
     ticker?: string;
     timestamp?: string;
-    type?: string; // Add type to distinguish between stocks and ETFs
+    type?: string;
+    url?: string;
   }> = [];
 
-  // Icon mapping for different source types
-  const getSourceIcon = (sourceName: string): string => {
-    const iconMap: Record<string, string> = {
-      "Balance Sheet": "📊",
-      "Income Statement": "💰",
-      "Cash Flow": "💵",
-      "Financial Ratios": "📈",
-      "Analyst Ratings": "⭐",
-      "Analyst Estimates": "🎯",
-      "Real-Time Market": "📱",
-      "Company News": "📰",
-      "Insider Trading": "🔍",
-      "Options Market": "📉",
-      "Dark Pool": "🌑",
-      Shareholder: "👥",
-      Earnings: "📋",
-      Dividend: "💸",
-      "Financial Score": "🏆",
-      Statistics: "📊",
-      "Key Metrics": "🔑",
-      "Business Metrics": "💼",
-      "Market News": "🌍",
-      "Economic Calendar": "📅",
-      Congressional: "🏛️",
-      "Market Flow": "🌊",
-      "Options Flow": "⚡",
-    };
-
-    for (const [key, icon] of Object.entries(iconMap)) {
-      if (sourceName.toLowerCase().includes(key.toLowerCase())) {
-        return icon;
-      }
-    }
-    return "📄"; // Default icon
-  };
-
-  // Group sources by ticker
+  // Group sources by ticker for better organization
   const groupedSources = sources.reduce(
     (acc, source) => {
       const key = source.ticker || "General";
@@ -59,7 +25,7 @@
 
 {#if sources && sources.length > 0}
   <div
-    class="sources-section mt-6 pt-4 border-t border-gray-200 dark:border-gray-700"
+    class="sources-section mt-6 pt-4 border-t border-gray-300 dark:border-gray-600"
   >
     <div class="flex items-center gap-2 mb-4">
       <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400">
@@ -101,13 +67,16 @@
 
           <div class="space-y-2">
             {#each tickerSources as source, i}
-              <div
-                class="source-item flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/30 hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-all duration-200 cursor-pointer group"
+              <a
+                href={source.url || "#"}
+                class="source-item flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/30 hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-all duration-200 group block"
+                class:cursor-pointer={source.url}
+                class:cursor-default={!source.url}
               >
                 <div
-                  class="source-icon flex-shrink-0 w-8 h-8 rounded-lg bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center text-base group-hover:scale-110 transition-transform"
+                  class="source-number flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-xs font-medium text-blue-600 dark:text-blue-400"
                 >
-                  {getSourceIcon(source.name)}
+                  {i + 1}
                 </div>
 
                 <div class="source-content flex-1 min-w-0">
@@ -119,20 +88,30 @@
                   <p
                     class="source-description text-xs text-gray-500 dark:text-gray-400 mt-0.5"
                   >
-                    Live data from Stocknear
+                    {source.description || "Live data from Stocknear"}
                   </p>
                 </div>
 
-                <div
-                  class="source-number flex-shrink-0 w-5 h-5 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center opacity-50 group-hover:opacity-100 transition-opacity"
-                >
-                  <span
-                    class="text-[10px] font-medium text-gray-600 dark:text-gray-300"
+                {#if source.url}
+                  <div
+                    class="source-link-icon flex-shrink-0 opacity-50 group-hover:opacity-100 transition-opacity"
                   >
-                    {i + 1}
-                  </span>
-                </div>
-              </div>
+                    <svg
+                      class="w-4 h-4 text-gray-400 dark:text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
+                    </svg>
+                  </div>
+                {/if}
+              </a>
             {/each}
           </div>
         </div>
