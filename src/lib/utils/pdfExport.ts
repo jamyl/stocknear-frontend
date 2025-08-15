@@ -82,18 +82,7 @@ export async function exportChatToPDF(messages: Message[], options: ExportOption
   await addHeader(pdf, pageWidth, margin);
   yPosition = 55;
 
-  // Add title if provided
-  if (options.title) {
-    pdf.setFontSize(24);
-    pdf.setFont('helvetica', 'bold');
-    pdf.setTextColor(0, 0, 0);
-    
-    const titleLines = pdf.splitTextToSize(options.title, contentWidth);
-    pdf.text(titleLines, margin, yPosition);
-    yPosition += (titleLines.length * 8) + 10;
-  }
-
-  // Skip timestamp - removed per user request
+  // Title removed per user request - skip timestamp as well
 
   // Process messages
   for (let i = 0; i < messages.length; i++) {
@@ -132,44 +121,47 @@ async function addHeader(pdf: jsPDF, pageWidth: number, margin: number) {
       logoImg.src = '/pwa-192x192.png';
     });
     
-    // Calculate center position for logo and text
+    // Set up sizing and positioning (left-aligned but vertically centered)
     const logoSize = 12;
     pdf.setFontSize(28);
     pdf.setFont('helvetica', 'bold');
-    const textWidth = pdf.getTextWidth('Stocknear');
-    const totalWidth = logoSize + 6 + textWidth; // logo + gap + text
-    const startX = (pageWidth - totalWidth) / 2;
+    pdf.setTextColor(0, 0, 0); // Black color for Stocknear
     
-    // Add centered logo image if loaded successfully
+    // Calculate vertical center alignment
+    const textHeight = 28 * 0.352778; // Convert font size to mm (1 pt = 0.352778 mm)
+    const logoY = margin + (textHeight - logoSize) / 2; // Center logo with text baseline
+    const textY = margin + textHeight * 0.8; // Adjust text baseline for better visual alignment
+    
+    // Add logo image if loaded successfully (vertically centered)
     if (logoImg.complete && logoImg.naturalWidth > 0) {
-      pdf.addImage(logoImg, 'PNG', startX, margin, logoSize, logoSize);
+      pdf.addImage(logoImg, 'PNG', margin, logoY, logoSize, logoSize);
     } else {
       // Fallback: simple blue square
       pdf.setFillColor(59, 130, 246);
-      pdf.rect(startX, margin, logoSize, logoSize, 'F');
+      pdf.rect(margin, logoY, logoSize, logoSize, 'F');
     }
     
-    // Add centered brand name
-    pdf.setTextColor(0, 0, 0); // Black color for Stocknear
-    pdf.text('Stocknear', startX + logoSize + 6, margin + 8);
+    // Add brand name (aligned with logo)
+    pdf.text('Stocknear', margin + logoSize + 6, textY);
     
   } catch (error) {
     console.warn('Error loading logo:', error);
-    // Calculate center position for fallback
+    // Fallback with same alignment
     const logoSize = 12;
     pdf.setFontSize(28);
     pdf.setFont('helvetica', 'bold');
-    const textWidth = pdf.getTextWidth('Stocknear');
-    const totalWidth = logoSize + 6 + textWidth;
-    const startX = (pageWidth - totalWidth) / 2;
+    pdf.setTextColor(0, 0, 0);
+    
+    const textHeight = 28 * 0.352778;
+    const logoY = margin + (textHeight - logoSize) / 2;
+    const textY = margin + textHeight * 0.8;
     
     // Fallback: simple blue square
     pdf.setFillColor(59, 130, 246);
-    pdf.rect(startX, margin, logoSize, logoSize, 'F');
+    pdf.rect(margin, logoY, logoSize, logoSize, 'F');
     
-    // Add centered brand name
-    pdf.setTextColor(0, 0, 0);
-    pdf.text('Stocknear', startX + logoSize + 6, margin + 8);
+    // Add brand name
+    pdf.text('Stocknear', margin + logoSize + 6, textY);
   }
   
   // Add a subtle line under the header
@@ -261,9 +253,7 @@ async function addMessage(
 
 export async function downloadChatPDF(messages: Message[], filename?: string) {
   try {
-    const pdf = await exportChatToPDF(messages, {
-      title: getConversationTitle(messages)
-    });
+    const pdf = await exportChatToPDF(messages, {});
     
     const finalFilename = filename || `stocknear-chat-${new Date().toISOString().split('T')[0]}.pdf`;
     pdf.save(finalFilename);
