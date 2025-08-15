@@ -10,7 +10,7 @@
   import OptionsFlow from "$lib/components/Dashboard/OptionsFlow.svelte";
   import Wiim from "$lib/components/Dashboard/Wiim.svelte";
   import AnalystReport from "$lib/components/Dashboard/AnalystReport.svelte";
-  //import AIAgent from "$lib/components/Dashboard/AIAgent.svelte";
+  import AIAgent from "$lib/components/AIAgent.svelte";
 
   export let data;
   export let form;
@@ -155,11 +155,10 @@
           options data, dark pool orders, news, financials, forecasts, charts
           and more.
         </p>
-        <!--
-        <div class="mx-auto max-w-[95%] md:max-w-[85%]">
+
+        <div class="mx-auto max-w-[95%] md:max-w-[85%] mt-5">
           <AIAgent {data} {form} />
         </div>
-        -->
       </div>
     </div>
 

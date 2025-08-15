@@ -48,7 +48,9 @@
           {/if}
 
           <!-- Sources side-by-side in a grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div
+            class="sources-section grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+          >
             {#each tickerSources as source}
               <a
                 href={source.url || "#"}
