@@ -3,8 +3,10 @@
 
   import Arrow from "lucide-svelte/icons/arrow-up";
   import Plus from "lucide-svelte/icons/plus";
+  import Download from "lucide-svelte/icons/download";
 
   import { getCreditFromQuery, agentOptions, agentCategory } from "$lib/utils";
+  import { downloadChatPDF } from "$lib/utils/pdfExport";
   import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
   import { Button } from "$lib/components/shadcn/button/index.js";
   import { goto } from "$app/navigation";
@@ -38,8 +40,6 @@
   let lastSavedContent = ""; // Track last saved content to avoid redundant saves
   let animationFrameId = null; // For smooth rendering
   let pendingContent = ""; // Buffer for content updates
-  let lastUpdateTime = 0; // Throttle DOM updates
-  const UPDATE_INTERVAL = 16; // ~60fps
 
   let editorDiv;
   let editorView;
@@ -254,6 +254,18 @@
   function handleMessageRelatedQuestion(event) {
     // Handle related question click from ChatMessage component
     handleRelatedQuestionClick(event);
+  }
+
+  async function exportToPDF() {
+    try {
+      const success = await downloadChatPDF(messages);
+      if (!success) {
+        console.error("Failed to export PDF");
+        // You could add a toast notification here
+      }
+    } catch (error) {
+      console.error("Error exporting PDF:", error);
+    }
   }
 
   async function llmChat(userMessage?: string) {
@@ -751,6 +763,20 @@
         <!-- sentinel div always at the bottom -->
         <div bind:this={bottomEl}></div>
       </div>
+
+      <!-- Floating PDF Export Button -->
+      {#if messages.length > 1}
+        <button
+          on:click={exportToPDF}
+          class="fixed top-20 right-6 z-10 p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-colors duration-200 flex items-center justify-center group"
+          title="Export chat to PDF"
+        >
+          <Download size={20} />
+          <span class="hidden group-hover:inline-block ml-2 whitespace-nowrap"
+            >Export PDF</span
+          >
+        </button>
+      {/if}
 
       <div
         class="bg-gray-50 dark:bg-[#2A2E39] fixed absolute bottom-10 sm:bottom-20 left-1/2 transform -translate-x-1/2 block p-3 min-w-[90vw] sm:min-w-0 sm:w-full sm:max-w-3xl border border-gray-300 dark:border-gray-600 shadow rounded-[8px] overflow-hidden"

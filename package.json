@@ -90,7 +90,9 @@
     "@highcharts/svelte": "^1.0.0",
     "@tailwindcss/vite": "^4.1.7",
     "highcharts": "^11.4.3",
+    "html2canvas": "^1.4.1",
     "jsconfig.json": "^2.3.3",
+    "jspdf": "^3.0.1",
     "plotly.js": "^2.35.3",
     "prosemirror-keymap": "^1.2.3",
     "prosemirror-model": "^1.25.1",
@@ -98,6 +100,7 @@
     "prosemirror-state": "^1.4.3",
     "prosemirror-view": "^1.39.3",
     "svelte-plotly.js": "^1.2.0",
+    "turndown": "^7.2.1",
     "ua-parser-js": "^1.0.37"
   },
   "description": "UI of stocknear - Stock Analysis & Community Platform for Small Investors.",
