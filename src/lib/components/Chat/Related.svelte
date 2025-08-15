@@ -29,7 +29,9 @@
             on:click={() => handleQuestionClick(question, index)}
             aria-expanded={expandedQuestions.has(index)}
           >
-            <span class="flex-1 text-sm leading-relaxed font-normal">
+            <span
+              class="flex-1 text-sm sm:text-[1rem] leading-relaxed font-normal"
+            >
               {question}
             </span>
           </button>
