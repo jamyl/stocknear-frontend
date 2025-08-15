@@ -291,6 +291,7 @@
       let assistantText = "";
       let updateBuffer = [];
       let batchTimeout = null;
+      let sourcesCollected = []; // Track sources for this response
 
       isLoading = false;
 
@@ -312,6 +313,17 @@
               console.error("Stream error:", json.error);
               break;
             }
+
+            // Handle sources event
+            if (json?.event === "sources" && json?.sources) {
+              sourcesCollected = json.sources;
+              // Update the message with sources
+              if (messages[idx]) {
+                messages[idx].sources = sourcesCollected;
+                messages = [...messages];
+              }
+            }
+
             if (json?.content) {
               assistantText = json?.content;
               pendingContent = assistantText;

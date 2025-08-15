@@ -7,17 +7,24 @@
   const dispatch = createEventDispatcher();
 
   //import CompareGraph from "$lib/components/Plot/CompareGraph.svelte";
+  import SourcesSection from "$lib/components/Chat/SourcesSection.svelte";
 
   export let message: {
     content: string;
     role: "user" | "system";
     callComponent?: {};
+    sources?: Array<{
+      name: string;
+      function: string;
+      ticker?: string;
+      timestamp?: string;
+    }>;
   };
   export let isLoading = false;
   export let isStreaming = false;
   export let index;
   export let editable;
-  
+
   // Smooth text rendering
   let displayedContent = "";
   let typewriterInterval = null;
@@ -84,16 +91,16 @@
       if (typewriterInterval) {
         clearInterval(typewriterInterval);
       }
-      
+
       // Start smooth rendering
       const charsToAdd = targetContent.length - displayedContent.length;
       const speed = Math.min(10, Math.max(1, Math.floor(charsToAdd / 20))); // Dynamic speed
-      
+
       typewriterInterval = setInterval(() => {
         if (displayedContent.length < targetContent.length) {
           const nextChars = targetContent.slice(
             displayedContent.length,
-            displayedContent.length + speed
+            displayedContent.length + speed,
           );
           displayedContent += nextChars;
         } else {
@@ -112,7 +119,7 @@
   } else if (message?.role === "user") {
     displayedContent = message?.content || "";
   }
-  
+
   onDestroy(() => {
     if (intervalId) clearInterval(intervalId);
     if (typewriterInterval) clearInterval(typewriterInterval);
@@ -255,13 +262,18 @@
             </div>
           {:else}
             <p
-              class="w-full transition-all duration-75 ease-out {message?.role === 'user'
+              class="w-full transition-all duration-75 ease-out {message?.role ===
+              'user'
                 ? 'p-3  border border-gray-200 dark:border-gray-800 rounded-[5px] bg-gray-200 dark:bg-table'
                 : ''}"
             >
-              {@html isStreaming && message?.role === 'system' ? displayedContent : message?.content}
-              {#if isStreaming && message?.role === 'system' && typewriterInterval}
-                <span class="inline-block w-1 h-4 ml-0.5 bg-gray-600 dark:bg-gray-400 animate-pulse"></span>
+              {@html isStreaming && message?.role === "system"
+                ? displayedContent
+                : message?.content}
+              {#if isStreaming && message?.role === "system" && typewriterInterval}
+                <span
+                  class="inline-block w-1 h-4 ml-0.5 bg-gray-600 dark:bg-gray-400 animate-pulse"
+                ></span>
               {/if}
             </p>
           {/if}
@@ -273,6 +285,11 @@
             </div>
           {/if}
           -->
+
+          <!-- Sources Section - Perplexity Style -->
+          {#if message?.sources && message?.sources?.length > 0 && !isStreaming}
+            <SourcesSection sources={message.sources} />
+          {/if}
         </div>
         {#if message?.role === "system"}
           {#if !isStreaming}

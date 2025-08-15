@@ -78,6 +78,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     let fullResponse = "";
     let controllerClosed = false;
     
+    let collectedSources = [];  // Track sources for saving
+    
     const stream = new ReadableStream({
       async start(controller) {
         try {
@@ -94,7 +96,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             
             // Accumulate full response for server-side saving
             try {
-              // Try to parse each chunk as JSON to extract content
+              // Try to parse each chunk as JSON to extract content and sources
               const lines = chunk.split('\n');
               for (const line of lines) {
                 if (line.trim()) {
@@ -102,6 +104,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
                     const parsed = JSON.parse(line);
                     if (parsed.content) {
                       fullResponse = parsed.content; // Keep updating with latest content
+                    }
+                    if (parsed.event === 'sources' && parsed.sources) {
+                      collectedSources = parsed.sources; // Capture sources
                     }
                   } catch (e) {
                     // Ignore parse errors for individual lines
@@ -126,9 +131,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
           // Server-side backup save after streaming completes
           if (fullResponse && fullResponse.trim()) {
             try {
+              const systemMessage: any = { content: fullResponse, role: "system" };
+              // Add sources if collected
+              if (collectedSources && collectedSources.length > 0) {
+                systemMessage.sources = collectedSources;
+              }
+              
               const updatedMessages = [...messages, 
                 { content: query, role: "user" },
-                { content: fullResponse, role: "system" }
+                systemMessage
               ];
               
               await pb?.collection("chat")?.update(chatId, {
