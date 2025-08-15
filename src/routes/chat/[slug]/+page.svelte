@@ -23,7 +23,7 @@
   let messages = data?.getChat?.messages || [
     { content: "Hello! How can I help you today?", role: "system" },
   ];
-  
+
   let relatedQuestions = [];
 
   let chatId = data?.getChat?.id;
@@ -237,18 +237,10 @@
 
   function handleRelatedQuestionClick(event) {
     const { question } = event.detail;
-    // Set the editor text to the clicked question
-    if (editorView) {
-      const tr = editorView.state.tr.insertText(question, 0, editorView.state.doc.content.size);
-      editorView.dispatch(tr);
-      editorView.focus();
-      
-      // Optionally, automatically send the question
-      // Uncomment the next line if you want to auto-send
-      // llmChat(question);
-    }
+    // Automatically send the question to the API
+    llmChat(question);
   }
-  
+
   function handleMessageRelatedQuestion(event) {
     // Handle related question click from ChatMessage component
     handleRelatedQuestionClick(event);
@@ -346,7 +338,7 @@
                 messages = [...messages];
               }
             }
-            
+
             // Handle related questions event
             if (json?.event === "related_questions" && json?.questions) {
               relatedQuestions = json.questions;
@@ -722,8 +714,9 @@
               {message}
               {index}
               isLoading={true}
-              isStreaming={isStreaming}
+              {isStreaming}
               {editable}
+              isLatestSystemMessage={index === messages.length - 1}
               on:rewrite={rewriteResponse}
               on:edit={editMessage}
               on:related-question={handleMessageRelatedQuestion}
@@ -733,15 +726,18 @@
               {message}
               {index}
               isLoading={false}
-              isStreaming={index === messages.length - 1 && message.role === "system" && isStreaming}
+              isStreaming={index === messages.length - 1 &&
+                message.role === "system" &&
+                isStreaming}
               {editable}
+              isLatestSystemMessage={index === messages.length - 1}
               on:rewrite={rewriteResponse}
               on:edit={editMessage}
               on:related-question={handleMessageRelatedQuestion}
             />
           {/if}
         {/each}
-        
+
         <!-- sentinel div always at the bottom -->
         <div bind:this={bottomEl}></div>
       </div>

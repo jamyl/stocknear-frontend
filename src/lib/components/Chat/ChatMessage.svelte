@@ -26,6 +26,7 @@
   export let isStreaming = false;
   export let index;
   export let editable;
+  export let isLatestSystemMessage = false;
 
   // Smooth text rendering
   let displayedContent = "";
@@ -298,8 +299,8 @@
             <SourcesSection sources={message.sources} />
           {/if}
 
-          <!-- Related Questions Section -->
-          {#if message?.relatedQuestions && message?.relatedQuestions?.length > 0 && !isStreaming}
+          <!-- Related Questions Section - Only show for latest system message -->
+          {#if message?.relatedQuestions && message?.relatedQuestions?.length > 0 && !isStreaming && editable && isLatestSystemMessage}
             <Related
               questions={message.relatedQuestions}
               on:question-click={handleRelatedQuestionClick}
