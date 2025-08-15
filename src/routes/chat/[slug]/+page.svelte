@@ -689,7 +689,7 @@
               {message}
               {index}
               isLoading={true}
-              {isStreaming}
+              isStreaming={isStreaming}
               {editable}
               on:rewrite={rewriteResponse}
               on:edit={editMessage}
@@ -699,7 +699,7 @@
               {message}
               {index}
               isLoading={false}
-              {isStreaming}
+              isStreaming={index === messages.length - 1 && message.role === "system" && isStreaming}
               {editable}
               on:rewrite={rewriteResponse}
               on:edit={editMessage}
