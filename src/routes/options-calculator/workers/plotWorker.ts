@@ -303,9 +303,22 @@ for (let i = 1; i < dataPoints.length; i++) {
     // Linear interpolation to estimate the exact crossing point
     const priceDiff = currPrice - prevPrice;
     const profitDiff = currProfitLoss - prevProfitLoss;
-    const ratio = Math.abs(prevProfitLoss) / Math.abs(profitDiff);
-    breakEvenPrice = prevPrice + ratio * priceDiff;
+    
+    // Handle edge case where profit difference is zero or very small
+    if (Math.abs(profitDiff) < 0.0001) {
+        // If the difference is negligible, use the midpoint
+        breakEvenPrice = (prevPrice + currPrice) / 2;
+    } else {
+        const ratio = Math.abs(prevProfitLoss) / Math.abs(profitDiff);
+        breakEvenPrice = prevPrice + ratio * priceDiff;
+    }
     break;
+    }
+    
+    // Special case: check if current point is exactly at breakeven (profit/loss = 0)
+    if (Math.abs(currProfitLoss) < 0.0001) {
+        breakEvenPrice = currPrice;
+        break;
     }
 }
 
@@ -351,7 +364,7 @@ function plotData(userStrategy, currentStockPrice) {
     const maxLegStrike = Math.max(...userStrategy.map((leg) => leg.strike));
     const xMin = 0;
     const xMax = Math.floor(Math.max(currentStockPrice, maxLegStrike) * 3);
-    const step = 10;
+    const step = 1; // Use finer step for more accurate breakeven detection
 
     // Calculate the total premium across all legs
     let totalPremium = userStrategy.reduce((sum, leg) => {
