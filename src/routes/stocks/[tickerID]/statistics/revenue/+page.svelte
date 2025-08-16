@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { displayCompanyName, stockTicker } from "$lib/store";
+  import { displayCompanyName, stockTicker, timeFrame } from "$lib/store";
   import { abbreviateNumber, removeCompanyStrings } from "$lib/utils";
   import SEO from "$lib/components/SEO.svelte";
   import { mode } from "mode-watcher";
   import Tutorial from "$lib/components/Tutorial.svelte";
+  import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
+  import { Button } from "$lib/components/shadcn/button/index.js";
 
   import { goto } from "$app/navigation";
   import highcharts from "$lib/highcharts.ts";
@@ -454,34 +456,107 @@
                 class=" flex flex-col sm:flex-row items-start sm:items-center w-full justify-between"
               >
                 <h2 class="text-xl sm:text-2xl font-bold">Revenue Chart</h2>
-
-                <div
-                  class="inline-flex justify-center w-full rounded sm:w-auto sm:ml-auto"
-                >
-                  <div
-                    class="bg-default text-white dark:bg-secondary w-full min-w-24 sm:w-fit relative flex flex-wrap items-center justify-center rounded p-1 mt-4"
-                  >
-                    {#each plotTabs as item, i}
-                      <button
-                        on:click={() => changeTimePeriod(i)}
-                        class="cursor-pointer group relative z-1 rounded-full w-1/2 min-w-24 md:w-auto px-5 py-1 {timeIdx ===
-                        i
-                          ? 'z-0'
-                          : ''} "
-                      >
-                        {#if timeIdx === i}
-                          <div class="absolute inset-0 rounded bg-[#fff]"></div>
-                        {/if}
-                        <span
-                          class="relative text-sm block font-semibold {timeIdx ===
-                          i
-                            ? 'text-black'
-                            : ''}"
+                <div>
+                  <div class="inline-flex mt-4 sm:mt-0">
+                    <div class="inline-flex rounded-lg shadow-sm">
+                      {#each plotTabs as item, i}
+                        <button
+                          on:click={() => changeTimePeriod(i)}
+                          class="px-4 py-2 text-sm font-medium focus:z-10 focus:outline-none transition-colors duration-50
+                          {i === 0 ? 'rounded-l border' : ''}
+                          {i === plotTabs.length - 1
+                            ? 'rounded-r border-t border-r border-b'
+                            : ''}
+                          {i !== 0 && i !== plotTabs.length - 1
+                            ? 'border-t border-b'
+                            : ''}
+                          {timeIdx === i
+                            ? 'bg-black dark:bg-white text-white dark:text-black'
+                            : 'bg-white  border-gray-300 sm:hover:bg-gray-100 dark:bg-default dark:border-gray-800'}"
                         >
                           {item.title}
-                        </span>
-                      </button>
-                    {/each}
+                        </button>
+                      {/each}
+                    </div>
+                  </div>
+                  <div class="ml-1 relative inline-block">
+                    <DropdownMenu.Root>
+                      <DropdownMenu.Trigger asChild let:builder>
+                        <Button
+                          builders={[builder]}
+                          class="flex-shrink-0  w-full sm:w-fit border border-gray-300 dark:border-gray-800 bg-black sm:hover:bg-default text-white dark:sm:hover:bg-primary ease-out  flex flex-row justify-between items-center px-3 py-1.5  rounded truncate"
+                        >
+                          <span class="truncate">{$timeFrame}</span>
+                          <svg
+                            class="-mr-1 ml-1 h-5 w-5 xs:ml-2 inline-block"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            style="max-width:40px"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                              clip-rule="evenodd"
+                            ></path>
+                          </svg>
+                        </Button>
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Content
+                        side="bottom"
+                        align="end"
+                        sideOffset={10}
+                        alignOffset={0}
+                        class=" h-fit max-h-72 overflow-y-auto scroller"
+                      >
+                        <DropdownMenu.Group>
+                          <DropdownMenu.Item
+                            on:click={() => ($timeFrame = "5Y")}
+                            class="cursor-pointer sm:hover:bg-gray-300 dark:sm:hover:bg-primary"
+                          >
+                            5Y
+                          </DropdownMenu.Item>
+                          <DropdownMenu.Item
+                            on:click={() => ($timeFrame = "10Y")}
+                            class="cursor-pointer sm:hover:bg-gray-300 dark:sm:hover:bg-primary"
+                          >
+                            10Y
+                            <svg
+                              class="{['Pro', 'Plus']?.includes(
+                                data?.user?.tier,
+                              )
+                                ? 'hidden'
+                                : ''} ml-2 w-3.5 h-3.5"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              ><path
+                                fill="currentColor"
+                                d="M17 9V7c0-2.8-2.2-5-5-5S7 4.2 7 7v2c-1.7 0-3 1.3-3 3v7c0 1.7 1.3 3 3 3h10c1.7 0 3-1.3 3-3v-7c0-1.7-1.3-3-3-3M9 7c0-1.7 1.3-3 3-3s3 1.3 3 3v2H9z"
+                              /></svg
+                            >
+                          </DropdownMenu.Item>
+                          <DropdownMenu.Item
+                            on:click={() => ($timeFrame = "MAX")}
+                            class="cursor-pointer sm:hover:bg-gray-300 dark:sm:hover:bg-primary flex flex-row items-center"
+                          >
+                            Max
+                            <svg
+                              class="{['Pro', 'Plus']?.includes(
+                                data?.user?.tier,
+                              )
+                                ? 'hidden'
+                                : ''} ml-2 w-3.5 h-3.5"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              ><path
+                                fill="currentColor"
+                                d="M17 9V7c0-2.8-2.2-5-5-5S7 4.2 7 7v2c-1.7 0-3 1.3-3 3v7c0 1.7 1.3 3 3 3h10c1.7 0 3-1.3 3-3v-7c0-1.7-1.3-3-3-3M9 7c0-1.7 1.3-3 3-3s3 1.3 3 3v2H9z"
+                              /></svg
+                            >
+                          </DropdownMenu.Item>
+                        </DropdownMenu.Group>
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Root>
                   </div>
                 </div>
               </div>
@@ -498,19 +573,23 @@
                   Revenue History
                 </h3>
 
-                <div
-                  class="inline-flex justify-center w-full rounded sm:w-auto sm:ml-auto"
-                >
-                  <div
-                    class="bg-default text-white dark:bg-secondary w-full min-w-24 sm:w-fit relative flex flex-wrap items-center justify-center rounded p-1"
-                  >
+                <div class="inline-flex">
+                  <div class="inline-flex rounded-lg shadow-sm">
                     {#each tabs as item, i}
                       {#if !["Pro", "Plus"]?.includes(data?.user?.tier) && i > 0}
                         <button
                           on:click={() => goto("/pricing")}
-                          class="cursor-pointer group relative z-1 rounded-full w-1/2 min-w-24 md:w-auto px-5 py-1"
+                          class="px-4 py-2 text-sm font-medium focus:z-10 focus:outline-none transition-colors duration-150
+                            {i === 0 ? 'rounded-l-lg border' : ''}
+                            {i === tabs.length - 1
+                            ? 'rounded-r-lg border-t border-r border-b'
+                            : ''}
+                            {i !== 0 && i !== tabs.length - 1
+                            ? 'border-t border-b'
+                            : ''}
+                            bg-white border-gray-200 text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700"
                         >
-                          <span class="relative text-sm block font-semibold">
+                          <span class="whitespace-nowrap">
                             {item.title}
                             <svg
                               class="inline-block ml-0.5 -mt-1 w-3.5 h-3.5"
@@ -526,22 +605,19 @@
                       {:else}
                         <button
                           on:click={() => changeTablePeriod(i)}
-                          class="cursor-pointer group relative z-1 rounded-full w-1/2 min-w-24 md:w-auto px-5 py-1 {activeIdx ===
-                          i
-                            ? 'z-0'
-                            : ''} "
+                          class="px-4 py-2 text-sm font-medium focus:z-10 focus:outline-none transition-colors duration-150
+                            {i === 0 ? 'rounded-l-lg border' : ''}
+                            {i === tabs.length - 1
+                            ? 'rounded-r-lg border-t border-r border-b'
+                            : ''}
+                            {i !== 0 && i !== tabs.length - 1
+                            ? 'border-t border-b'
+                            : ''}
+                            {activeIdx === i
+                            ? 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700'
+                            : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700'}"
                         >
-                          {#if activeIdx === i}
-                            <div
-                              class="absolute inset-0 rounded bg-[#fff]"
-                            ></div>
-                          {/if}
-                          <span
-                            class="relative text-sm block font-semibold whitespace-nowrap {activeIdx ===
-                            i
-                              ? 'text-black'
-                              : ''}"
-                          >
+                          <span class="whitespace-nowrap">
                             {item.title}
                           </span>
                         </button>

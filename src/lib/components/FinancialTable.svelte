@@ -1,11 +1,6 @@
 <script lang="ts">
   import { abbreviateNumber } from "$lib/utils";
-  import {
-    selectedTimePeriod,
-    stockTicker,
-    getCache,
-    setCache,
-  } from "$lib/store";
+  import { stockTicker, getCache, setCache } from "$lib/store";
 
   import { mode } from "mode-watcher";
   import { onMount } from "svelte";
