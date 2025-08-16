@@ -6,7 +6,7 @@
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
 
-  //import CompareGraph from "$lib/components/Plot/CompareGraph.svelte";
+  import TickerGraph from "$lib/components/Plot/TickerGraph.svelte";
   import SourcesSection from "$lib/components/Chat/SourcesSection.svelte";
   import Related from "$lib/components/Chat/Related.svelte";
 
@@ -221,16 +221,21 @@
           : 'mr-auto w-fit border-b rounded-none border-gray-300 dark:border-gray-700'}"
     >
       {#if isLoading}
-        <div class="text-center">
-          <span class="text-sm animate-pulse">
-            {#if loadingTime <= 2}
-              Preparing insights...
-            {:else}
-              {loadingMessages[
-                Math.min(loadingTime - 3, loadingMessages.length - 1)
-              ]}
-            {/if}
-          </span>
+        <div class="flex items-center space-x-2 py-3">
+          <div class="flex space-x-1">
+            <div
+              class="w-2 h-2 bg-gray-500 dark:bg-gray-400 rounded-full animate-pulse"
+              style="animation-delay: 0ms; animation-duration: 1.5s;"
+            ></div>
+            <div
+              class="w-2 h-2 bg-gray-500 dark:bg-gray-400 rounded-full animate-pulse"
+              style="animation-delay: 0.5s; animation-duration: 1.5s;"
+            ></div>
+            <div
+              class="w-2 h-2 bg-gray-500 dark:bg-gray-400 rounded-full animate-pulse"
+              style="animation-delay: 1s; animation-duration: 1.5s;"
+            ></div>
+          </div>
         </div>
       {:else}
         <div class="w-full">
@@ -291,10 +296,14 @@
           <!--
           {#if message?.callComponent?.plot && message?.callComponent?.tickerList?.length > 0}
             <div class="mt-6">
-              <CompareGraph tickerList={message?.callComponent?.tickerList} />
+              <TickerGraph tickerList={message?.callComponent?.tickerList} />
             </div>
           {/if}
           -->
+
+          <div class="mt-6">
+            <TickerGraph tickerList={["NVDA"]} />
+          </div>
 
           <!-- Sources Section - Perplexity Style -->
           {#if message?.sources && message?.sources?.length > 0 && !isStreaming}

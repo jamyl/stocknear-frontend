@@ -492,55 +492,6 @@
             </label>
           {/each}
         </div>
-        <div
-          class="ml-auto w-fit relative inline-block text-left cursor-pointer shadow-xs -mt-2.5"
-        >
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild let:builder>
-              <Button
-                builders={[builder]}
-                class="w-full min-w-30 border-gray-300 font-semibold dark:font-normal dark:border-gray-600 border bg-white dark:bg-default sm:hover:bg-gray-100 dark:sm:hover:bg-primary ease-out  flex flex-row justify-between items-center px-2 py-1 h-9 rounded truncate"
-              >
-                <span class="truncate text-sm"
-                  >{selectedPlotCategory?.name}</span
-                >
-                <svg
-                  class="-mr-1 ml-3 h-5 w-5 xs:ml-2 inline-block"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  style="max-width:40px"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    clip-rule="evenodd"
-                  ></path>
-                </svg>
-              </Button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content
-              side="bottom"
-              align="end"
-              sideOffset={10}
-              alignOffset={0}
-              class="w-full max-w-80 sm:w-64 h-fit max-h-72 overflow-y-auto scroller"
-            >
-              <DropdownMenu.Group>
-                {#each categoryList as item}
-                  <DropdownMenu.Item
-                    on:click={() => changeCategory(item)}
-                    class="{selectedPlotCategory?.name === item?.name
-                      ? 'dark:bg-gray-300 dark:bg-primary'
-                      : ''} cursor-pointer sm:hover:bg-gray-300 dark:sm:hover:bg-primary"
-                  >
-                    {item?.name}
-                  </DropdownMenu.Item>
-                {/each}
-              </DropdownMenu.Group>
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
-        </div>
       </div>
       <div
         class="shadow-xs border border-gray-300 dark:border-gray-800 rounded w-full h-[300px] sm:h-[400px]"

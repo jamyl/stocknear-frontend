@@ -956,9 +956,12 @@
                   type="button"
                 >
                   {#if isLoading || isStreaming}
-                    <span
-                      class="loading loading-spinner loading-xs text-center m-auto flex justify-center items-center text-white dark:text-black"
-                    ></span>
+                    <svg class="w-4 h-4 animate-spin text-white dark:text-black" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="31.416" stroke-dashoffset="31.416">
+                        <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite"/>
+                        <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite"/>
+                      </circle>
+                    </svg>
                   {:else}
                     <Arrow
                       class="w-4 h-4 text-center m-auto flex justify-center items-center text-white dark:text-black"
