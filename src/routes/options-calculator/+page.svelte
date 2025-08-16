@@ -960,7 +960,7 @@
                       d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327l4.898.696c.441.062.612.636.282.95l-3.522 3.356l.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"
                     /></svg
                   >
-                  Save Trade
+                  Save Strategy
                 </button>
                 <div
                   class="order-last relative inline-block text-left cursor-pointer mt-3 sm:mt-0 sm:ml-3 shadow-xs"
@@ -994,12 +994,6 @@
                       alignOffset={0}
                       class="w-56 h-fit max-h-72 overflow-y-auto scroller"
                     >
-                      <DropdownMenu.Label
-                        class="text-muted dark:text-gray-400 font-normal"
-                      >
-                        Select Strategy
-                      </DropdownMenu.Label>
-                      <DropdownMenu.Separator />
                       <DropdownMenu.Group>
                         {#each prebuiltStrategy as strategy}
                           <DropdownMenu.Item
@@ -1009,7 +1003,7 @@
                             <span>{strategy.name}</span>
                             {#if strategy?.sentiment}
                               <span
-                                class="ml-2 badge px-2 text-xs rounded-full {strategy.sentiment ===
+                                class="ml-3 border-inherit shadow badge px-2 text-xs rounded-full {strategy.sentiment ===
                                 'Bullish'
                                   ? 'bg-green-100 text-green-800 dark:bg-green-300 dark:text-black'
                                   : strategy?.sentiment === 'Bearish'
@@ -1040,7 +1034,7 @@
                         scope="col"
                         class="px-4 py-1.5 text-left text-sm font-semibold"
                       >
-                        Ticker
+                        Symbol
                       </th>
                       <th
                         scope="col"
@@ -1095,7 +1089,7 @@
                         <td class="px-4 whitespace-nowrap py-2">
                           <label
                             on:click={() => handleAction(index)}
-                            class="badge px-2 select-none rounded {item?.action ===
+                            class="badge px-2 border-none select-none rounded {item?.action ===
                             'Buy'
                               ? 'bg-green-100 text-green-800 dark:bg-green-300 dark:text-muted'
                               : 'bg-red-100 text-red-800 dark:bg-red-300 dark:text-muted'} font-semibold cursor-pointer"
@@ -1205,7 +1199,7 @@
                         <td class="px-4 whitespace-nowrap py-2">
                           <label
                             on:click={() => handleOptionType(index)}
-                            class="select-none badge px-2 rounded bg-blue-100 text-blue-800 dark:bg-blue-300 dark:text-muted font-semibold cursor-pointer"
+                            class="select-none badge px-2 rounded border-none bg-blue-100 text-blue-800 dark:bg-blue-300 dark:text-muted font-semibold cursor-pointer"
                             >{item?.optionType}</label
                           >
                         </td>
