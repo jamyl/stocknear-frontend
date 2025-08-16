@@ -19,6 +19,7 @@
   let rawData = data?.getHistoricalRevenue || {};
   let tableList = [];
 
+  $timeFrame = "5Y";
   const tabs = [
     {
       title: "Annual",
@@ -30,6 +31,23 @@
   let activeIdx = 0;
   let timeIdx = 0;
 
+  function filterByYears(data) {
+    // Find the maximum fiscal year
+    const maxYear = Math.max(...data.map((item) => Number(item.fiscalYear)));
+
+    let yearsToKeep;
+    if ($timeFrame === "MAX") {
+      return data; // Keep everything
+    } else if ($timeFrame.endsWith("Y")) {
+      yearsToKeep = Number($timeFrame?.replace("Y", ""));
+    } else {
+      throw new Error("Invalid $timeFrame format. Use '5Y', '10Y', or 'MAX'.");
+    }
+    return data?.filter(
+      (item) => Number(item.fiscalYear) >= maxYear - yearsToKeep + 1,
+    );
+  }
+
   function formatDate(dateString) {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -37,6 +55,7 @@
       year: "numeric",
       month: "long",
       day: "numeric",
+      timeZone: "UTC", // Ensure consistent formatting regardless of user's timezone
     });
   }
 
@@ -51,7 +70,6 @@
 
   function changeTablePeriod(index) {
     activeIdx = index;
-    const rawData = data?.getHistoricalRevenue;
     if (activeIdx === 0) {
       // Clone the array before sorting
       tableList = [...rawData?.annual];
@@ -61,6 +79,8 @@
       tableList.sort((a, b) => new Date(b?.date) - new Date(a?.date));
     }
   }
+
+  tableList = filterByYears(tableList);
 
   async function changeTimePeriod(state) {
     timeIdx = state;
@@ -85,6 +105,7 @@
     } else {
       filteredData = [...rawData?.quarter];
     }
+    filteredData = filterByYears(filteredData);
     // Sort ascending for plotting
     filteredData.sort((a, b) => new Date(a?.date) - new Date(b?.date));
 
@@ -180,7 +201,7 @@
           color: $mode === "light" ? "black" : "white",
           animation: false,
           dataLabels: {
-            enabled: timeIdx === 0 ? true : false,
+            enabled: timeIdx === 0 && $timeFrame === "5Y" ? true : false,
             color: $mode === "light" ? "black" : "white",
             style: {
               fontSize: "13px",
@@ -299,7 +320,7 @@
   ];
 
   $: {
-    if ($mode) {
+    if ($mode || $timeFrame) {
       changeTablePeriod(0);
       changeTimePeriod(0);
     }
@@ -456,13 +477,13 @@
                 class=" flex flex-col sm:flex-row items-start sm:items-center w-full justify-between"
               >
                 <h2 class="text-xl sm:text-2xl font-bold">Revenue Chart</h2>
-                <div>
+                <div class="ml-auto">
                   <div class="inline-flex mt-4 sm:mt-0">
                     <div class="inline-flex rounded-lg shadow-sm">
                       {#each plotTabs as item, i}
                         <button
                           on:click={() => changeTimePeriod(i)}
-                          class="px-4 py-2 text-sm font-medium focus:z-10 focus:outline-none transition-colors duration-50
+                          class="cursor-pointer px-4 py-2 text-sm font-medium focus:z-10 focus:outline-none transition-colors duration-50
                           {i === 0 ? 'rounded-l border' : ''}
                           {i === plotTabs.length - 1
                             ? 'rounded-r border-t border-r border-b'
@@ -573,21 +594,23 @@
                   Revenue History
                 </h3>
 
-                <div class="inline-flex">
+                <div class="inline-flex ml-auto">
                   <div class="inline-flex rounded-lg shadow-sm">
                     {#each tabs as item, i}
                       {#if !["Pro", "Plus"]?.includes(data?.user?.tier) && i > 0}
                         <button
                           on:click={() => goto("/pricing")}
-                          class="px-4 py-2 text-sm font-medium focus:z-10 focus:outline-none transition-colors duration-150
-                            {i === 0 ? 'rounded-l-lg border' : ''}
-                            {i === tabs.length - 1
-                            ? 'rounded-r-lg border-t border-r border-b'
+                          class="cursor-pointer px-4 py-2 text-sm font-medium focus:z-10 focus:outline-none transition-colors duration-50
+                          {i === 0 ? 'rounded-l border' : ''}
+                          {i === tabs.length - 1
+                            ? 'rounded-r border-t border-r border-b'
                             : ''}
-                            {i !== 0 && i !== tabs.length - 1
+                          {i !== 0 && i !== tabs.length - 1
                             ? 'border-t border-b'
                             : ''}
-                            bg-white border-gray-200 text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700"
+                          {activeIdx === i
+                            ? 'bg-black dark:bg-white text-white dark:text-black'
+                            : 'bg-white  border-gray-300 sm:hover:bg-gray-100 dark:bg-default dark:border-gray-800'}"
                         >
                           <span class="whitespace-nowrap">
                             {item.title}
@@ -605,21 +628,19 @@
                       {:else}
                         <button
                           on:click={() => changeTablePeriod(i)}
-                          class="px-4 py-2 text-sm font-medium focus:z-10 focus:outline-none transition-colors duration-150
-                            {i === 0 ? 'rounded-l-lg border' : ''}
-                            {i === tabs.length - 1
-                            ? 'rounded-r-lg border-t border-r border-b'
+                          class="cursor-pointer px-4 py-2 text-sm font-medium focus:z-10 focus:outline-none transition-colors duration-50
+                          {i === 0 ? 'rounded-l border' : ''}
+                          {i === tabs.length - 1
+                            ? 'rounded-r border-t border-r border-b'
                             : ''}
-                            {i !== 0 && i !== tabs.length - 1
+                          {i !== 0 && i !== tabs.length - 1
                             ? 'border-t border-b'
                             : ''}
-                            {activeIdx === i
-                            ? 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700'
-                            : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700'}"
+                          {activeIdx === i
+                            ? 'bg-black dark:bg-white text-white dark:text-black'
+                            : 'bg-white  border-gray-300 sm:hover:bg-gray-100 dark:bg-default dark:border-gray-800'}"
                         >
-                          <span class="whitespace-nowrap">
-                            {item.title}
-                          </span>
+                          {item.title}
                         </button>
                       {/if}
                     {/each}
