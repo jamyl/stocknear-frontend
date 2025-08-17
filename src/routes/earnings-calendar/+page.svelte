@@ -17,6 +17,7 @@
   import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
   import { Button } from "$lib/components/shadcn/button/index.js";
   import CheckMark from "lucide-svelte/icons/check";
+  import { goto } from "$app/navigation";
 
   export let data;
 
@@ -30,10 +31,18 @@
   let releaseTime = "anytime";
 
   const timeOptions = [
-    { value: "anytime", label: "Any Time" },
-    { value: "bmo", label: "Before Open" },
-    { value: "amc", label: "After Close" },
+    { value: "anytime", label: "Any Time", isPremium: false },
+    { value: "bmo", label: "Before Open", isPremium: true },
+    { value: "amc", label: "After Close", isPremium: true },
   ];
+
+  function handleTimeOptionClick(option) {
+    if (option.isPremium && !["Plus", "Pro"]?.includes(data?.user?.tier)) {
+      goto("/pricing");
+    } else {
+      releaseTime = option.value;
+    }
+  }
 
   let timeframe = "Daily"; // "Daily" or "Weekly"
   let expandedItems = {}; // Track expanded state for each stock in weekly view
@@ -457,10 +466,26 @@
                     <DropdownMenu.Group>
                       {#each timeOptions as option}
                         <DropdownMenu.Item
-                          on:click={() => (releaseTime = option.value)}
+                          on:click={() => handleTimeOptionClick(option)}
                           class="cursor-pointer sm:hover:bg-gray-300 dark:sm:hover:bg-primary flex items-center justify-between"
                         >
-                          {option.label}
+                          <span
+                            class="flex items-center justify-between w-full"
+                          >
+                            {option.label}
+                            {#if option.isPremium && !["Plus", "Pro"]?.includes(data?.user?.tier)}
+                              <svg
+                                class=" w-3.5 h-3.5"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  fill="currentColor"
+                                  d="M17 9V7c0-2.8-2.2-5-5-5S7 4.2 7 7v2c-1.7 0-3 1.3-3 3v7c0 1.7 1.3 3 3 3h10c1.7 0 3-1.3 3-3v-7c0-1.7-1.3-3-3-3M9 7c0-1.7 1.3-3 3-3s3 1.3 3 3v2H9z"
+                                />
+                              </svg>
+                            {/if}
+                          </span>
                           {#if releaseTime === option.value}
                             <CheckMark class="w-4 h-4 text-green-800 ml-2" />
                           {/if}
