@@ -14,8 +14,26 @@
 
   export let data;
 
-  let rawData;
+  // Reusable SVG icon paths
+  const arrowIcon =
+    "M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z";
+  const chevronDownIcon =
+    "M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z";
+  const closeIcon = "M18 6L6 18M6 6l12 12";
+  const starIcon =
+    "M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z";
 
+  // Common CSS classes
+  const borderClasses = "border border-gray-300 dark:border-gray-600";
+  const navigationButtonClasses =
+    "h-16 w-48 cursor-pointer border m-auto flex bg-default text-white dark:bg-primary mb-3";
+  const dropdownButtonClasses =
+    "border-gray-300 dark:border-gray-600 border border-gray-300 bg-black sm:hover:bg-default text-white dark:bg-default dark:sm:hover:bg-primary ease-out flex flex-row justify-between items-center px-3 py-2 rounded truncate";
+
+  // Importance levels for dropdown
+  const importanceLevels = [1, 2, 3];
+
+  let rawData;
   let filterList = [];
   let weekdayFiltered = [];
   let weekday = []; // our unordered week data
@@ -31,6 +49,8 @@
   let nextMax = false;
   let searchQuery = "";
   let sortMode = false;
+  let daysOfWeek = [];
+  let formattedWeekday = [];
   $: testList = [];
 
   // Get calendar data from our load function
@@ -59,6 +79,7 @@
   // Create a consolidated derived value for our header and table rendering
   $: displayWeekData = filterList.length === 0 ? weekday : weekdayFiltered;
 
+  // Calculate week boundaries
   const startBoundary = subWeeks(
     startOfWeek(today, { weekStartsOn: 1 }),
     maxWeeksChange,
@@ -67,8 +88,12 @@
     startOfWeek(today, { weekStartsOn: 1 }),
     maxWeeksChange,
   );
-  $: previousMax = currentWeek <= startBoundary;
-  $: nextMax = currentWeek >= endBoundary;
+
+  // Consolidated navigation limits reactive statement
+  $: {
+    previousMax = currentWeek <= startBoundary;
+    nextMax = currentWeek >= endBoundary;
+  }
 
   let currentDate = new Date();
   let selectedWeekday = Math.min((currentDate.getDay() + 6) % 7, 4);
@@ -388,17 +413,14 @@
                   on:click={() => changeWeek("previous")}
                   class="{previousMax
                     ? 'opacity-80'
-                    : ''} hidden sm:flex h-16 w-48 cursor-pointer border m-auto flex bg-default text-white dark:bg-primary border border-gray-300 dark:border-gray-600 mb-3"
+                    : ''} hidden sm:flex {navigationButtonClasses} {borderClasses}"
                 >
                   <svg
                     class="w-6 h-6 m-auto rotate-180"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                   >
-                    <path
-                      fill="currentColor"
-                      d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
-                    />
+                    <path fill="currentColor" d={arrowIcon} />
                   </svg>
                 </label>
                 {#each displayWeekData as day, index (formattedWeekday[index])}
@@ -426,10 +448,7 @@
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                           >
-                            <path
-                              fill="black"
-                              d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
-                            />
+                            <path fill="currentColor" d={arrowIcon} />
                           </svg>
                         </label>
                         <div
@@ -449,10 +468,7 @@
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                           >
-                            <path
-                              fill="black"
-                              d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
-                            />
+                            <path fill="currentColor" d={arrowIcon} />
                           </svg>
                         </label>
                       </div>
@@ -463,17 +479,14 @@
                   on:click={() => changeWeek("next")}
                   class="{nextMax
                     ? 'opacity-80'
-                    : ''} hidden sm:flex h-16 w-48 cursor-pointer border m-auto flex bg-default text-white dark:bg-primary border border-gray-300 dark:border-gray-600 mb-3"
+                    : ''} hidden sm:flex {navigationButtonClasses} {borderClasses}"
                 >
                   <svg
                     class="w-6 h-6 m-auto"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                   >
-                    <path
-                      fill="currentColor"
-                      d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
-                    />
+                    <path fill="currentColor" d={arrowIcon} />
                   </svg>
                 </label>
               </div>
@@ -489,7 +502,7 @@
                     <DropdownMenu.Trigger asChild let:builder>
                       <Button
                         builders={[builder]}
-                        class="border-gray-300 dark:border-gray-600 border border-gray-300 bg-black sm:hover:bg-default text-white dark:bg-default  dark:sm:hover:bg-primary ease-out flex flex-row justify-between items-center px-3 py-2  rounded truncate"
+                        class={dropdownButtonClasses}
                       >
                         <span class="truncate">Filter Country</span>
                         <svg
@@ -501,9 +514,9 @@
                         >
                           <path
                             fill-rule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            d={chevronDownIcon}
                             clip-rule="evenodd"
-                          ></path>
+                          />
                         </svg>
                       </Button>
                     </DropdownMenu.Trigger>
@@ -535,11 +548,12 @@
                               class="w-5 h-5"
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 24 24"
-                              ><path
-                                fill="currentColor"
-                                d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6z"
-                              /></svg
+                              stroke="currentColor"
+                              fill="none"
+                              stroke-width="2"
                             >
+                              <path d={closeIcon} />
+                            </svg>
                           </label>
                         {/if}
                       </div>
@@ -577,7 +591,7 @@
                     <DropdownMenu.Trigger asChild let:builder>
                       <Button
                         builders={[builder]}
-                        class="border-gray-300 dark:border-gray-600 border border-gray-300 bg-black sm:hover:bg-default text-white dark:bg-default  dark:sm:hover:bg-primary ease-out flex flex-row justify-between items-center px-3 py-2  rounded truncate"
+                        class={dropdownButtonClasses}
                       >
                         <span class="truncate">Filter Importance</span>
                         <svg
@@ -589,9 +603,9 @@
                         >
                           <path
                             fill-rule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            d={chevronDownIcon}
                             clip-rule="evenodd"
-                          ></path>
+                          />
                         </svg>
                       </Button>
                     </DropdownMenu.Trigger>
@@ -608,7 +622,7 @@
                         role="menu"
                       ></div>
                       <DropdownMenu.Group>
-                        {#each [1, 2, 3] as i}
+                        {#each importanceLevels as i}
                           <DropdownMenu.Item
                             class="sm:hover:bg-gray-300 dark:sm:hover:bg-primary"
                           >
@@ -632,9 +646,7 @@
                                         fill="currentColor"
                                         viewBox="0 0 22 20"
                                       >
-                                        <path
-                                          d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-                                        />
+                                        <path d={starIcon} />
                                       </svg>
                                     {/each}
                                   {/if}

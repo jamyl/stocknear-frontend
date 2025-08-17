@@ -484,7 +484,9 @@
                             {/if}
                           </span>
                           {#if releaseTime === option.value}
-                            <CheckMark class="w-4 h-4 text-green-800 ml-2" />
+                            <CheckMark
+                              class="w-4 h-4 text-green-800 dark:text-green-400 ml-2"
+                            />
                           {/if}
                         </DropdownMenu.Item>
                       {/each}
