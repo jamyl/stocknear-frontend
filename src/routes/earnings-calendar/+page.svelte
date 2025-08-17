@@ -29,6 +29,12 @@
   const tabs = ["Daily", "Weekly"];
   let releaseTime = "anytime";
 
+  const timeOptions = [
+    { value: "anytime", label: "Any Time" },
+    { value: "bmo", label: "Before Open" },
+    { value: "amc", label: "After Close" },
+  ];
+
   let timeframe = "Daily"; // "Daily" or "Weekly"
   let expandedItems = {}; // Track expanded state for each stock in weekly view
 
@@ -191,17 +197,23 @@
       for (let i = 0; i < earningsCalendar.length; i++) {
         const dayData = earningsCalendar[i].data;
 
-        // Filter out entries with company name "---"
+        // Filter based on release time
+        const filteredData =
+          releaseTime === "anytime"
+            ? dayData
+            : dayData?.filter((item) => item?.release === releaseTime);
 
         // Sort and map the filtered data
-        rawWeekday[i] = dayData?.sort((a, b) => b?.marketCap - a?.marketCap);
+        rawWeekday[i] = filteredData?.sort(
+          (a, b) => b?.marketCap - a?.marketCap,
+        );
       }
       weekday = rawWeekday;
     }
   }
 
   $: {
-    if (earningsCalendar) {
+    if (earningsCalendar && releaseTime) {
       earningsCalendar = daysOfWeek?.map((day) => {
         return {
           name: day.name,
@@ -216,10 +228,16 @@
         for (let i = 0; i < earningsCalendar.length; i++) {
           const dayData = earningsCalendar[i].data;
 
-          // Filter out entries with company name "---"
+          // Filter based on release time
+          const filteredData =
+            releaseTime === "anytime"
+              ? dayData
+              : dayData?.filter((item) => item?.release === releaseTime);
 
           // Sort and map the filtered data
-          rawWeekday[i] = dayData?.sort((a, b) => b?.marketCap - a?.marketCap);
+          rawWeekday[i] = filteredData?.sort(
+            (a, b) => b?.marketCap - a?.marketCap,
+          );
         }
         weekday = rawWeekday;
       }
@@ -437,27 +455,17 @@
                     class=" h-fit max-h-72 overflow-y-auto scroller"
                   >
                     <DropdownMenu.Group>
-                      <DropdownMenu.Item
-                        on:click={() => (releaseTime = "anytime")}
-                        class="cursor-pointer sm:hover:bg-gray-300 dark:sm:hover:bg-primary flex items-center justify-between"
-                      >
-                        Any Time
-                        {#if releaseTime === "anytime"}
-                          <CheckMark class="w-4 h-4 text-green-800 ml-2" />
-                        {/if}
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item
-                        on:click={() => (releaseTime = "bmo")}
-                        class="cursor-pointer sm:hover:bg-gray-300 dark:sm:hover:bg-primary"
-                      >
-                        Before Open
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item
-                        on:click={() => (releaseTime = "amc")}
-                        class="cursor-pointer sm:hover:bg-gray-300 dark:sm:hover:bg-primary"
-                      >
-                        After Close
-                      </DropdownMenu.Item>
+                      {#each timeOptions as option}
+                        <DropdownMenu.Item
+                          on:click={() => (releaseTime = option.value)}
+                          class="cursor-pointer sm:hover:bg-gray-300 dark:sm:hover:bg-primary flex items-center justify-between"
+                        >
+                          {option.label}
+                          {#if releaseTime === option.value}
+                            <CheckMark class="w-4 h-4 text-green-800 ml-2" />
+                          {/if}
+                        </DropdownMenu.Item>
+                      {/each}
                     </DropdownMenu.Group>
                   </DropdownMenu.Content>
                 </DropdownMenu.Root>
