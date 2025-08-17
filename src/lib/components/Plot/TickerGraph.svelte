@@ -16,7 +16,7 @@
 
   let downloadWorker: Worker | undefined;
 
-  let selectedPlotPeriod = "3Y";
+  let selectedPlotPeriod = "1D";
   let config = null;
   let isLoaded = false;
   let rawGraphData = {};
@@ -140,10 +140,84 @@
     const output = event?.data?.output;
     rawGraphData = output?.graph;
 
+    // Generate dummy data if no data received
+    if (!rawGraphData || Object.keys(rawGraphData).length === 0) {
+      rawGraphData = generateDummyData();
+    }
+
     config = plotData() || null;
 
     isLoaded = true;
   };
+
+  function generateDummyData() {
+    const dummyData = {};
+    const now = new Date();
+
+    tickerList.forEach((ticker, index) => {
+      const basePrice =
+        ticker === "AMD"
+          ? 180
+          : ticker === "NVDA"
+            ? 182
+            : ticker === "INTC"
+              ? 24
+              : ticker === "AAPL"
+                ? 233
+                : 125;
+
+      const history = [];
+      const points =
+        selectedPlotPeriod === "1D"
+          ? 390 // 6.5 hours * 60 minutes
+          : selectedPlotPeriod === "5D"
+            ? 1950 // 5 days * 390 points
+            : selectedPlotPeriod === "1M"
+              ? 22 // 22 trading days
+              : selectedPlotPeriod === "6M"
+                ? 130 // ~6 months of trading days
+                : selectedPlotPeriod === "YTD"
+                  ? 160 // YTD trading days
+                  : selectedPlotPeriod === "1Y"
+                    ? 252 // 1 year trading days
+                    : selectedPlotPeriod === "5Y"
+                      ? 1260
+                      : 2520; // 5 years or more
+
+      for (let i = 0; i < points; i++) {
+        let date;
+        if (selectedPlotPeriod === "1D") {
+          date = new Date(now.getTime() - (points - i) * 60000); // 1 minute intervals
+        } else if (selectedPlotPeriod === "5D") {
+          date = new Date(now.getTime() - (points - i) * 60000); // 1 minute intervals over 5 days
+        } else {
+          date = new Date(now.getTime() - (points - i) * 24 * 60 * 60 * 1000); // Daily intervals
+        }
+
+        // Generate percentage-based values for comparison view
+        const volatility = 0.02; // 2% daily volatility
+        const randomChange = (Math.random() - 0.5) * volatility;
+        const compoundedChange = Math.pow(1 + randomChange, i);
+
+        // For intraday periods, show percentage change from start of period
+        let value;
+        if (selectedPlotPeriod === "1D" || selectedPlotPeriod === "5D") {
+          value = (compoundedChange - 1) * 100; // Percentage change
+        } else {
+          value = basePrice * compoundedChange; // Absolute price
+        }
+
+        history.push({
+          date: date.toISOString(),
+          value: value,
+        });
+      }
+
+      dummyData[ticker] = { history };
+    });
+
+    return dummyData;
+  }
 
   const colorPairs = [
     { light: "#1E90FF", dark: "#60A5FA" }, // DodgerBlue → SkyBlue
@@ -161,6 +235,12 @@
   function changePlotPeriod(timePeriod) {
     isLoaded = false;
     selectedPlotPeriod = timePeriod;
+
+    // Regenerate dummy data for the new period
+    rawGraphData = generateDummyData();
+    config = plotData() || null;
+    isLoaded = true;
+
     downloadWorker?.postMessage({
       tickerList: tickerList,
       category: selectedPlotCategory,
@@ -182,13 +262,21 @@
     let thresholdDate;
 
     switch (selectedPlotPeriod) {
+      case "1D":
+        thresholdDate = new Date(now);
+        thresholdDate.setDate(now.getDate() - 1);
+        break;
+      case "5D":
+        thresholdDate = new Date(now);
+        thresholdDate.setDate(now.getDate() - 5);
+        break;
       case "1M":
         thresholdDate = new Date(now);
         thresholdDate.setMonth(now.getMonth() - 1);
         break;
-      case "3M":
+      case "6M":
         thresholdDate = new Date(now);
-        thresholdDate.setMonth(now.getMonth() - 3);
+        thresholdDate.setMonth(now.getMonth() - 6);
         break;
       case "YTD":
         thresholdDate = new Date(now.getFullYear(), 0, 1);
@@ -197,15 +285,11 @@
         thresholdDate = new Date(now);
         thresholdDate.setFullYear(now.getFullYear() - 1);
         break;
-      case "3Y":
-        thresholdDate = new Date(now);
-        thresholdDate.setFullYear(now.getFullYear() - 3);
-        break;
       case "5Y":
         thresholdDate = new Date(now);
         thresholdDate.setFullYear(now.getFullYear() - 5);
         break;
-      default: // "Max"
+      default: // "MAX"
         thresholdDate = new Date(0);
     }
 
@@ -396,6 +480,14 @@
           distance: 10,
           formatter() {
             const d = new Date(this.value);
+            if (selectedPlotPeriod === "1D" || selectedPlotPeriod === "5D") {
+              return `<span class="text-xs">${d.toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+                timeZone: "UTC",
+              })}</span>`;
+            }
             return `<span class="text-xs">${d.toLocaleDateString("en-US", {
               year: "2-digit",
               month: "short",
@@ -406,7 +498,8 @@
         tickPositioner() {
           const { min, max } = this.getExtremes();
           const ticks = [];
-          const count = $screenWidth < 640 ? 2 : 5;
+          const count =
+            selectedPlotPeriod === "1D" ? 3 : $screenWidth < 640 ? 2 : 5;
           const interval = Math.floor((max - min) / count);
           for (let i = 0; i <= count; i++) {
             ticks.push(min + i * interval);
@@ -440,18 +533,7 @@
         },
       },
       legend: {
-        enabled: true,
-        align: "center", // left side
-        verticalAlign: "bottom", // top edge
-        layout: "horizontal",
-        squareSymbol: false, // use our rectangle shape
-        symbolWidth: 20,
-        symbolHeight: 12,
-        symbolRadius: 0,
-
-        itemStyle: {
-          color: $mode === "light" ? "black" : "white",
-        },
+        enabled: false,
       },
 
       series,
@@ -459,6 +541,13 @@
   }
 
   onMount(async () => {
+    // Load dummy data immediately for demo
+    if (tickerList?.length > 0) {
+      rawGraphData = generateDummyData();
+      config = plotData() || null;
+      isLoaded = true;
+    }
+
     if (!downloadWorker) {
       const DownloadWorker = await import(
         "$lib/workers/downloadCompareWorker?worker"
@@ -481,7 +570,7 @@
         class="w-full relative mt-2 mb-2 flex flex-col sm:flex-row items-start sm:items-center justify-between z-10"
       >
         <div class="flex w-fit space-x-2">
-          {#each ["1Y", "3Y", "5Y", "Max"] as item}
+          {#each ["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"] as item}
             <label
               on:click={() => changePlotPeriod(item)}
               class="px-2 sm:px-3 py-1 {selectedPlotPeriod === item
@@ -497,6 +586,151 @@
         class="shadow-xs border border-gray-300 dark:border-gray-800 rounded w-full h-[300px] sm:h-[400px]"
         use:highcharts={config}
       ></div>
+
+      <!-- Stock Metric Cards -->
+      {#if tickerList?.length > 0}
+        <div class="mt-6 space-y-4">
+          {#each tickerList as ticker, index}
+            {@const colorPair = colorPairs[index % colorPairs?.length]}
+            {@const tickerColor =
+              $mode === "light" ? colorPair?.light : colorPair?.dark}
+            <div
+              class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+            >
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center space-x-2">
+                  <div
+                    class="w-1 h-6 rounded"
+                    style="background-color: {tickerColor}"
+                  ></div>
+                  <h3
+                    class="text-lg font-semibold text-gray-900 dark:text-white"
+                  >
+                    {ticker}
+                  </h3>
+                </div>
+                <div class="text-sm text-gray-500 dark:text-gray-400 ml-auto">
+                  15/08/2025
+                </div>
+              </div>
+
+              <div
+                class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm"
+              >
+                <div>
+                  <div class="text-gray-500 dark:text-gray-400">Prev Close</div>
+                  <div class="font-medium text-gray-900 dark:text-white">
+                    {#if ticker === "AMD"}$180.95
+                    {:else if ticker === "NVDA"}$182.02
+                    {:else if ticker === "INTC"}$23.86
+                    {:else if ticker === "AAPL"}$232.78
+                    {:else}$125.50
+                    {/if}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-gray-500 dark:text-gray-400">Open</div>
+                  <div class="font-medium text-gray-900 dark:text-white">
+                    {#if ticker === "AMD"}$180.06
+                    {:else if ticker === "NVDA"}$181.88
+                    {:else if ticker === "INTC"}$25.00
+                    {:else if ticker === "AAPL"}$234.00
+                    {:else}$126.25
+                    {/if}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-gray-500 dark:text-gray-400">Day Range</div>
+                  <div class="font-medium text-gray-900 dark:text-white">
+                    {#if ticker === "AMD"}$176.25 - $180.14
+                    {:else if ticker === "NVDA"}$178.04 - $181.90
+                    {:else if ticker === "INTC"}$24.11 - $25.65
+                    {:else if ticker === "AAPL"}$229.34 - $234.28
+                    {:else}$124.50 - $127.80
+                    {/if}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-gray-500 dark:text-gray-400">52W Range</div>
+                  <div class="font-medium text-gray-900 dark:text-white">
+                    {#if ticker === "AMD"}$76.48 - $186.65
+                    {:else if ticker === "NVDA"}$86.62 - $184.48
+                    {:else if ticker === "INTC"}$17.67 - $27.55
+                    {:else if ticker === "AAPL"}$169.21 - $260.10
+                    {:else}$85.20 - $155.40
+                    {/if}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-gray-500 dark:text-gray-400">Volume</div>
+                  <div class="font-medium text-gray-900 dark:text-white">
+                    {#if ticker === "AMD"}51M
+                    {:else if ticker === "NVDA"}150M
+                    {:else if ticker === "INTC"}307M
+                    {:else if ticker === "AAPL"}55M
+                    {:else}25M
+                    {/if}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-gray-500 dark:text-gray-400">P/E Ratio</div>
+                  <div class="font-medium text-gray-900 dark:text-white">
+                    {#if ticker === "AMD"}106.93
+                    {:else if ticker === "NVDA"}58.40
+                    {:else if ticker === "INTC"}-5.15
+                    {:else if ticker === "AAPL"}31.90
+                    {:else}24.50
+                    {/if}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-gray-500 dark:text-gray-400">Market Cap</div>
+                  <div class="font-medium text-gray-900 dark:text-white">
+                    {#if ticker === "AMD"}$288.07B
+                    {:else if ticker === "NVDA"}$4.4T
+                    {:else if ticker === "INTC"}$107.5B
+                    {:else if ticker === "AAPL"}$3.44T
+                    {:else}$150.2B
+                    {/if}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-gray-500 dark:text-gray-400">
+                    Dividend Yield
+                  </div>
+                  <div class="font-medium text-gray-900 dark:text-white">
+                    {#if ticker === "AMD"}—
+                    {:else if ticker === "NVDA"}0.0222%
+                    {:else if ticker === "INTC"}—
+                    {:else if ticker === "AAPL"}0.44%
+                    {:else}1.25%
+                    {/if}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-gray-500 dark:text-gray-400">EPS</div>
+                  <div class="font-medium text-gray-900 dark:text-white">
+                    {#if ticker === "AMD"}$1.66
+                    {:else if ticker === "NVDA"}$3.09
+                    {:else if ticker === "INTC"}-$4.77
+                    {:else if ticker === "AAPL"}$7.26
+                    {:else}$5.15
+                    {/if}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {/each}
+        </div>
+      {/if}
     {:else}
       <div
         class="mt-2 flex justify-center items-center h-96 border border-gray-300 dark:border-gray-800 rounded"
