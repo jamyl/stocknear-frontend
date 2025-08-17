@@ -73,8 +73,8 @@
     return isFinite(change) ? change.toFixed(2) : null;
   }
 
-  let timeframe = "Daily"; // "Daily" or "Weekly" for desktop, "Details" or "Compact" for mobile
-  let expandedItems = {}; // Track expanded state for each stock in weekly view
+  let timeframe = "Weekly";
+  let expandedItems = {};
 
   // Reusable SVG icons
   const arrowIcon =
@@ -435,7 +435,7 @@
                   <DropdownMenu.Trigger asChild let:builder>
                     <Button
                       builders={[builder]}
-                      class="flex-shrink-0 w-fit border border-gray-300 dark:border-gray-800 bg-black sm:hover:bg-default text-white dark:sm:hover:bg-primary ease-out  flex flex-row justify-between items-center px-3 py-1.5  rounded truncate"
+                      class="flex-shrink-0 w-fit border border-gray-300 dark:border-gray-800 bg-black sm:hover:bg-default text-white dark:text-muted dark:bg-white dark:sm:hover:bg-gray-100 ease-out  flex flex-row justify-between items-center px-3 py-1.5  rounded truncate"
                     >
                       <span class="truncate">Time of Day</span>
                       <svg
@@ -508,7 +508,7 @@
                         : ''}
                           {timeframe === item
                         ? 'bg-black dark:bg-white text-white dark:text-black'
-                        : 'bg-white  border-gray-300 sm:hover:bg-gray-100 dark:bg-default dark:border-gray-800'}"
+                        : 'bg-white  border-gray-300 sm:hover:bg-gray-100 dark:bg-default dark:border-gray-600'}"
                     >
                       {item}
                     </button>
@@ -797,7 +797,7 @@
                       {#each weekday as day, index}
                         <div
                           on:click={() => switchToDailyView(index)}
-                          class="text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          class="text-center cursor-pointer"
                         >
                           <div class="font-semibold text-base">
                             {formattedWeekday[index]?.split(",")[0]}, {formattedWeekday[

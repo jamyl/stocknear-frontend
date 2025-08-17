@@ -12,7 +12,6 @@
   import Infobox from "$lib/components/Infobox.svelte";
   import TableHeader from "$lib/components/Table/TableHeader.svelte";
   import SEO from "$lib/components/SEO.svelte";
-  import { mode } from "mode-watcher";
 
   import HoverStockChart from "$lib/components/HoverStockChart.svelte";
 
@@ -597,14 +596,14 @@
                       {#each weekday as day, index}
                         <div
                           on:click={() => switchToDailyView(index)}
-                          class="text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          class="text-center cursor-pointer"
                         >
-                          <div class="font-semibold text-base">
+                          <div class="font-semibold">
                             {formattedWeekday[index]?.split(",")[0]}, {formattedWeekday[
                               index
                             ]?.split(", ")[1]}
                           </div>
-                          <div class="text-sm text-gray-600 dark:text-gray-400">
+                          <div class="text-sm">
                             {day?.length} Dividends
                           </div>
                         </div>
