@@ -25,7 +25,7 @@
   const today = new Date();
   const tabs = ["Daily", "Weekly"];
 
-  let timeframe = "Weekly"; // "Daily" or "Weekly"
+  let timeframe = "Daily"; // "Daily" or "Weekly"
   let expandedItems = {}; // Track expanded state for each stock in weekly view
 
   let formattedMonday = startOfWeek(currentWeek, { weekStartsOn: 1 });
@@ -317,6 +317,12 @@
     // Sort using the generic comparison function
     weekday[selectedWeekday] = [...originalData]?.sort(compareValues);
   };
+
+  $: {
+    if ($screenWidth < 640) {
+      timeframe = "Daily";
+    }
+  }
 </script>
 
 <SEO
@@ -469,11 +475,11 @@
                               : ''} sm:hidden ml-auto"
                           >
                             <svg
-                              class="w-8 h-8 inline-block rotate-180"
+                              class="w-6 h-6 inline-block rotate-180"
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 24 24"
                               ><path
-                                fill="black"
+                                fill="currentColor"
                                 d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
                               /></svg
                             >
@@ -484,9 +490,7 @@
                             <span class="text-[1rem]"
                               >{formattedWeekday[index]}</span
                             >
-                            <span
-                              class="text-[1rem] sm:text-sm m-auto pt-1 pb-1"
-                            >
+                            <span class="text-sm m-auto pt-1 pb-1">
                               {day?.length} Earnings</span
                             >
                           </div>
@@ -497,11 +501,11 @@
                               : ''} sm:hidden mr-auto"
                           >
                             <svg
-                              class="w-8 h-8 inline-block"
+                              class="w-7 h-7 inline-block"
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 24 24"
                               ><path
-                                fill="black"
+                                fill="currentColor"
                                 d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
                               /></svg
                             >
@@ -729,7 +733,7 @@
                   <div class="flex-1">
                     <!-- Header Row -->
                     <div
-                      class="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4 border border-gray-300 dark:border-gray-800 p-3"
+                      class="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4 border border-gray-300 dark:border-gray-800 p-3 h-18"
                     >
                       {#each weekday as day, index}
                         <div
