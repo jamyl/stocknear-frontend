@@ -16,14 +16,33 @@
 
   $: isGamma = title === "Gamma";
 
-  // Calculate DTE (Days to Expiration) for each date
+  // Calculate DTE (Days to Expiration) for each date, excluding weekends
   function calculateDTE(dateStr) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const expiryDate = new Date(dateStr + "T00:00:00Z");
-    const diffTime = expiryDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+
+    // If expiry is before today, return negative days (counting business days)
+    if (expiryDate < today) {
+      const diffTime = expiryDate - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays;
+    }
+
+    // Count business days between today and expiry
+    let businessDays = 0;
+    let currentDate = new Date(today);
+
+    while (currentDate < expiryDate) {
+      currentDate.setDate(currentDate.getDate() + 1);
+      const dayOfWeek = currentDate.getDay();
+      // 0 = Sunday, 6 = Saturday
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        businessDays++;
+      }
+    }
+
+    return businessDays;
   }
 
   // Create DTE-based options
