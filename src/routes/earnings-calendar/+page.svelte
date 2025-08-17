@@ -433,12 +433,12 @@
             >
               <h1 class="text-2xl sm:text-3xl font-bold">Earnings Calendar</h1>
 
-              <div class="inline-flex ml-auto">
+              <div class="inline-flex sm:ml-auto">
                 <DropdownMenu.Root>
                   <DropdownMenu.Trigger asChild let:builder>
                     <Button
                       builders={[builder]}
-                      class="flex-shrink-0  w-full sm:w-fit border border-gray-300 dark:border-gray-800 bg-black sm:hover:bg-default text-white dark:sm:hover:bg-primary ease-out  flex flex-row justify-between items-center px-3 py-1.5  rounded truncate"
+                      class="flex-shrink-0 w-fit border border-gray-300 dark:border-gray-800 bg-black sm:hover:bg-default text-white dark:sm:hover:bg-primary ease-out  flex flex-row justify-between items-center px-3 py-1.5  rounded truncate"
                     >
                       <span class="truncate">Time of Day</span>
                       <svg
