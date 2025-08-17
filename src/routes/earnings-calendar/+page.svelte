@@ -14,6 +14,9 @@
   import Infobox from "$lib/components/Infobox.svelte";
   import SEO from "$lib/components/SEO.svelte";
   import { mode } from "mode-watcher";
+  import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
+  import { Button } from "$lib/components/shadcn/button/index.js";
+  import CheckMark from "lucide-svelte/icons/check";
 
   export let data;
 
@@ -24,6 +27,7 @@
   let nextMax = false;
   const today = new Date();
   const tabs = ["Daily", "Weekly"];
+  let releaseTime = "anytime";
 
   let timeframe = "Daily"; // "Daily" or "Weekly"
   let expandedItems = {}; // Track expanded state for each stock in weekly view
@@ -403,11 +407,66 @@
               <h1 class="text-2xl sm:text-3xl font-bold">Earnings Calendar</h1>
 
               <div class="inline-flex ml-auto">
-                <div class="inline-flex rounded-lg shadow-sm">
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger asChild let:builder>
+                    <Button
+                      builders={[builder]}
+                      class="flex-shrink-0  w-full sm:w-fit border border-gray-300 dark:border-gray-800 bg-black sm:hover:bg-default text-white dark:sm:hover:bg-primary ease-out  flex flex-row justify-between items-center px-3 py-1.5  rounded truncate"
+                    >
+                      <span class="truncate">Time of Day</span>
+                      <svg
+                        class="-mr-1 ml-1 h-5 w-5 xs:ml-2 inline-block"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        style="max-width:40px"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                          clip-rule="evenodd"
+                        ></path>
+                      </svg>
+                    </Button>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content
+                    side="bottom"
+                    align="end"
+                    sideOffset={10}
+                    alignOffset={0}
+                    class=" h-fit max-h-72 overflow-y-auto scroller"
+                  >
+                    <DropdownMenu.Group>
+                      <DropdownMenu.Item
+                        on:click={() => (releaseTime = "anytime")}
+                        class="cursor-pointer sm:hover:bg-gray-300 dark:sm:hover:bg-primary flex items-center justify-between"
+                      >
+                        Any Time
+                        {#if releaseTime === "anytime"}
+                          <CheckMark class="w-4 h-4 text-green-800 ml-2" />
+                        {/if}
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        on:click={() => (releaseTime = "bmo")}
+                        class="cursor-pointer sm:hover:bg-gray-300 dark:sm:hover:bg-primary"
+                      >
+                        Before Open
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        on:click={() => (releaseTime = "amc")}
+                        class="cursor-pointer sm:hover:bg-gray-300 dark:sm:hover:bg-primary"
+                      >
+                        After Close
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Group>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
+
+                <div class="inline-flex rounded ml-1.5 shadow-sm">
                   {#each tabs as item, i}
                     <button
                       on:click={() => (timeframe = item)}
-                      class="cursor-pointer px-4 py-2 text-sm font-medium focus:z-10 focus:outline-none transition-colors duration-50
+                      class="cursor-pointer px-4 py-1.5 text-sm font-medium focus:z-10 focus:outline-none transition-colors duration-50
                           {i === 0 ? 'rounded-l border' : ''}
                           {i === tabs.length - 1
                         ? 'rounded-r border-t border-r border-b'
