@@ -23,6 +23,10 @@
   let previousMax = false;
   let nextMax = false;
   const today = new Date();
+  const tabs = ["Daily", "Weekly"];
+
+  let timeframe = "Daily"; // "Daily" or "Weekly"
+  let expandedItems = {}; // Track expanded state for each stock in weekly view
 
   let formattedMonday = startOfWeek(currentWeek, { weekStartsOn: 1 });
   let formattedTuesday = format(addDays(formattedMonday, 1), "EEE, MMM d");
@@ -76,6 +80,16 @@
     if ($screenWidth > 640) {
       selectedWeekday = index;
     }
+  }
+
+  function toggleExpanded(dayIndex, itemIndex) {
+    const key = `${dayIndex}-${itemIndex}`;
+    expandedItems[key] = !expandedItems[key];
+  }
+
+  function switchToDailyView(dayIndex) {
+    timeframe = "Daily";
+    selectedWeekday = dayIndex;
   }
 
   function clickWeekday(state, index) {
@@ -377,285 +391,621 @@
       >
         <main class="w-full lg:pr-5">
           <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px]">
-            <h1 class="mb-1 text-2xl sm:text-3xl font-bold">
-              Earnings Calendar
-            </h1>
+            <div
+              class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2"
+            >
+              <h1 class="text-2xl sm:text-3xl font-bold">Earnings Calendar</h1>
+
+              <div class="inline-flex ml-auto">
+                <div class="inline-flex rounded-lg shadow-sm">
+                  {#each tabs as item, i}
+                    <button
+                      on:click={() => (timeframe = item)}
+                      class="cursor-pointer px-4 py-2 text-sm font-medium focus:z-10 focus:outline-none transition-colors duration-50
+                          {i === 0 ? 'rounded-l border' : ''}
+                          {i === tabs.length - 1
+                        ? 'rounded-r border-t border-r border-b'
+                        : ''}
+                          {i !== 0 && i !== tabs.length - 1
+                        ? 'border-t border-b'
+                        : ''}
+                          {timeframe === item
+                        ? 'bg-black dark:bg-white text-white dark:text-black'
+                        : 'bg-white  border-gray-300 sm:hover:bg-gray-100 dark:bg-default dark:border-gray-800'}"
+                    >
+                      {item}
+                    </button>
+                  {/each}
+                </div>
+              </div>
+            </div>
           </div>
           <!-- Page wrapper -->
           <div class="flex justify-center w-full m-auto h-full overflow-hidden">
             <!-- Content area -->
             <div class="w-full overflow-x-auto">
-              <!-- Cards -->
-              <div
-                class=" w-full flex flex-row justify-center m-auto items-center"
-              >
-                <!-- Start Columns -->
-                <label
-                  on:click={() => changeWeek("previous")}
-                  class="{previousMax
-                    ? 'opacity-80'
-                    : ''} hidden sm:flex h-16 w-48 cursor-pointer border m-auto flex bg-default text-white dark:bg-primary border border-gray-300 dark:border-gray-600 mb-3"
+              {#if timeframe === "Daily"}
+                <!-- Daily View -->
+                <div
+                  class=" w-full flex flex-row justify-center m-auto items-center"
                 >
-                  <svg
-                    class="w-6 h-6 m-auto rotate-180"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    ><path
-                      fill="currentColor"
-                      d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
-                    /></svg
+                  <!-- Start Columns -->
+                  <label
+                    on:click={() => changeWeek("previous")}
+                    class="{previousMax
+                      ? 'opacity-80'
+                      : ''} hidden sm:flex h-16 w-48 cursor-pointer border m-auto flex bg-default text-white dark:bg-primary border border-gray-300 dark:border-gray-600 mb-3"
                   >
-                </label>
-                {#each weekday as day, index}
-                  <div
-                    class="w-full {index === selectedWeekday
-                      ? ''
-                      : 'hidden sm:block'}"
-                  >
-                    <label
-                      on:click={() => toggleDate(index)}
-                      class=" m-auto w-full cursor-pointer h-16 {index ===
-                      selectedWeekday
-                        ? 'bg-default text-white dark:bg-white dark:text-black font-semibold'
-                        : ''} rounded sm:rounded-none flex dark:bg-default border border-gray-300 dark:border-gray-600 mb-3"
+                    <svg
+                      class="w-6 h-6 m-auto rotate-180"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      ><path
+                        fill="currentColor"
+                        d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
+                      /></svg
                     >
-                      <div
-                        class=" flex flex-row justify-center items-center w-full"
+                  </label>
+                  {#each weekday as day, index}
+                    <div
+                      class="w-full {index === selectedWeekday
+                        ? ''
+                        : 'hidden sm:block'}"
+                    >
+                      <label
+                        on:click={() => toggleDate(index)}
+                        class=" m-auto w-full cursor-pointer h-16 {index ===
+                        selectedWeekday
+                          ? 'bg-default text-white dark:bg-white dark:text-black font-semibold'
+                          : ''} rounded sm:rounded-none flex dark:bg-default border border-gray-300 dark:border-gray-600 mb-3"
                       >
-                        <label
-                          on:click={() => clickWeekday("previous", index)}
-                          class="{previousMax === true && index === 0
-                            ? 'opacity-20'
-                            : ''} sm:hidden ml-auto"
-                        >
-                          <svg
-                            class="w-8 h-8 inline-block rotate-180"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            ><path
-                              fill="black"
-                              d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
-                            /></svg
-                          >
-                        </label>
                         <div
-                          class="flex flex-col items-center truncate m-auto p-1"
+                          class=" flex flex-row justify-center items-center w-full"
                         >
-                          <span class="text-[1rem]"
-                            >{formattedWeekday[index]}</span
+                          <label
+                            on:click={() => clickWeekday("previous", index)}
+                            class="{previousMax === true && index === 0
+                              ? 'opacity-20'
+                              : ''} sm:hidden ml-auto"
                           >
-                          <span class="text-[1rem] sm:text-sm m-auto pt-1 pb-1">
-                            {day?.length} Earnings</span
-                          >
-                        </div>
-                        <label
-                          on:click={() => clickWeekday("next", index)}
-                          class="{nextMax === true && index === 4
-                            ? 'opacity-20'
-                            : ''} sm:hidden mr-auto"
-                        >
-                          <svg
-                            class="w-8 h-8 inline-block"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            ><path
-                              fill="black"
-                              d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
-                            /></svg
-                          >
-                        </label>
-                      </div>
-                    </label>
-                  </div>
-                {/each}
-                <label
-                  on:click={() => changeWeek("next")}
-                  class="{nextMax
-                    ? 'opacity-80'
-                    : ''} hidden sm:flex h-16 w-48 cursor-pointer border m-auto flex bg-default text-white dark:bg-primary border border-gray-300 dark:border-gray-600 mb-3"
-                >
-                  <svg
-                    class="w-6 h-6 m-auto"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    ><path
-                      fill="currentColor"
-                      d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
-                    /></svg
-                  >
-                </label>
-              </div>
-
-              {#each weekday as day, index}
-                {#if index === selectedWeekday}
-                  {#if day?.length !== 0}
-                    <h2 class="font-semibold text-xl mt-5">
-                      {formattedWeekday[index]?.split(", ")[1]} · {day?.length} Earnings
-                    </h2>
-
-                    <div class="w-full overflow-x-auto no-scrollbar">
-                      <table
-                        class="table table-sm table-compact no-scrollbar rounded-none sm:rounded w-full border border-gray-300 dark:border-gray-800 m-auto mt-4"
-                      >
-                        <thead>
-                          <TableHeader {columns} {sortOrders} {sortData} />
-                        </thead>
-                        <tbody>
-                          {#each day as item, index}
-                            <!-- row -->
-                            <tr
-                              class="dark:sm:hover:bg-[#245073]/10 odd:bg-[#F6F7F8] dark:odd:bg-odd"
+                            <svg
+                              class="w-8 h-8 inline-block rotate-180"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              ><path
+                                fill="black"
+                                d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
+                              /></svg
                             >
-                              <td
-                                class="text-blue-400 text-start text-sm sm:text-[1rem]"
+                          </label>
+                          <div
+                            class="flex flex-col items-center truncate m-auto p-1"
+                          >
+                            <span class="text-[1rem]"
+                              >{formattedWeekday[index]}</span
+                            >
+                            <span
+                              class="text-[1rem] sm:text-sm m-auto pt-1 pb-1"
+                            >
+                              {day?.length} Earnings</span
+                            >
+                          </div>
+                          <label
+                            on:click={() => clickWeekday("next", index)}
+                            class="{nextMax === true && index === 4
+                              ? 'opacity-20'
+                              : ''} sm:hidden mr-auto"
+                          >
+                            <svg
+                              class="w-8 h-8 inline-block"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              ><path
+                                fill="black"
+                                d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
+                              /></svg
+                            >
+                          </label>
+                        </div>
+                      </label>
+                    </div>
+                  {/each}
+                  <label
+                    on:click={() => changeWeek("next")}
+                    class="{nextMax
+                      ? 'opacity-80'
+                      : ''} hidden sm:flex h-16 w-48 cursor-pointer border m-auto flex bg-default text-white dark:bg-primary border border-gray-300 dark:border-gray-600 mb-3"
+                  >
+                    <svg
+                      class="w-6 h-6 m-auto"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      ><path
+                        fill="currentColor"
+                        d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
+                      /></svg
+                    >
+                  </label>
+                </div>
+              {/if}
+
+              {#if timeframe === "Daily"}
+                {#each weekday as day, index}
+                  {#if index === selectedWeekday}
+                    {#if day?.length !== 0}
+                      <h2 class="font-semibold text-xl mt-5">
+                        {formattedWeekday[index]?.split(", ")[1]} · {day?.length}
+                        Earnings
+                      </h2>
+
+                      <div class="w-full overflow-x-auto no-scrollbar">
+                        <table
+                          class="table table-sm table-compact no-scrollbar rounded-none sm:rounded w-full border border-gray-300 dark:border-gray-800 m-auto mt-4"
+                        >
+                          <thead>
+                            <TableHeader {columns} {sortOrders} {sortData} />
+                          </thead>
+                          <tbody>
+                            {#each day as item, index}
+                              <!-- row -->
+                              <tr
+                                class="dark:sm:hover:bg-[#245073]/10 odd:bg-[#F6F7F8] dark:odd:bg-odd"
                               >
-                                <HoverStockChart symbol={item?.symbol} />
-                              </td>
-
-                              <td
-                                class=" whitespace-nowrap text-sm sm:text-[1rem]"
-                              >
-                                {item?.name.length > 20
-                                  ? item?.name?.slice(0, 20) + "..."
-                                  : item?.name}
-                              </td>
-
-                              <td class=" text-end text-sm sm:text-[1rem]">
-                                {@html item?.marketCap !== null
-                                  ? abbreviateNumber(
-                                      item?.marketCap,
-                                      false,
-                                      true,
-                                    )
-                                  : "n/a"}
-                              </td>
-
-                              <td class=" text-end text-sm sm:text-[1rem]">
-                                <div
-                                  class="flex flex-row items-center justify-end"
+                                <td
+                                  class="text-blue-400 text-start text-sm sm:text-[1rem]"
                                 >
-                                  <span>
-                                    {@html item?.revenueEst !== null
-                                      ? abbreviateNumber(
-                                          item?.revenueEst,
-                                          false,
-                                          true,
-                                        )
-                                      : "n/a"}
-                                  </span>
-                                  {#if item?.revenueEst !== null && item?.revenuePrior !== null && item?.revenuePrior !== 0}
-                                    {#if !isFinite((item?.revenueEst / item?.revenuePrior - 1) * 100)}
-                                      <span class="ml-1"></span>
-                                    {:else if item?.revenueEst / item?.revenuePrior - 1 >= 0}
-                                      <span
-                                        class="ml-1 text-green-800 dark:text-[#00FC50]"
-                                      >
-                                        +{(
-                                          (item?.revenueEst /
-                                            item?.revenuePrior -
-                                            1) *
-                                          100
-                                        )?.toFixed(2)}%
-                                      </span>
-                                    {:else}
-                                      <span
-                                        class="ml-1 text-red-800 dark:text-[#FF2F1F]"
-                                      >
-                                        {(
-                                          (item?.revenueEst /
-                                            item?.revenuePrior -
-                                            1) *
-                                          100
-                                        )?.toFixed(2)}%
-                                      </span>
-                                    {/if}
-                                  {/if}
-                                </div>
-                              </td>
+                                  <HoverStockChart symbol={item?.symbol} />
+                                </td>
 
-                              <td class=" text-end text-sm sm:text-[1rem]">
-                                <div
-                                  class="flex flex-row items-center justify-end"
+                                <td
+                                  class=" whitespace-nowrap text-sm sm:text-[1rem]"
                                 >
-                                  <span>
-                                    {item?.epsEst !== null
-                                      ? item?.epsEst?.toFixed(2)
-                                      : "n/a"}
-                                  </span>
-                                  {#if item?.epsEst !== null && item?.epsPrior !== null && item?.epsPrior !== 0}
-                                    {#if item?.epsEst / item?.epsPrior - 1 >= 0}
-                                      <span
-                                        class="ml-1 text-green-800 dark:text-[#00FC50]"
-                                      >
-                                        +{(
-                                          (item?.epsEst / item?.epsPrior - 1) *
-                                          100
-                                        )?.toFixed(2)}%
-                                      </span>
-                                    {:else}
-                                      <span
-                                        class="ml-1 text-red-800 dark:text-[#FF2F1F]"
-                                      >
-                                        {(
-                                          (item?.epsEst / item?.epsPrior - 1) *
-                                          100
-                                        )?.toFixed(2)}%
-                                      </span>
-                                    {/if}
-                                  {/if}
-                                </div>
-                              </td>
+                                  {item?.name.length > 20
+                                    ? item?.name?.slice(0, 20) + "..."
+                                    : item?.name}
+                                </td>
 
-                              <td
-                                class=" text-end text-sm sm:text-[1rem] whitespace-nowrap"
-                              >
-                                {#if item?.release === "amc"}
-                                  <svg
-                                    class="w-4 h-4 inline-block mr-1"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 256 256"
-                                    ><path
-                                      fill={$mode === "light"
-                                        ? "#397de9"
-                                        : "#70A1EF"}
-                                      d="M232.13 143.64a6 6 0 0 0-6-1.49a90.07 90.07 0 0 1-112.27-112.3a6 6 0 0 0-7.49-7.48a102.88 102.88 0 0 0-51.89 36.31a102 102 0 0 0 142.84 142.84a102.88 102.88 0 0 0 36.31-51.89a6 6 0 0 0-1.5-5.99m-42 48.29a90 90 0 0 1-126-126a90.9 90.9 0 0 1 35.52-28.27a102.06 102.06 0 0 0 118.69 118.69a90.9 90.9 0 0 1-28.24 35.58Z"
-                                    /></svg
+                                <td class=" text-end text-sm sm:text-[1rem]">
+                                  {@html item?.marketCap !== null
+                                    ? abbreviateNumber(
+                                        item?.marketCap,
+                                        false,
+                                        true,
+                                      )
+                                    : "n/a"}
+                                </td>
+
+                                <td class=" text-end text-sm sm:text-[1rem]">
+                                  <div
+                                    class="flex flex-row items-center justify-end"
                                   >
-                                  After Close
+                                    <span>
+                                      {@html item?.revenueEst !== null
+                                        ? abbreviateNumber(
+                                            item?.revenueEst,
+                                            false,
+                                            true,
+                                          )
+                                        : "n/a"}
+                                    </span>
+                                    {#if item?.revenueEst !== null && item?.revenuePrior !== null && item?.revenuePrior !== 0}
+                                      {#if !isFinite((item?.revenueEst / item?.revenuePrior - 1) * 100)}
+                                        <span class="ml-1"></span>
+                                      {:else if item?.revenueEst / item?.revenuePrior - 1 >= 0}
+                                        <span
+                                          class="ml-1 text-green-800 dark:text-[#00FC50]"
+                                        >
+                                          +{(
+                                            (item?.revenueEst /
+                                              item?.revenuePrior -
+                                              1) *
+                                            100
+                                          )?.toFixed(2)}%
+                                        </span>
+                                      {:else}
+                                        <span
+                                          class="ml-1 text-red-800 dark:text-[#FF2F1F]"
+                                        >
+                                          {(
+                                            (item?.revenueEst /
+                                              item?.revenuePrior -
+                                              1) *
+                                            100
+                                          )?.toFixed(2)}%
+                                        </span>
+                                      {/if}
+                                    {/if}
+                                  </div>
+                                </td>
+
+                                <td class=" text-end text-sm sm:text-[1rem]">
+                                  <div
+                                    class="flex flex-row items-center justify-end"
+                                  >
+                                    <span>
+                                      {item?.epsEst !== null
+                                        ? item?.epsEst?.toFixed(2)
+                                        : "n/a"}
+                                    </span>
+                                    {#if item?.epsEst !== null && item?.epsPrior !== null && item?.epsPrior !== 0}
+                                      {#if item?.epsEst / item?.epsPrior - 1 >= 0}
+                                        <span
+                                          class="ml-1 text-green-800 dark:text-[#00FC50]"
+                                        >
+                                          +{(
+                                            (item?.epsEst / item?.epsPrior -
+                                              1) *
+                                            100
+                                          )?.toFixed(2)}%
+                                        </span>
+                                      {:else}
+                                        <span
+                                          class="ml-1 text-red-800 dark:text-[#FF2F1F]"
+                                        >
+                                          {(
+                                            (item?.epsEst / item?.epsPrior -
+                                              1) *
+                                            100
+                                          )?.toFixed(2)}%
+                                        </span>
+                                      {/if}
+                                    {/if}
+                                  </div>
+                                </td>
+
+                                <td
+                                  class=" text-end text-sm sm:text-[1rem] whitespace-nowrap"
+                                >
+                                  {#if item?.release === "amc"}
+                                    <svg
+                                      class="w-4 h-4 inline-block mr-1"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      viewBox="0 0 256 256"
+                                      ><path
+                                        fill={$mode === "light"
+                                          ? "#397de9"
+                                          : "#70A1EF"}
+                                        d="M232.13 143.64a6 6 0 0 0-6-1.49a90.07 90.07 0 0 1-112.27-112.3a6 6 0 0 0-7.49-7.48a102.88 102.88 0 0 0-51.89 36.31a102 102 0 0 0 142.84 142.84a102.88 102.88 0 0 0 36.31-51.89a6 6 0 0 0-1.5-5.99m-42 48.29a90 90 0 0 1-126-126a90.9 90.9 0 0 1 35.52-28.27a102.06 102.06 0 0 0 118.69 118.69a90.9 90.9 0 0 1-28.24 35.58Z"
+                                      /></svg
+                                    >
+                                    After Close
+                                  {:else}
+                                    <svg
+                                      class="w-4 h-4 inline-block mr-1"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      viewBox="0 0 256 256"
+                                      ><g
+                                        fill={$mode === "light"
+                                          ? "#C39401"
+                                          : "#FEC001"}
+                                        ><path
+                                          d="M184 128a56 56 0 1 1-56-56a56 56 0 0 1 56 56Z"
+                                          opacity=".2"
+                                        /><path
+                                          d="M120 40V16a8 8 0 0 1 16 0v24a8 8 0 0 1-16 0Zm72 88a64 64 0 1 1-64-64a64.07 64.07 0 0 1 64 64Zm-16 0a48 48 0 1 0-48 48a48.05 48.05 0 0 0 48-48ZM58.34 69.66a8 8 0 0 0 11.32-11.32l-16-16a8 8 0 0 0-11.32 11.32Zm0 116.68l-16 16a8 8 0 0 0 11.32 11.32l16-16a8 8 0 0 0-11.32-11.32ZM192 72a8 8 0 0 0 5.66-2.34l16-16a8 8 0 0 0-11.32-11.32l-16 16A8 8 0 0 0 192 72Zm5.66 114.34a8 8 0 0 0-11.32 11.32l16 16a8 8 0 0 0 11.32-11.32ZM48 128a8 8 0 0 0-8-8H16a8 8 0 0 0 0 16h24a8 8 0 0 0 8-8Zm80 80a8 8 0 0 0-8 8v24a8 8 0 0 0 16 0v-24a8 8 0 0 0-8-8Zm112-88h-24a8 8 0 0 0 0 16h24a8 8 0 0 0 0-16Z"
+                                        /></g
+                                      ></svg
+                                    >
+                                    Before Open
+                                  {/if}
+                                </td>
+                              </tr>
+                            {/each}
+                          </tbody>
+                        </table>
+                      </div>
+                    {:else}
+                      <div class="mt-5 mb-3">
+                        <Infobox
+                          text=" No Earnings reports available for the day."
+                        />
+                      </div>
+                    {/if}
+                  {/if}
+                {/each}
+              {:else}
+                <!-- Weekly View Header (reusing Daily header structure) -->
+                <div
+                  class="w-full flex flex-row justify-center m-auto items-center"
+                >
+                  <!-- Previous Week Arrow -->
+                  <label
+                    on:click={() => changeWeek("previous")}
+                    class="{previousMax
+                      ? 'opacity-80'
+                      : ''} hidden sm:flex h-16 w-48 cursor-pointer border m-auto flex bg-default text-white dark:bg-primary border border-gray-300 dark:border-gray-600 mb-3"
+                  >
+                    <svg
+                      class="w-6 h-6 m-auto rotate-180"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
+                      />
+                    </svg>
+                  </label>
+
+                  <!-- Weekday Headers (clickable to switch to Daily) -->
+                  {#each weekday as day, index}
+                    <div class="w-full block">
+                      <label
+                        on:click={() => switchToDailyView(index)}
+                        class="m-auto w-full h-16 rounded sm:rounded-none flex dark:bg-default border border-gray-300 dark:border-gray-600 mb-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        <div
+                          class="flex flex-row justify-center items-center w-full"
+                        >
+                          <div
+                            class="flex flex-col items-center truncate m-auto p-1"
+                          >
+                            <span class="text-[1rem]"
+                              >{formattedWeekday[index]}</span
+                            >
+                            <span
+                              class="text-[1rem] sm:text-sm m-auto pt-1 pb-1"
+                            >
+                              {day?.length} Earnings
+                            </span>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+                  {/each}
+
+                  <!-- Next Week Arrow -->
+                  <label
+                    on:click={() => changeWeek("next")}
+                    class="{nextMax
+                      ? 'opacity-80'
+                      : ''} hidden sm:flex h-16 w-48 cursor-pointer border m-auto flex bg-default text-white dark:bg-primary border border-gray-300 dark:border-gray-600 mb-3"
+                  >
+                    <svg
+                      class="w-6 h-6 m-auto"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
+                      />
+                    </svg>
+                  </label>
+                </div>
+
+                <!-- Weekly Stocks Content -->
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 mt-4">
+                  {#each weekday as day, dayIndex}
+                    <div class="flex flex-col">
+                      <!-- Stocks List -->
+                      <div class="space-y-2">
+                        {#if day?.length > 0}
+                          {#each day as item, itemIndex}
+                            {@const isExpanded =
+                              expandedItems[`${dayIndex}-${itemIndex}`]}
+                            <div
+                              class="w-full rounded border border-gray-300 dark:border-gray-600"
+                            >
+                              <!-- Collapsible Header -->
+                              <div
+                                on:click={() =>
+                                  toggleExpanded(dayIndex, itemIndex)}
+                                class="flex w-full cursor-pointer items-center justify-between px-2 py-1.5"
+                              >
+                                <span class="max-w-[92%] truncate">
+                                  <HoverStockChart symbol={item?.symbol} />
+                                  <span class="truncate"> · {item?.name}</span>
+                                </span>
+                                {#if isExpanded}
+                                  <svg
+                                    class="h-4 w-4"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                  >
+                                    <path
+                                      fill-rule="evenodd"
+                                      d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                      clip-rule="evenodd"
+                                    ></path>
+                                  </svg>
                                 {:else}
                                   <svg
-                                    class="w-4 h-4 inline-block mr-1"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 256 256"
-                                    ><g
-                                      fill={$mode === "light"
-                                        ? "#C39401"
-                                        : "#FEC001"}
-                                      ><path
-                                        d="M184 128a56 56 0 1 1-56-56a56 56 0 0 1 56 56Z"
-                                        opacity=".2"
-                                      /><path
-                                        d="M120 40V16a8 8 0 0 1 16 0v24a8 8 0 0 1-16 0Zm72 88a64 64 0 1 1-64-64a64.07 64.07 0 0 1 64 64Zm-16 0a48 48 0 1 0-48 48a48.05 48.05 0 0 0 48-48ZM58.34 69.66a8 8 0 0 0 11.32-11.32l-16-16a8 8 0 0 0-11.32 11.32Zm0 116.68l-16 16a8 8 0 0 0 11.32 11.32l16-16a8 8 0 0 0-11.32-11.32ZM192 72a8 8 0 0 0 5.66-2.34l16-16a8 8 0 0 0-11.32-11.32l-16 16A8 8 0 0 0 192 72Zm5.66 114.34a8 8 0 0 0-11.32 11.32l16 16a8 8 0 0 0 11.32-11.32ZM48 128a8 8 0 0 0-8-8H16a8 8 0 0 0 0 16h24a8 8 0 0 0 8-8Zm80 80a8 8 0 0 0-8 8v24a8 8 0 0 0 16 0v-24a8 8 0 0 0-8-8Zm112-88h-24a8 8 0 0 0 0 16h24a8 8 0 0 0 0-16Z"
-                                      /></g
-                                    ></svg
+                                    class="h-4 w-4"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
                                   >
-                                  Before Open
+                                    <path
+                                      fill-rule="evenodd"
+                                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                      clip-rule="evenodd"
+                                    ></path>
+                                  </svg>
                                 {/if}
-                              </td>
-                            </tr>
+                              </div>
+
+                              <!-- Expanded Content -->
+                              {#if isExpanded}
+                                <div class="px-2 pb-1 pt-0.5">
+                                  <div
+                                    class="border-t border-gray-300 dark:border-gray-800"
+                                  >
+                                    <table class="w-full text-sm">
+                                      <tbody>
+                                        <tr
+                                          class="border-b border-gray-300 dark:border-gray-800"
+                                        >
+                                          <td class="py-1.5">Reports</td>
+                                          <td class="text-right font-semibold">
+                                            <span
+                                              class="flex items-center justify-end"
+                                            >
+                                              {#if item?.release === "amc"}
+                                                <svg
+                                                  class="h-4 w-4 mr-1"
+                                                  fill="none"
+                                                  viewBox="0 0 24 24"
+                                                  stroke={$mode === "light"
+                                                    ? "#397de9"
+                                                    : "#70A1EF"}
+                                                >
+                                                  <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                                                  ></path>
+                                                </svg>
+                                                After Close
+                                              {:else}
+                                                <svg
+                                                  class="h-4 w-4 mr-1 text-yellow-500"
+                                                  fill="none"
+                                                  viewBox="0 0 24 24"
+                                                  stroke="currentColor"
+                                                >
+                                                  <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                                                  ></path>
+                                                </svg>
+                                                Before Open
+                                              {/if}
+                                            </span>
+                                          </td>
+                                        </tr>
+                                        {#if item?.marketCap !== null}
+                                          <tr
+                                            class="border-b border-gray-300 dark:border-gray-800"
+                                          >
+                                            <td class="py-1.5">Market Cap</td>
+                                            <td class="text-right font-semibold"
+                                              >{@html abbreviateNumber(
+                                                item?.marketCap,
+                                                false,
+                                                true,
+                                              )}</td
+                                            >
+                                          </tr>
+                                        {/if}
+                                        {#if item?.revenueEst !== null}
+                                          <tr
+                                            class="border-b border-gray-300 dark:border-gray-800"
+                                          >
+                                            <td
+                                              class="py-1.5"
+                                              title="Estimated Revenue"
+                                            >
+                                              Revenue <span
+                                                class="hidden md:inline"
+                                                >Est.</span
+                                              ><span class="inline md:hidden"
+                                                >Estimate</span
+                                              >
+                                            </td>
+                                            <td
+                                              class="text-right font-semibold"
+                                            >
+                                              {@html abbreviateNumber(
+                                                item?.revenueEst,
+                                                false,
+                                                true,
+                                              )}
+                                              {#if item?.revenuePrior !== null && item?.revenuePrior !== 0}
+                                                {#if !isFinite((item?.revenueEst / item?.revenuePrior - 1) * 100)}
+                                                  <span></span>
+                                                {:else if item?.revenueEst / item?.revenuePrior - 1 >= 0}
+                                                  <span
+                                                    class="text-green-800 dark:text-green-400"
+                                                  >
+                                                    +{(
+                                                      (item?.revenueEst /
+                                                        item?.revenuePrior -
+                                                        1) *
+                                                      100
+                                                    )?.toFixed(2)}%
+                                                  </span>
+                                                {:else}
+                                                  <span
+                                                    class="text-red-800 dark:text-red-400"
+                                                  >
+                                                    {(
+                                                      (item?.revenueEst /
+                                                        item?.revenuePrior -
+                                                        1) *
+                                                      100
+                                                    )?.toFixed(2)}%
+                                                  </span>
+                                                {/if}
+                                              {/if}
+                                            </td>
+                                          </tr>
+                                        {/if}
+                                        {#if item?.epsEst !== null}
+                                          <tr>
+                                            <td
+                                              class="pb-0.5 pt-1.5"
+                                              title="Estimated EPS"
+                                            >
+                                              EPS <span class="hidden md:inline"
+                                                >Est.</span
+                                              ><span class="inline md:hidden"
+                                                >Estimate</span
+                                              >
+                                            </td>
+                                            <td
+                                              class="text-right font-semibold"
+                                            >
+                                              {item?.epsEst?.toFixed(2)}
+                                              {#if item?.epsPrior !== null && item?.epsPrior !== 0}
+                                                {#if item?.epsEst / item?.epsPrior - 1 >= 0}
+                                                  <span
+                                                    class="text-green-800 dark:text-green-400"
+                                                  >
+                                                    +{(
+                                                      (item?.epsEst /
+                                                        item?.epsPrior -
+                                                        1) *
+                                                      100
+                                                    )?.toFixed(2)}%
+                                                  </span>
+                                                {:else}
+                                                  <span
+                                                    class="text-red-800 dark:text-red-400"
+                                                  >
+                                                    {(
+                                                      (item?.epsEst /
+                                                        item?.epsPrior -
+                                                        1) *
+                                                      100
+                                                    )?.toFixed(2)}%
+                                                  </span>
+                                                {/if}
+                                              {/if}
+                                            </td>
+                                          </tr>
+                                        {/if}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              {/if}
+                            </div>
                           {/each}
-                        </tbody>
-                      </table>
+                        {:else}
+                          <div
+                            class="text-center text-sm text-gray-500 dark:text-gray-400 py-8"
+                          >
+                            No earnings scheduled
+                          </div>
+                        {/if}
+                      </div>
                     </div>
-                  {:else}
-                    <div class="mt-5 mb-3">
-                      <Infobox
-                        text=" No Earnings reports available for the day."
-                      />
-                    </div>
-                  {/if}
-                {/if}
-              {/each}
+                  {/each}
+                </div>
+              {/if}
             </div>
           </div>
         </main>
