@@ -414,7 +414,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/industry"
@@ -426,7 +426,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/market-mover/gainers"
@@ -438,7 +438,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/heatmap"
@@ -450,7 +450,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/list"
@@ -484,7 +484,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/etf/new-launches"
@@ -495,7 +495,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/etf/etf-providers"
@@ -529,7 +529,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/analysts"
@@ -540,7 +540,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/analysts/top-stocks"
@@ -552,7 +552,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/analysts/analyst-flow"
@@ -586,7 +586,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/dividends-calendar"
@@ -597,7 +597,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/earnings-calendar"
@@ -609,7 +609,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/ipos"
@@ -621,7 +621,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/economic-calendar"
@@ -633,7 +633,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/economic-indicator"
@@ -646,7 +646,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/stock-splits-calendar"
@@ -682,7 +682,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/politicians/flow-data"
@@ -693,7 +693,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/politicians"
@@ -727,7 +727,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/market-flow"
@@ -739,7 +739,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/options-flow"
@@ -750,7 +750,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/dark-pool-flow"
@@ -784,7 +784,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/stock-screener"
@@ -799,7 +799,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/options-screener"
@@ -833,7 +833,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/compare"
@@ -848,7 +848,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/options-calculator"
@@ -864,7 +864,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/potus-tracker"
@@ -880,7 +880,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/insider-tracker"
@@ -896,7 +896,7 @@
                           <Button
                             builders={[builder]}
                             type="submit"
-                            class="w-full bg-gray-100 dark:bg-[#18181B]"
+                            class="w-full bg-gray-100 dark:bg-[#18181B] cursor-pointer"
                           >
                             <a
                               href="/reddit-tracker"

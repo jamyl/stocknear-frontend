@@ -12,6 +12,7 @@
   import Infobox from "$lib/components/Infobox.svelte";
   import TableHeader from "$lib/components/Table/TableHeader.svelte";
   import SEO from "$lib/components/SEO.svelte";
+  import { mode } from "mode-watcher";
 
   import HoverStockChart from "$lib/components/HoverStockChart.svelte";
 
@@ -20,6 +21,10 @@
   // Reusable SVG icon paths
   const arrowIcon =
     "M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z";
+  const chevronUpIcon =
+    "M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z";
+  const chevronDownIcon =
+    "M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z";
 
   // Common CSS classes
   const borderClasses = "border border-gray-300 dark:border-gray-600";
@@ -42,6 +47,25 @@
   let currentDate = new Date();
   let currentWeekday = Math.min((currentDate.getDay() + 6) % 7, 4);
   let selectedWeekday = currentWeekday;
+
+  // Timeframe management
+  let timeframe = "Daily";
+  let expandedItems = {};
+
+  // Tab options
+  const tabs = ["Daily", "Weekly"];
+  const mobileTabs = ["Details", "Compact"];
+
+  function toggleExpanded(dayIndex, itemIndex) {
+    const key = `${dayIndex}-${itemIndex}`;
+    expandedItems[key] = !expandedItems[key];
+    expandedItems = { ...expandedItems };
+  }
+
+  function switchToDailyView(dayIndex) {
+    timeframe = "Daily";
+    selectedWeekday = dayIndex;
+  }
 
   // Consolidated data processing function
   function processDividendData() {
@@ -132,6 +156,17 @@
   // Initialize data on component mount
   $: if (data?.getDividendCalendar) {
     processDividendData();
+  }
+
+  // Handle screen width changes for mobile responsiveness
+  $: if ($screenWidth < 640) {
+    if (timeframe === "Daily" || timeframe === "Weekly") {
+      timeframe = "Details";
+    }
+  } else {
+    if (timeframe === "Details" || timeframe === "Compact") {
+      timeframe = "Daily";
+    }
   }
 
   // Consolidated navigation limits reactive statement
@@ -292,205 +327,670 @@
       >
         <main class="w-full lg:pr-5">
           <div class="mb-6 border-[#2C6288] dark:border-white border-b-[2px]">
-            <h1 class="mb-1 text-2xl sm:text-3xl font-bold">
-              Dividends Calendar
-            </h1>
+            <div
+              class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2"
+            >
+              <h1 class="text-2xl sm:text-3xl font-bold">Dividends Calendar</h1>
+
+              <div class="inline-flex sm:ml-auto">
+                <!-- Tab Selection -->
+                <div
+                  class="inline-flex rounded-md shadow-sm"
+                  role="group"
+                  aria-label="View Options"
+                >
+                  {#each $screenWidth >= 640 ? tabs : mobileTabs as item, i}
+                    <button
+                      on:click={() => (timeframe = item)}
+                      class="cursor-pointer px-4 py-2 text-sm font-medium {i ===
+                      0
+                        ? 'rounded-l-lg border-l border-t border-b'
+                        : ''}
+                        {i ===
+                      ($screenWidth >= 640 ? tabs.length : mobileTabs.length) -
+                        1
+                        ? 'rounded-r border-t border-r border-b'
+                        : ''}
+                        {i !== 0 &&
+                      i !==
+                        ($screenWidth >= 640
+                          ? tabs.length
+                          : mobileTabs.length) -
+                          1
+                        ? 'border-t border-b'
+                        : ''}
+                        {timeframe === item
+                        ? 'bg-black dark:bg-white text-white dark:text-black'
+                        : 'bg-white border-gray-300 sm:hover:bg-gray-100 dark:bg-default dark:border-gray-600'}"
+                    >
+                      {item}
+                    </button>
+                  {/each}
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Page wrapper -->
           <div class="flex justify-center w-full m-auto h-full overflow-hidden">
             <!-- Content area -->
             <div class="w-full overflow-x-auto">
-              <!-- Cards -->
-              <div
-                class=" w-full flex flex-row justify-center m-auto items-center"
-              >
-                <!-- Start Columns -->
-                <label
-                  on:click={() => changeWeek("previous")}
-                  class="{previousMax
-                    ? 'opacity-80'
-                    : ''} hidden sm:flex {navigationButtonClasses} {borderClasses}"
+              {#if timeframe === "Daily" || timeframe === "Details"}
+                <!-- Daily/Details View -->
+                <!-- Cards -->
+                <div
+                  class=" w-full flex flex-row justify-center m-auto items-center"
                 >
-                  <svg
-                    class="w-6 h-6 m-auto rotate-180"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
+                  <!-- Start Columns -->
+                  <label
+                    on:click={() => changeWeek("previous")}
+                    class="{previousMax
+                      ? 'opacity-80'
+                      : ''} hidden sm:flex {navigationButtonClasses} {borderClasses}"
                   >
-                    <path fill="currentColor" d={arrowIcon} />
-                  </svg>
-                </label>
-                {#each weekday as day, index}
-                  <div
-                    class="w-full {index === selectedWeekday
-                      ? ''
-                      : 'hidden sm:block'}"
-                  >
-                    <label
-                      on:click={() => toggleDate(index)}
-                      class=" m-auto w-full cursor-pointer h-16 {index ===
-                      selectedWeekday
-                        ? 'bg-default text-white dark:bg-white dark:text-black font-semibold'
-                        : ''} rounded sm:rounded-none flex dark:bg-default {borderClasses} mb-3"
+                    <svg
+                      class="w-6 h-6 m-auto rotate-180"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
                     >
+                      <path fill="currentColor" d={arrowIcon} />
+                    </svg>
+                  </label>
+                  {#each weekday as day, index}
+                    <div
+                      class="w-full {index === selectedWeekday
+                        ? ''
+                        : 'hidden sm:block'}"
+                    >
+                      <label
+                        on:click={() => toggleDate(index)}
+                        class=" m-auto w-full cursor-pointer h-16 {index ===
+                        selectedWeekday
+                          ? 'bg-default text-white dark:bg-white dark:text-black font-semibold'
+                          : ''} rounded sm:rounded-none flex dark:bg-default {borderClasses} mb-3"
+                      >
+                        <div
+                          class=" flex flex-row justify-center items-center w-full"
+                        >
+                          <label
+                            on:click={() => clickWeekday("previous", index)}
+                            class="{previousMax === true && index === 0
+                              ? 'opacity-20'
+                              : ''} sm:hidden ml-auto"
+                          >
+                            <svg
+                              class="w-8 h-8 inline-block rotate-180"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                            >
+                              <path fill="currentColor" d={arrowIcon} />
+                            </svg>
+                          </label>
+                          <div
+                            class="flex flex-col items-center truncate m-auto p-1"
+                          >
+                            <span class="text-[1rem]"
+                              >{formattedWeekday[index]}</span
+                            >
+                            <span
+                              class="text-[1rem] sm:text-sm m-auto pt-1 pb-1"
+                            >
+                              {day?.length} Dividends</span
+                            >
+                          </div>
+                          <label
+                            on:click={() => clickWeekday("next", index)}
+                            class="{nextMax === true && index === 4
+                              ? 'opacity-20'
+                              : ''} sm:hidden mr-auto"
+                          >
+                            <svg
+                              class="w-8 h-8 inline-block"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                            >
+                              <path fill="currentColor" d={arrowIcon} />
+                            </svg>
+                          </label>
+                        </div>
+                      </label>
+                    </div>
+                  {/each}
+                  <label
+                    on:click={() => changeWeek("next")}
+                    class="{nextMax
+                      ? 'opacity-80'
+                      : ''} hidden sm:flex {navigationButtonClasses} {borderClasses}"
+                  >
+                    <svg
+                      class="w-6 h-6 m-auto"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                    >
+                      <path fill="currentColor" d={arrowIcon} />
+                    </svg>
+                  </label>
+                </div>
+
+                {#each weekday as day, index}
+                  {#if index === selectedWeekday}
+                    {#if day?.length !== 0}
+                      <h2 class="font-semibold text-xl mt-5">
+                        {formattedWeekday[index]?.split(", ")[1]} · {day?.length}
+                        Dividends
+                      </h2>
+
+                      <div class="w-full overflow-x-auto no-scrollbar">
+                        <table
+                          class="table table-sm table-compact no-scrollbar rounded-none sm:rounded w-full {tableBorderClasses} m-auto mt-4"
+                        >
+                          <thead>
+                            <TableHeader {columns} {sortOrders} {sortData} />
+                          </thead>
+                          <tbody>
+                            {#each day as item}
+                              <!-- row -->
+                              <tr
+                                class="dark:sm:hover:bg-[#245073]/10 odd:bg-[#F6F7F8] dark:odd:bg-odd"
+                              >
+                                <td class=" text-sm sm:text-[1rem]">
+                                  <HoverStockChart symbol={item?.symbol} />
+                                </td>
+
+                                <td
+                                  class=" whitespace-nowrap text-sm sm:text-[1rem]"
+                                >
+                                  {item?.name.length > 20
+                                    ? item?.name.slice(0, 20) + "..."
+                                    : item?.name}
+                                </td>
+
+                                <td class=" text-sm text-end sm:text-[1rem]">
+                                  {@html item?.marketCap !== null
+                                    ? abbreviateNumber(
+                                        item?.marketCap,
+                                        false,
+                                        true,
+                                      )
+                                    : "n/a"}
+                                </td>
+
+                                <td class=" text-sm sm:text-[1rem] text-end">
+                                  {item?.revenue !== null
+                                    ? abbreviateNumber(item?.revenue)
+                                    : "n/a"}
+                                </td>
+
+                                <td
+                                  class=" text-center text-sm sm:text-[1rem] text-end"
+                                >
+                                  {item?.adjDividend !== null
+                                    ? item?.adjDividend?.toFixed(3)
+                                    : "n/a"}
+                                </td>
+
+                                <td class=" text-end text-sm sm:text-[1rem]">
+                                  {item?.date !== null
+                                    ? new Date(item?.date)?.toLocaleString(
+                                        "en-US",
+                                        {
+                                          month: "short",
+                                          day: "numeric",
+                                          year: "numeric",
+                                          daySuffix: "2-digit",
+                                          timeZone: "UTC",
+                                        },
+                                      )
+                                    : "n/a"}
+                                </td>
+
+                                <td class=" text-end text-sm sm:text-[1rem]">
+                                  {item?.paymentDate !== null
+                                    ? new Date(
+                                        item?.paymentDate,
+                                      )?.toLocaleString("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                        year: "numeric",
+                                        daySuffix: "2-digit",
+                                        timeZone: "UTC",
+                                      })
+                                    : "n/a"}
+                                </td>
+                              </tr>
+                            {/each}
+                          </tbody>
+                        </table>
+                      </div>
+                    {:else}
+                      <div class="mt-5">
+                        <Infobox text="No Dividends available for the day." />
+                      </div>
+                    {/if}
+                  {/if}
+                {/each}
+              {:else if timeframe === "Weekly"}
+                <!-- Weekly View Container -->
+                <div class="flex items-start">
+                  <!-- Previous Week Arrow -->
+                  <label
+                    on:click={() => changeWeek("previous")}
+                    class="{previousMax
+                      ? 'opacity-80'
+                      : ''} hidden sm:flex h-18 w-9 cursor-pointer border flex bg-default text-white dark:bg-primary {borderClasses} mb-3"
+                  >
+                    <svg
+                      class="w-6 h-6 m-auto rotate-180"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                    >
+                      <path fill="currentColor" d={arrowIcon} />
+                    </svg>
+                  </label>
+
+                  <!-- Content Area -->
+                  <div class="flex-1">
+                    <!-- Header Row -->
+                    <div
+                      class="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4 {borderClasses} p-3 h-18"
+                    >
+                      {#each weekday as day, index}
+                        <div
+                          on:click={() => switchToDailyView(index)}
+                          class="text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <div class="font-semibold text-base">
+                            {formattedWeekday[index]?.split(",")[0]}, {formattedWeekday[
+                              index
+                            ]?.split(", ")[1]}
+                          </div>
+                          <div class="text-sm text-gray-600 dark:text-gray-400">
+                            {day?.length} Dividends
+                          </div>
+                        </div>
+                      {/each}
+                    </div>
+
+                    <!-- Weekly Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                      {#each weekday as day, dayIndex}
+                        <div class="flex flex-col">
+                          <!-- Stocks List -->
+                          <div class="space-y-2">
+                            {#if day?.length > 0}
+                              {#each day as item, itemIndex}
+                                {@const isExpanded =
+                                  expandedItems[`${dayIndex}-${itemIndex}`]}
+                                <div
+                                  class="w-full rounded {borderClasses} text-[0.9rem]"
+                                >
+                                  <!-- Collapsible Header -->
+                                  <div
+                                    on:click={() =>
+                                      toggleExpanded(dayIndex, itemIndex)}
+                                    class="flex w-full cursor-pointer items-center justify-between px-2 py-1.5"
+                                  >
+                                    <span class="max-w-[92%] truncate">
+                                      <HoverStockChart symbol={item?.symbol} />
+                                      <span class="truncate">
+                                        · {item?.name}</span
+                                      >
+                                    </span>
+                                    <svg
+                                      class="h-4 w-4"
+                                      viewBox="0 0 20 20"
+                                      fill="currentColor"
+                                    >
+                                      <path
+                                        fill-rule="evenodd"
+                                        d={isExpanded
+                                          ? chevronUpIcon
+                                          : chevronDownIcon}
+                                        clip-rule="evenodd"
+                                      />
+                                    </svg>
+                                  </div>
+
+                                  <!-- Expanded Content -->
+                                  {#if isExpanded}
+                                    <div class="px-2 pb-1 pt-0.5">
+                                      <div
+                                        class="border-t border-gray-300 dark:border-gray-800"
+                                      >
+                                        <table class="w-full text-sm">
+                                          <tbody>
+                                            <tr
+                                              class="border-b border-gray-300 dark:border-gray-800"
+                                            >
+                                              <td class="py-1.5">Ex-Date</td>
+                                              <td
+                                                class="text-right font-semibold"
+                                              >
+                                                {item?.date !== null
+                                                  ? new Date(
+                                                      item?.date,
+                                                    )?.toLocaleString("en-US", {
+                                                      month: "short",
+                                                      day: "numeric",
+                                                      year: "numeric",
+                                                      timeZone: "UTC",
+                                                    })
+                                                  : "n/a"}
+                                              </td>
+                                            </tr>
+                                            {#if item?.marketCap !== null}
+                                              <tr
+                                                class="border-b border-gray-300 dark:border-gray-800"
+                                              >
+                                                <td class="py-1.5"
+                                                  >Market Cap</td
+                                                >
+                                                <td
+                                                  class="text-right font-semibold"
+                                                  >{@html abbreviateNumber(
+                                                    item?.marketCap,
+                                                    false,
+                                                    true,
+                                                  )}</td
+                                                >
+                                              </tr>
+                                            {/if}
+                                            <tr
+                                              class="border-b border-gray-300 dark:border-gray-800"
+                                            >
+                                              <td class="py-1.5">Amount</td>
+                                              <td
+                                                class="text-right font-semibold"
+                                              >
+                                                ${item?.adjDividend?.toFixed(
+                                                  4,
+                                                ) || "n/a"}
+                                              </td>
+                                            </tr>
+                                            <tr
+                                              class="border-b border-gray-300 dark:border-gray-800"
+                                            >
+                                              <td class="py-1.5">Revenue</td>
+                                              <td
+                                                class="text-right font-semibold"
+                                              >
+                                                {item?.revenue
+                                                  ? `$${abbreviateNumber(item?.revenue, false, true)}`
+                                                  : "n/a"}
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td class="pb-0.5 pt-1.5"
+                                                >Payment Date</td
+                                              >
+                                              <td
+                                                class="text-right font-semibold"
+                                              >
+                                                {item?.paymentDate !== null
+                                                  ? new Date(
+                                                      item?.paymentDate,
+                                                    )?.toLocaleString("en-US", {
+                                                      month: "short",
+                                                      day: "numeric",
+                                                      year: "numeric",
+                                                      timeZone: "UTC",
+                                                    })
+                                                  : "n/a"}
+                                              </td>
+                                            </tr>
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    </div>
+                                  {/if}
+                                </div>
+                              {/each}
+                            {:else}
+                              <div
+                                class="text-center text-gray-500 dark:text-gray-400 py-4"
+                              >
+                                No dividends
+                              </div>
+                            {/if}
+                          </div>
+                        </div>
+                      {/each}
+                    </div>
+                  </div>
+
+                  <!-- Next Week Arrow -->
+                  <label
+                    on:click={() => changeWeek("next")}
+                    class="{nextMax
+                      ? 'opacity-80'
+                      : ''} hidden sm:flex h-18 w-9 cursor-pointer flex bg-default text-white dark:bg-primary {borderClasses} mb-3"
+                  >
+                    <svg
+                      class="w-6 h-6 m-auto"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                    >
+                      <path fill="currentColor" d={arrowIcon} />
+                    </svg>
+                  </label>
+                </div>
+              {:else if timeframe === "Compact"}
+                <!-- Compact View for Mobile -->
+                <div class="w-full">
+                  <!-- Use same header as Details view -->
+                  <div
+                    class="w-full flex flex-row justify-center m-auto items-center"
+                  >
+                    <!-- Start Columns -->
+                    <label
+                      on:click={() => changeWeek("previous")}
+                      class="{previousMax
+                        ? 'opacity-80'
+                        : ''} hidden sm:flex {navigationButtonClasses} {borderClasses}"
+                    >
+                      <svg
+                        class="w-6 h-6 m-auto rotate-180"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                      >
+                        <path fill="currentColor" d={arrowIcon} />
+                      </svg>
+                    </label>
+                    {#each weekday as day, index}
                       <div
-                        class=" flex flex-row justify-center items-center w-full"
+                        class="w-full {index === selectedWeekday
+                          ? ''
+                          : 'hidden sm:block'}"
                       >
                         <label
-                          on:click={() => clickWeekday("previous", index)}
-                          class="{previousMax === true && index === 0
-                            ? 'opacity-20'
-                            : ''} sm:hidden ml-auto"
+                          on:click={() => toggleDate(index)}
+                          class=" m-auto w-full cursor-pointer h-16 {index ===
+                          selectedWeekday
+                            ? 'bg-default text-white dark:bg-white dark:text-black font-semibold'
+                            : ''} rounded sm:rounded-none flex dark:bg-default {borderClasses} mb-3"
                         >
-                          <svg
-                            class="w-8 h-8 inline-block rotate-180"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
+                          <div
+                            class=" flex flex-row justify-center items-center w-full"
                           >
-                            <path fill="currentColor" d={arrowIcon} />
-                          </svg>
-                        </label>
-                        <div
-                          class="flex flex-col items-center truncate m-auto p-1"
-                        >
-                          <span class="text-[1rem]"
-                            >{formattedWeekday[index]}</span
-                          >
-                          <span class="text-[1rem] sm:text-sm m-auto pt-1 pb-1">
-                            {day?.length} Dividends</span
-                          >
-                        </div>
-                        <label
-                          on:click={() => clickWeekday("next", index)}
-                          class="{nextMax === true && index === 4
-                            ? 'opacity-20'
-                            : ''} sm:hidden mr-auto"
-                        >
-                          <svg
-                            class="w-8 h-8 inline-block"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                          >
-                            <path fill="currentColor" d={arrowIcon} />
-                          </svg>
+                            <label
+                              on:click={() => clickWeekday("previous", index)}
+                              class="{previousMax === true && index === 0
+                                ? 'opacity-20'
+                                : ''} sm:hidden ml-auto"
+                            >
+                              <svg
+                                class="w-8 h-8 inline-block rotate-180"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                              >
+                                <path fill="currentColor" d={arrowIcon} />
+                              </svg>
+                            </label>
+                            <div
+                              class="flex flex-col items-center truncate m-auto p-1"
+                            >
+                              <span class="text-[1rem]"
+                                >{formattedWeekday[index]}</span
+                              >
+                              <span class="text-sm m-auto pt-1 pb-1">
+                                {day?.length} Dividends</span
+                              >
+                            </div>
+                            <label
+                              on:click={() => clickWeekday("next", index)}
+                              class="{nextMax === true && index === 4
+                                ? 'opacity-20'
+                                : ''} sm:hidden mr-auto"
+                            >
+                              <svg
+                                class="w-8 h-8 inline-block"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                              >
+                                <path fill="currentColor" d={arrowIcon} />
+                              </svg>
+                            </label>
+                          </div>
                         </label>
                       </div>
+                    {/each}
+                    <label
+                      on:click={() => changeWeek("next")}
+                      class="{nextMax
+                        ? 'opacity-80'
+                        : ''} hidden sm:flex {navigationButtonClasses} {borderClasses}"
+                    >
+                      <svg
+                        class="w-6 h-6 m-auto"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                      >
+                        <path fill="currentColor" d={arrowIcon} />
+                      </svg>
                     </label>
                   </div>
-                {/each}
-                <label
-                  on:click={() => changeWeek("next")}
-                  class="{nextMax
-                    ? 'opacity-80'
-                    : ''} hidden sm:flex {navigationButtonClasses} {borderClasses}"
-                >
-                  <svg
-                    class="w-6 h-6 m-auto"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                  >
-                    <path fill="currentColor" d={arrowIcon} />
-                  </svg>
-                </label>
-              </div>
 
-              {#each weekday as day, index}
-                {#if index === selectedWeekday}
-                  {#if day?.length !== 0}
-                    <h2 class="font-semibold text-xl mt-5">
-                      {formattedWeekday[index]?.split(", ")[1]} · {day?.length} Dividends
-                    </h2>
-
-                    <div class="w-full overflow-x-auto no-scrollbar">
-                      <table
-                        class="table table-sm table-compact no-scrollbar rounded-none sm:rounded w-full {tableBorderClasses} m-auto mt-4"
-                      >
-                        <thead>
-                          <TableHeader {columns} {sortOrders} {sortData} />
-                        </thead>
-                        <tbody>
-                          {#each day as item}
-                            <!-- row -->
-                            <tr
-                              class="dark:sm:hover:bg-[#245073]/10 odd:bg-[#F6F7F8] dark:odd:bg-odd"
+                  <!-- Compact Card List -->
+                  <div class="space-y-2">
+                    {#if weekday[selectedWeekday]?.length > 0}
+                      {#each weekday[selectedWeekday] as item, itemIndex}
+                        {@const isExpanded =
+                          expandedItems[`${selectedWeekday}-${itemIndex}`]}
+                        <div
+                          class="w-full rounded {borderClasses} text-[0.9rem]"
+                        >
+                          <!-- Collapsible Header -->
+                          <div
+                            on:click={() =>
+                              toggleExpanded(selectedWeekday, itemIndex)}
+                            class="flex w-full cursor-pointer items-center justify-between px-3 py-2"
+                          >
+                            <span class="max-w-[92%] truncate">
+                              <HoverStockChart symbol={item?.symbol} />
+                              <span class="truncate"> · {item?.name}</span>
+                            </span>
+                            <svg
+                              class="h-4 w-4"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
                             >
-                              <td class=" text-sm sm:text-[1rem]">
-                                <HoverStockChart symbol={item?.symbol} />
-                              </td>
+                              <path
+                                fill-rule="evenodd"
+                                d={isExpanded ? chevronUpIcon : chevronDownIcon}
+                                clip-rule="evenodd"
+                              />
+                            </svg>
+                          </div>
 
-                              <td
-                                class=" whitespace-nowrap text-sm sm:text-[1rem]"
+                          <!-- Expanded Content -->
+                          {#if isExpanded}
+                            <div class="px-2 pb-1 pt-0.5">
+                              <div
+                                class="border-t border-gray-300 dark:border-gray-800"
                               >
-                                {item?.name.length > 20
-                                  ? item?.name.slice(0, 20) + "..."
-                                  : item?.name}
-                              </td>
-
-                              <td class=" text-sm text-end sm:text-[1rem]">
-                                {@html item?.marketCap !== null
-                                  ? abbreviateNumber(
-                                      item?.marketCap,
-                                      false,
-                                      true,
-                                    )
-                                  : "n/a"}
-                              </td>
-
-                              <td class=" text-sm sm:text-[1rem] text-end">
-                                {item?.revenue !== null
-                                  ? abbreviateNumber(item?.revenue)
-                                  : "n/a"}
-                              </td>
-
-                              <td
-                                class=" text-center text-sm sm:text-[1rem] text-end"
-                              >
-                                {item?.adjDividend !== null
-                                  ? item?.adjDividend?.toFixed(3)
-                                  : "n/a"}
-                              </td>
-
-                              <td class=" text-end text-sm sm:text-[1rem]">
-                                {item?.date !== null
-                                  ? new Date(item?.date)?.toLocaleString(
-                                      "en-US",
-                                      {
-                                        month: "short",
-                                        day: "numeric",
-                                        year: "numeric",
-                                        daySuffix: "2-digit",
-                                        timeZone: "UTC",
-                                      },
-                                    )
-                                  : "n/a"}
-                              </td>
-
-                              <td class=" text-end text-sm sm:text-[1rem]">
-                                {item?.paymentDate !== null
-                                  ? new Date(item?.paymentDate)?.toLocaleString(
-                                      "en-US",
-                                      {
-                                        month: "short",
-                                        day: "numeric",
-                                        year: "numeric",
-                                        daySuffix: "2-digit",
-                                        timeZone: "UTC",
-                                      },
-                                    )
-                                  : "n/a"}
-                              </td>
-                            </tr>
-                          {/each}
-                        </tbody>
-                      </table>
-                    </div>
-                  {:else}
-                    <div class="mt-5">
-                      <Infobox text="No Dividends available for the day." />
-                    </div>
-                  {/if}
-                {/if}
-              {/each}
+                                <table class="w-full text-sm">
+                                  <tbody>
+                                    <tr
+                                      class="border-b border-gray-300 dark:border-gray-800"
+                                    >
+                                      <td class="py-1.5">Date</td>
+                                      <td class="text-right font-semibold">
+                                        {new Date(
+                                          item?.date,
+                                        ).toLocaleDateString("en-US", {
+                                          month: "short",
+                                          day: "numeric",
+                                          year: "numeric",
+                                        })}
+                                      </td>
+                                    </tr>
+                                    <tr
+                                      class="border-b border-gray-300 dark:border-gray-800"
+                                    >
+                                      <td class="py-1.5">Dividend</td>
+                                      <td class="text-right font-semibold">
+                                        ${item?.adjDividend?.toFixed(4) ||
+                                          "n/a"}
+                                      </td>
+                                    </tr>
+                                    <tr
+                                      class="border-b border-gray-300 dark:border-gray-800"
+                                    >
+                                      <td class="py-1.5">Revenue</td>
+                                      <td class="text-right font-semibold">
+                                        {item?.revenue
+                                          ? `$${abbreviateNumber(item?.revenue, false, true)}`
+                                          : "n/a"}
+                                      </td>
+                                    </tr>
+                                    <tr
+                                      class="border-b border-gray-300 dark:border-gray-800"
+                                    >
+                                      <td class="py-1.5">Ex-Date</td>
+                                      <td class="text-right font-semibold">
+                                        {item?.exDividendDate
+                                          ? new Date(
+                                              item?.exDividendDate,
+                                            ).toLocaleDateString("en-US", {
+                                              month: "short",
+                                              day: "numeric",
+                                              year: "numeric",
+                                            })
+                                          : "n/a"}
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td class="pb-0.5 pt-1.5">Payment Date</td
+                                      >
+                                      <td class="text-right font-semibold">
+                                        {item?.paymentDate
+                                          ? new Date(
+                                              item?.paymentDate,
+                                            ).toLocaleDateString("en-US", {
+                                              month: "short",
+                                              day: "numeric",
+                                              year: "numeric",
+                                            })
+                                          : "n/a"}
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          {/if}
+                        </div>
+                      {/each}
+                    {:else}
+                      <div
+                        class="text-center text-sm text-gray-500 dark:text-gray-400 py-8"
+                      >
+                        No dividends scheduled
+                      </div>
+                    {/if}
+                  </div>
+                </div>
+              {/if}
             </div>
           </div>
         </main>
