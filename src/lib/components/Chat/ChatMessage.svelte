@@ -6,7 +6,7 @@
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
 
-  import TickerGraph from "$lib/components/Plot/TickerGraph.svelte";
+  //import TickerGraph from "$lib/components/Plot/TickerGraph.svelte";
   import SourcesSection from "$lib/components/Chat/SourcesSection.svelte";
   import Related from "$lib/components/Chat/Related.svelte";
 
@@ -300,10 +300,6 @@
             </div>
           {/if}
           -->
-
-          <div class="mt-6">
-            <TickerGraph tickerList={["NVDA"]} />
-          </div>
 
           <!-- Sources Section - Perplexity Style -->
           {#if message?.sources && message?.sources?.length > 0 && !isStreaming}
