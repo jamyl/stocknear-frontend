@@ -25,7 +25,7 @@
   const today = new Date();
   const tabs = ["Daily", "Weekly"];
 
-  let timeframe = "Daily"; // "Daily" or "Weekly"
+  let timeframe = "Weekly"; // "Daily" or "Weekly"
   let expandedItems = {}; // Track expanded state for each stock in weekly view
 
   let formattedMonday = startOfWeek(currentWeek, { weekStartsOn: 1 });
@@ -704,306 +704,312 @@
                   {/if}
                 {/each}
               {:else}
-                <!-- Weekly View Header (reusing Daily header structure) -->
-                <div
-                  class="w-full flex flex-row justify-center m-auto items-center"
-                >
+                <!-- Weekly View Container -->
+                <div class="flex items-start">
                   <!-- Previous Week Arrow -->
+
                   <label
                     on:click={() => changeWeek("previous")}
                     class="{previousMax
                       ? 'opacity-80'
-                      : ''} hidden sm:flex h-16 w-48 cursor-pointer border m-auto flex bg-default text-white dark:bg-primary border border-gray-300 dark:border-gray-600 mb-3"
+                      : ''} hidden sm:flex h-18 w-9 cursor-pointer border flex bg-default text-white dark:bg-primary border border-gray-300 dark:border-gray-600 mb-3"
                   >
                     <svg
                       class="w-6 h-6 m-auto rotate-180"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
-                    >
-                      <path
+                      ><path
                         fill="currentColor"
                         d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
-                      />
-                    </svg>
+                      /></svg
+                    >
                   </label>
 
-                  <!-- Weekday Headers (clickable to switch to Daily) -->
-                  {#each weekday as day, index}
-                    <div class="w-full block">
-                      <label
-                        on:click={() => switchToDailyView(index)}
-                        class="m-auto w-full h-16 rounded sm:rounded-none flex dark:bg-default border border-gray-300 dark:border-gray-600 mb-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                      >
+                  <!-- Content Area -->
+                  <div class="flex-1">
+                    <!-- Header Row -->
+                    <div
+                      class="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4 border border-gray-300 dark:border-gray-800 p-3"
+                    >
+                      {#each weekday as day, index}
                         <div
-                          class="flex flex-row justify-center items-center w-full"
+                          on:click={() => switchToDailyView(index)}
+                          class="text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                         >
+                          <div class="font-semibold text-base">
+                            {formattedWeekday[index]?.split(",")[0]}, {formattedWeekday[
+                              index
+                            ]?.split(", ")[1]}
+                          </div>
                           <div
-                            class="flex flex-col items-center truncate m-auto p-1"
+                            class="text-sm text-gray-600 dark:text-gray-400 mt-1"
                           >
-                            <span class="text-[1rem]"
-                              >{formattedWeekday[index]}</span
-                            >
-                            <span
-                              class="text-[1rem] sm:text-sm m-auto pt-1 pb-1"
-                            >
-                              {day?.length} Earnings
-                            </span>
+                            {day?.length || 0} Earnings
                           </div>
                         </div>
-                      </label>
+                      {/each}
                     </div>
-                  {/each}
+
+                    <!-- Content Row -->
+                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                      {#each weekday as day, dayIndex}
+                        <div class="flex flex-col">
+                          <!-- Stocks List -->
+                          <div class="space-y-2">
+                            {#if day?.length > 0}
+                              {#each day as item, itemIndex}
+                                {@const isExpanded =
+                                  expandedItems[`${dayIndex}-${itemIndex}`]}
+                                <div
+                                  class="w-full rounded border border-gray-300 dark:border-gray-60 text-[0.9rem]"
+                                >
+                                  <!-- Collapsible Header -->
+                                  <div
+                                    on:click={() =>
+                                      toggleExpanded(dayIndex, itemIndex)}
+                                    class="flex w-full cursor-pointer items-center justify-between px-2 py-1.5"
+                                  >
+                                    <span class="max-w-[92%] truncate">
+                                      <HoverStockChart symbol={item?.symbol} />
+                                      <span class="truncate">
+                                        · {item?.name}</span
+                                      >
+                                    </span>
+                                    {#if isExpanded}
+                                      <svg
+                                        class="h-4 w-4"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                      >
+                                        <path
+                                          fill-rule="evenodd"
+                                          d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                          clip-rule="evenodd"
+                                        ></path>
+                                      </svg>
+                                    {:else}
+                                      <svg
+                                        class="h-4 w-4"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                      >
+                                        <path
+                                          fill-rule="evenodd"
+                                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                          clip-rule="evenodd"
+                                        ></path>
+                                      </svg>
+                                    {/if}
+                                  </div>
+
+                                  <!-- Expanded Content -->
+                                  {#if isExpanded}
+                                    <div class="px-2 pb-1 pt-0.5">
+                                      <div
+                                        class="border-t border-gray-300 dark:border-gray-800"
+                                      >
+                                        <table class="w-full text-sm">
+                                          <tbody>
+                                            <tr
+                                              class="border-b border-gray-300 dark:border-gray-800"
+                                            >
+                                              <td class="py-1.5">Reports</td>
+                                              <td
+                                                class="text-right font-semibold"
+                                              >
+                                                <span
+                                                  class="flex items-center justify-end"
+                                                >
+                                                  {#if item?.release === "amc"}
+                                                    <svg
+                                                      class="h-4 w-4 mr-1"
+                                                      fill="none"
+                                                      viewBox="0 0 24 24"
+                                                      stroke={$mode === "light"
+                                                        ? "#397de9"
+                                                        : "#70A1EF"}
+                                                    >
+                                                      <path
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                                                      ></path>
+                                                    </svg>
+                                                    After Close
+                                                  {:else}
+                                                    <svg
+                                                      class="h-4 w-4 mr-1 text-yellow-500"
+                                                      fill="none"
+                                                      viewBox="0 0 24 24"
+                                                      stroke="currentColor"
+                                                    >
+                                                      <path
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                                                      ></path>
+                                                    </svg>
+                                                    Before Open
+                                                  {/if}
+                                                </span>
+                                              </td>
+                                            </tr>
+                                            {#if item?.marketCap !== null}
+                                              <tr
+                                                class="border-b border-gray-300 dark:border-gray-800"
+                                              >
+                                                <td class="py-1.5"
+                                                  >Market Cap</td
+                                                >
+                                                <td
+                                                  class="text-right font-semibold"
+                                                  >{@html abbreviateNumber(
+                                                    item?.marketCap,
+                                                    false,
+                                                    true,
+                                                  )}</td
+                                                >
+                                              </tr>
+                                            {/if}
+                                            {#if item?.revenueEst !== null}
+                                              <tr
+                                                class="border-b border-gray-300 dark:border-gray-800"
+                                              >
+                                                <td
+                                                  class="py-1.5"
+                                                  title="Estimated Revenue"
+                                                >
+                                                  Revenue <span
+                                                    class="hidden md:inline"
+                                                    >Est.</span
+                                                  ><span
+                                                    class="inline md:hidden"
+                                                    >Estimate</span
+                                                  >
+                                                </td>
+                                                <td
+                                                  class="text-right font-semibold"
+                                                >
+                                                  {@html abbreviateNumber(
+                                                    item?.revenueEst,
+                                                    false,
+                                                    true,
+                                                  )}
+                                                  {#if item?.revenuePrior !== null && item?.revenuePrior !== 0}
+                                                    {#if !isFinite((item?.revenueEst / item?.revenuePrior - 1) * 100)}
+                                                      <span></span>
+                                                    {:else if item?.revenueEst / item?.revenuePrior - 1 >= 0}
+                                                      <span
+                                                        class="text-green-800 dark:text-green-400"
+                                                      >
+                                                        +{(
+                                                          (item?.revenueEst /
+                                                            item?.revenuePrior -
+                                                            1) *
+                                                          100
+                                                        )?.toFixed(2)}%
+                                                      </span>
+                                                    {:else}
+                                                      <span
+                                                        class="text-red-800 dark:text-red-400"
+                                                      >
+                                                        {(
+                                                          (item?.revenueEst /
+                                                            item?.revenuePrior -
+                                                            1) *
+                                                          100
+                                                        )?.toFixed(2)}%
+                                                      </span>
+                                                    {/if}
+                                                  {/if}
+                                                </td>
+                                              </tr>
+                                            {/if}
+                                            {#if item?.epsEst !== null}
+                                              <tr>
+                                                <td
+                                                  class="pb-0.5 pt-1.5"
+                                                  title="Estimated EPS"
+                                                >
+                                                  EPS <span
+                                                    class="hidden md:inline"
+                                                    >Est.</span
+                                                  ><span
+                                                    class="inline md:hidden"
+                                                    >Estimate</span
+                                                  >
+                                                </td>
+                                                <td
+                                                  class="text-right font-semibold"
+                                                >
+                                                  {item?.epsEst?.toFixed(2)}
+                                                  {#if item?.epsPrior !== null && item?.epsPrior !== 0}
+                                                    {#if item?.epsEst / item?.epsPrior - 1 >= 0}
+                                                      <span
+                                                        class="text-green-800 dark:text-green-400"
+                                                      >
+                                                        +{(
+                                                          (item?.epsEst /
+                                                            item?.epsPrior -
+                                                            1) *
+                                                          100
+                                                        )?.toFixed(2)}%
+                                                      </span>
+                                                    {:else}
+                                                      <span
+                                                        class="text-red-800 dark:text-red-400"
+                                                      >
+                                                        {(
+                                                          (item?.epsEst /
+                                                            item?.epsPrior -
+                                                            1) *
+                                                          100
+                                                        )?.toFixed(2)}%
+                                                      </span>
+                                                    {/if}
+                                                  {/if}
+                                                </td>
+                                              </tr>
+                                            {/if}
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    </div>
+                                  {/if}
+                                </div>
+                              {/each}
+                            {:else}
+                              <div
+                                class="text-center text-sm text-gray-500 dark:text-gray-400 py-8"
+                              >
+                                No earnings scheduled
+                              </div>
+                            {/if}
+                          </div>
+                        </div>
+                      {/each}
+                    </div>
+                  </div>
 
                   <!-- Next Week Arrow -->
                   <label
                     on:click={() => changeWeek("next")}
                     class="{nextMax
                       ? 'opacity-80'
-                      : ''} hidden sm:flex h-16 w-48 cursor-pointer border m-auto flex bg-default text-white dark:bg-primary border border-gray-300 dark:border-gray-600 mb-3"
+                      : ''} hidden sm:flex h-18 w-9 cursor-pointer flex bg-default text-white dark:bg-primary border border-gray-300 dark:border-gray-600 mb-3"
                   >
                     <svg
                       class="w-6 h-6 m-auto"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
-                    >
-                      <path
+                      ><path
                         fill="currentColor"
                         d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
-                      />
-                    </svg>
+                      /></svg
+                    >
                   </label>
-                </div>
-
-                <!-- Weekly Stocks Content -->
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 mt-4">
-                  {#each weekday as day, dayIndex}
-                    <div class="flex flex-col">
-                      <!-- Stocks List -->
-                      <div class="space-y-2">
-                        {#if day?.length > 0}
-                          {#each day as item, itemIndex}
-                            {@const isExpanded =
-                              expandedItems[`${dayIndex}-${itemIndex}`]}
-                            <div
-                              class="w-full rounded border border-gray-300 dark:border-gray-600"
-                            >
-                              <!-- Collapsible Header -->
-                              <div
-                                on:click={() =>
-                                  toggleExpanded(dayIndex, itemIndex)}
-                                class="flex w-full cursor-pointer items-center justify-between px-2 py-1.5"
-                              >
-                                <span class="max-w-[92%] truncate">
-                                  <HoverStockChart symbol={item?.symbol} />
-                                  <span class="truncate"> · {item?.name}</span>
-                                </span>
-                                {#if isExpanded}
-                                  <svg
-                                    class="h-4 w-4"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                  >
-                                    <path
-                                      fill-rule="evenodd"
-                                      d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-                                      clip-rule="evenodd"
-                                    ></path>
-                                  </svg>
-                                {:else}
-                                  <svg
-                                    class="h-4 w-4"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                  >
-                                    <path
-                                      fill-rule="evenodd"
-                                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                      clip-rule="evenodd"
-                                    ></path>
-                                  </svg>
-                                {/if}
-                              </div>
-
-                              <!-- Expanded Content -->
-                              {#if isExpanded}
-                                <div class="px-2 pb-1 pt-0.5">
-                                  <div
-                                    class="border-t border-gray-300 dark:border-gray-800"
-                                  >
-                                    <table class="w-full text-sm">
-                                      <tbody>
-                                        <tr
-                                          class="border-b border-gray-300 dark:border-gray-800"
-                                        >
-                                          <td class="py-1.5">Reports</td>
-                                          <td class="text-right font-semibold">
-                                            <span
-                                              class="flex items-center justify-end"
-                                            >
-                                              {#if item?.release === "amc"}
-                                                <svg
-                                                  class="h-4 w-4 mr-1"
-                                                  fill="none"
-                                                  viewBox="0 0 24 24"
-                                                  stroke={$mode === "light"
-                                                    ? "#397de9"
-                                                    : "#70A1EF"}
-                                                >
-                                                  <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                                                  ></path>
-                                                </svg>
-                                                After Close
-                                              {:else}
-                                                <svg
-                                                  class="h-4 w-4 mr-1 text-yellow-500"
-                                                  fill="none"
-                                                  viewBox="0 0 24 24"
-                                                  stroke="currentColor"
-                                                >
-                                                  <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                                                  ></path>
-                                                </svg>
-                                                Before Open
-                                              {/if}
-                                            </span>
-                                          </td>
-                                        </tr>
-                                        {#if item?.marketCap !== null}
-                                          <tr
-                                            class="border-b border-gray-300 dark:border-gray-800"
-                                          >
-                                            <td class="py-1.5">Market Cap</td>
-                                            <td class="text-right font-semibold"
-                                              >{@html abbreviateNumber(
-                                                item?.marketCap,
-                                                false,
-                                                true,
-                                              )}</td
-                                            >
-                                          </tr>
-                                        {/if}
-                                        {#if item?.revenueEst !== null}
-                                          <tr
-                                            class="border-b border-gray-300 dark:border-gray-800"
-                                          >
-                                            <td
-                                              class="py-1.5"
-                                              title="Estimated Revenue"
-                                            >
-                                              Revenue <span
-                                                class="hidden md:inline"
-                                                >Est.</span
-                                              ><span class="inline md:hidden"
-                                                >Estimate</span
-                                              >
-                                            </td>
-                                            <td
-                                              class="text-right font-semibold"
-                                            >
-                                              {@html abbreviateNumber(
-                                                item?.revenueEst,
-                                                false,
-                                                true,
-                                              )}
-                                              {#if item?.revenuePrior !== null && item?.revenuePrior !== 0}
-                                                {#if !isFinite((item?.revenueEst / item?.revenuePrior - 1) * 100)}
-                                                  <span></span>
-                                                {:else if item?.revenueEst / item?.revenuePrior - 1 >= 0}
-                                                  <span
-                                                    class="text-green-800 dark:text-green-400"
-                                                  >
-                                                    +{(
-                                                      (item?.revenueEst /
-                                                        item?.revenuePrior -
-                                                        1) *
-                                                      100
-                                                    )?.toFixed(2)}%
-                                                  </span>
-                                                {:else}
-                                                  <span
-                                                    class="text-red-800 dark:text-red-400"
-                                                  >
-                                                    {(
-                                                      (item?.revenueEst /
-                                                        item?.revenuePrior -
-                                                        1) *
-                                                      100
-                                                    )?.toFixed(2)}%
-                                                  </span>
-                                                {/if}
-                                              {/if}
-                                            </td>
-                                          </tr>
-                                        {/if}
-                                        {#if item?.epsEst !== null}
-                                          <tr>
-                                            <td
-                                              class="pb-0.5 pt-1.5"
-                                              title="Estimated EPS"
-                                            >
-                                              EPS <span class="hidden md:inline"
-                                                >Est.</span
-                                              ><span class="inline md:hidden"
-                                                >Estimate</span
-                                              >
-                                            </td>
-                                            <td
-                                              class="text-right font-semibold"
-                                            >
-                                              {item?.epsEst?.toFixed(2)}
-                                              {#if item?.epsPrior !== null && item?.epsPrior !== 0}
-                                                {#if item?.epsEst / item?.epsPrior - 1 >= 0}
-                                                  <span
-                                                    class="text-green-800 dark:text-green-400"
-                                                  >
-                                                    +{(
-                                                      (item?.epsEst /
-                                                        item?.epsPrior -
-                                                        1) *
-                                                      100
-                                                    )?.toFixed(2)}%
-                                                  </span>
-                                                {:else}
-                                                  <span
-                                                    class="text-red-800 dark:text-red-400"
-                                                  >
-                                                    {(
-                                                      (item?.epsEst /
-                                                        item?.epsPrior -
-                                                        1) *
-                                                      100
-                                                    )?.toFixed(2)}%
-                                                  </span>
-                                                {/if}
-                                              {/if}
-                                            </td>
-                                          </tr>
-                                        {/if}
-                                      </tbody>
-                                    </table>
-                                  </div>
-                                </div>
-                              {/if}
-                            </div>
-                          {/each}
-                        {:else}
-                          <div
-                            class="text-center text-sm text-gray-500 dark:text-gray-400 py-8"
-                          >
-                            No earnings scheduled
-                          </div>
-                        {/if}
-                      </div>
-                    </div>
-                  {/each}
                 </div>
               {/if}
             </div>
