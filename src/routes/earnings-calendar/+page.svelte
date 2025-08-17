@@ -44,8 +44,52 @@
     }
   }
 
+  function processEarningsData() {
+    earningsCalendar = daysOfWeek?.map((day) => ({
+      name: day.name,
+      data: data?.getEarningsCalendar?.filter(
+        (item) => item?.date === day?.date,
+      ),
+    }));
+
+    if (earningsCalendar?.length) {
+      for (let i = 0; i < earningsCalendar.length; i++) {
+        const dayData = earningsCalendar[i].data;
+        const filteredData =
+          releaseTime === "anytime"
+            ? dayData
+            : dayData?.filter((item) => item?.release === releaseTime);
+        rawWeekday[i] = filteredData?.sort(
+          (a, b) => b?.marketCap - a?.marketCap,
+        );
+      }
+      weekday = rawWeekday;
+    }
+  }
+
+  function getPercentageChange(current, prior) {
+    if (!current || !prior || prior === 0) return null;
+    const change = (current / prior - 1) * 100;
+    return isFinite(change) ? change.toFixed(2) : null;
+  }
+
   let timeframe = "Daily"; // "Daily" or "Weekly" for desktop, "Details" or "Compact" for mobile
   let expandedItems = {}; // Track expanded state for each stock in weekly view
+
+  // Reusable SVG icons
+  const arrowIcon =
+    "M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z";
+  const chevronUpIcon =
+    "M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z";
+  const chevronDownIcon =
+    "M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z";
+
+  // Reusable CSS classes
+  const weekArrowClasses =
+    "hidden sm:flex h-16 w-48 cursor-pointer border m-auto flex bg-default text-white dark:bg-primary border border-gray-300 dark:border-gray-800 mb-3";
+  const mobileArrowClasses = "w-6 h-6 inline-block";
+  const weekdayClasses =
+    "m-auto w-full cursor-pointer h-16 rounded sm:rounded-none flex dark:bg-default border border-gray-300 dark:border-gray-800 mb-3";
 
   let formattedMonday = startOfWeek(currentWeek, { weekStartsOn: 1 });
   let formattedTuesday = format(addDays(formattedMonday, 1), "EEE, MMM d");
@@ -192,64 +236,12 @@
       },
     ];
 
-    earningsCalendar = daysOfWeek?.map((day) => {
-      return {
-        name: day.name,
-        data: data?.getEarningsCalendar?.filter(
-          (item) => item?.date === day?.date,
-        ),
-      };
-    });
-
-    if (earningsCalendar?.length) {
-      // Loop through each day of the week
-      for (let i = 0; i < earningsCalendar.length; i++) {
-        const dayData = earningsCalendar[i].data;
-
-        // Filter based on release time
-        const filteredData =
-          releaseTime === "anytime"
-            ? dayData
-            : dayData?.filter((item) => item?.release === releaseTime);
-
-        // Sort and map the filtered data
-        rawWeekday[i] = filteredData?.sort(
-          (a, b) => b?.marketCap - a?.marketCap,
-        );
-      }
-      weekday = rawWeekday;
-    }
+    processEarningsData();
   }
 
   $: {
     if (earningsCalendar && releaseTime) {
-      earningsCalendar = daysOfWeek?.map((day) => {
-        return {
-          name: day.name,
-          data: data?.getEarningsCalendar?.filter(
-            (item) => item?.date === day?.date,
-          ),
-        };
-      });
-
-      if (earningsCalendar?.length) {
-        // Loop through each day of the week
-        for (let i = 0; i < earningsCalendar.length; i++) {
-          const dayData = earningsCalendar[i].data;
-
-          // Filter based on release time
-          const filteredData =
-            releaseTime === "anytime"
-              ? dayData
-              : dayData?.filter((item) => item?.release === releaseTime);
-
-          // Sort and map the filtered data
-          rawWeekday[i] = filteredData?.sort(
-            (a, b) => b?.marketCap - a?.marketCap,
-          );
-        }
-        weekday = rawWeekday;
-      }
+      processEarningsData();
     }
   }
 
@@ -535,19 +527,15 @@
                   <!-- Start Columns -->
                   <label
                     on:click={() => changeWeek("previous")}
-                    class="{previousMax
-                      ? 'opacity-80'
-                      : ''} hidden sm:flex h-16 w-48 cursor-pointer border m-auto flex bg-default text-white dark:bg-primary border border-gray-300 dark:border-gray-800 mb-3"
+                    class="{previousMax ? 'opacity-80' : ''} {weekArrowClasses}"
                   >
                     <svg
                       class="w-6 h-6 m-auto rotate-180"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
-                      ><path
-                        fill="currentColor"
-                        d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
-                      /></svg
                     >
+                      <path fill="currentColor" d={arrowIcon} />
+                    </svg>
                   </label>
                   {#each weekday as day, index}
                     <div
@@ -557,10 +545,9 @@
                     >
                       <label
                         on:click={() => toggleDate(index)}
-                        class=" m-auto w-full cursor-pointer h-16 {index ===
-                        selectedWeekday
+                        class="{weekdayClasses} {index === selectedWeekday
                           ? 'bg-default text-white dark:bg-white dark:text-black font-semibold'
-                          : ''} rounded sm:rounded-none flex dark:bg-default border border-gray-300 dark:border-gray-800 mb-3"
+                          : ''}"
                       >
                         <div
                           class=" flex flex-row justify-center items-center w-full"
@@ -572,14 +559,12 @@
                               : ''} sm:hidden ml-auto"
                           >
                             <svg
-                              class="w-6 h-6 inline-block rotate-180"
+                              class="{mobileArrowClasses} rotate-180"
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 24 24"
-                              ><path
-                                fill="currentColor"
-                                d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
-                              /></svg
                             >
+                              <path fill="currentColor" d={arrowIcon} />
+                            </svg>
                           </label>
                           <div
                             class="flex flex-col items-center truncate m-auto p-1"
@@ -613,19 +598,15 @@
                   {/each}
                   <label
                     on:click={() => changeWeek("next")}
-                    class="{nextMax
-                      ? 'opacity-80'
-                      : ''} hidden sm:flex h-16 w-48 cursor-pointer border m-auto flex bg-default text-white dark:bg-primary border border-gray-300 dark:border-gray-800 mb-3"
+                    class="{nextMax ? 'opacity-80' : ''} {weekArrowClasses}"
                   >
                     <svg
                       class="w-6 h-6 m-auto"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
-                      ><path
-                        fill="currentColor"
-                        d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
-                      /></svg
                     >
+                      <path fill="currentColor" d={arrowIcon} />
+                    </svg>
                   </label>
                 </div>
               {/if}
@@ -689,32 +670,21 @@
                                           )
                                         : "n/a"}
                                     </span>
-                                    {#if item?.revenueEst !== null && item?.revenuePrior !== null && item?.revenuePrior !== 0}
-                                      {#if !isFinite((item?.revenueEst / item?.revenuePrior - 1) * 100)}
-                                        <span class="ml-1"></span>
-                                      {:else if item?.revenueEst / item?.revenuePrior - 1 >= 0}
-                                        <span
-                                          class="ml-1 text-green-800 dark:text-[#00FC50]"
-                                        >
-                                          +{(
-                                            (item?.revenueEst /
-                                              item?.revenuePrior -
-                                              1) *
-                                            100
-                                          )?.toFixed(2)}%
-                                        </span>
-                                      {:else}
-                                        <span
-                                          class="ml-1 text-red-800 dark:text-[#FF2F1F]"
-                                        >
-                                          {(
-                                            (item?.revenueEst /
-                                              item?.revenuePrior -
-                                              1) *
-                                            100
-                                          )?.toFixed(2)}%
-                                        </span>
-                                      {/if}
+                                    {#if getPercentageChange(item?.revenueEst, item?.revenuePrior) !== null}
+                                      {@const revenueChange =
+                                        getPercentageChange(
+                                          item?.revenueEst,
+                                          item?.revenuePrior,
+                                        )}
+                                      <span
+                                        class="ml-1 {revenueChange >= 0
+                                          ? 'text-green-800 dark:text-[#00FC50]'
+                                          : 'text-red-800 dark:text-[#FF2F1F]'}"
+                                      >
+                                        {revenueChange >= 0
+                                          ? "+"
+                                          : ""}{revenueChange}%
+                                      </span>
                                     {/if}
                                   </div>
                                 </td>
@@ -728,28 +698,18 @@
                                         ? item?.epsEst?.toFixed(2)
                                         : "n/a"}
                                     </span>
-                                    {#if item?.epsEst !== null && item?.epsPrior !== null && item?.epsPrior !== 0}
-                                      {#if item?.epsEst / item?.epsPrior - 1 >= 0}
-                                        <span
-                                          class="ml-1 text-green-800 dark:text-[#00FC50]"
-                                        >
-                                          +{(
-                                            (item?.epsEst / item?.epsPrior -
-                                              1) *
-                                            100
-                                          )?.toFixed(2)}%
-                                        </span>
-                                      {:else}
-                                        <span
-                                          class="ml-1 text-red-800 dark:text-[#FF2F1F]"
-                                        >
-                                          {(
-                                            (item?.epsEst / item?.epsPrior -
-                                              1) *
-                                            100
-                                          )?.toFixed(2)}%
-                                        </span>
-                                      {/if}
+                                    {#if getPercentageChange(item?.epsEst, item?.epsPrior) !== null}
+                                      {@const epsChange = getPercentageChange(
+                                        item?.epsEst,
+                                        item?.epsPrior,
+                                      )}
+                                      <span
+                                        class="ml-1 {epsChange >= 0
+                                          ? 'text-green-800 dark:text-[#00FC50]'
+                                          : 'text-red-800 dark:text-[#FF2F1F]'}"
+                                      >
+                                        {epsChange >= 0 ? "+" : ""}{epsChange}%
+                                      </span>
                                     {/if}
                                   </div>
                                 </td>
@@ -874,31 +834,19 @@
                                         · {item?.name}</span
                                       >
                                     </span>
-                                    {#if isExpanded}
-                                      <svg
-                                        class="h-4 w-4"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                      >
-                                        <path
-                                          fill-rule="evenodd"
-                                          d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-                                          clip-rule="evenodd"
-                                        ></path>
-                                      </svg>
-                                    {:else}
-                                      <svg
-                                        class="h-4 w-4"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                      >
-                                        <path
-                                          fill-rule="evenodd"
-                                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                          clip-rule="evenodd"
-                                        ></path>
-                                      </svg>
-                                    {/if}
+                                    <svg
+                                      class="h-4 w-4"
+                                      viewBox="0 0 20 20"
+                                      fill="currentColor"
+                                    >
+                                      <path
+                                        fill-rule="evenodd"
+                                        d={isExpanded
+                                          ? chevronUpIcon
+                                          : chevronDownIcon}
+                                        clip-rule="evenodd"
+                                      />
+                                    </svg>
                                   </div>
 
                                   <!-- Expanded Content -->
@@ -972,106 +920,96 @@
                                                 >
                                               </tr>
                                             {/if}
-                                            {#if item?.revenueEst !== null}
-                                              <tr
-                                                class="border-b border-gray-300 dark:border-gray-800"
+                                            <tr
+                                              class="border-b border-gray-300 dark:border-gray-800"
+                                            >
+                                              <td
+                                                class="py-1.5"
+                                                title="Estimated Revenue"
                                               >
-                                                <td
-                                                  class="py-1.5"
-                                                  title="Estimated Revenue"
+                                                Revenue <span
+                                                  class="hidden md:inline"
+                                                  >Est.</span
+                                                ><span class="inline md:hidden"
+                                                  >Estimate</span
                                                 >
-                                                  Revenue <span
-                                                    class="hidden md:inline"
-                                                    >Est.</span
-                                                  ><span
-                                                    class="inline md:hidden"
-                                                    >Estimate</span
-                                                  >
-                                                </td>
-                                                <td
-                                                  class="text-right font-semibold"
-                                                >
+                                              </td>
+                                              <td
+                                                class="text-right font-semibold"
+                                              >
+                                                {#if item?.revenueEst !== null}
                                                   {@html abbreviateNumber(
                                                     item?.revenueEst,
                                                     false,
                                                     true,
                                                   )}
-                                                  {#if item?.revenuePrior !== null && item?.revenuePrior !== 0}
-                                                    {#if !isFinite((item?.revenueEst / item?.revenuePrior - 1) * 100)}
-                                                      <span></span>
-                                                    {:else if item?.revenueEst / item?.revenuePrior - 1 >= 0}
-                                                      <span
-                                                        class="text-green-800 dark:text-green-400"
-                                                      >
-                                                        +{(
-                                                          (item?.revenueEst /
-                                                            item?.revenuePrior -
-                                                            1) *
-                                                          100
-                                                        )?.toFixed(2)}%
-                                                      </span>
-                                                    {:else}
-                                                      <span
-                                                        class="text-red-800 dark:text-red-400"
-                                                      >
-                                                        {(
-                                                          (item?.revenueEst /
-                                                            item?.revenuePrior -
-                                                            1) *
-                                                          100
-                                                        )?.toFixed(2)}%
-                                                      </span>
-                                                    {/if}
+                                                  {#if getPercentageChange(item?.revenueEst, item?.revenuePrior) !== null}
+                                                    {@const revenueChange =
+                                                      getPercentageChange(
+                                                        item?.revenueEst,
+                                                        item?.revenuePrior,
+                                                      )}
+                                                    <span
+                                                      class="text-green-800 dark:text-green-400 {revenueChange >=
+                                                      0
+                                                        ? 'text-green-800 dark:text-green-400'
+                                                        : 'text-red-800 dark:text-red-400'}"
+                                                    >
+                                                      {revenueChange >= 0
+                                                        ? "+"
+                                                        : ""}{revenueChange}%
+                                                    </span>
                                                   {/if}
-                                                </td>
-                                              </tr>
-                                            {/if}
-                                            {#if item?.epsEst !== null}
-                                              <tr>
-                                                <td
-                                                  class="pb-0.5 pt-1.5"
-                                                  title="Estimated EPS"
+                                                {:else}
+                                                  n/a
+                                                {/if}
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td
+                                                class="pb-0.5 pt-1.5"
+                                                title="Estimated EPS"
+                                              >
+                                                EPS <span
+                                                  class="hidden md:inline"
+                                                  >Est.</span
+                                                ><span class="inline md:hidden"
+                                                  >Estimate</span
                                                 >
-                                                  EPS <span
-                                                    class="hidden md:inline"
-                                                    >Est.</span
-                                                  ><span
-                                                    class="inline md:hidden"
-                                                    >Estimate</span
-                                                  >
-                                                </td>
-                                                <td
-                                                  class="text-right font-semibold"
-                                                >
-                                                  {item?.epsEst?.toFixed(2)}
-                                                  {#if item?.epsPrior !== null && item?.epsPrior !== 0}
-                                                    {#if item?.epsEst / item?.epsPrior - 1 >= 0}
-                                                      <span
-                                                        class="text-green-800 dark:text-green-400"
-                                                      >
-                                                        +{(
-                                                          (item?.epsEst /
-                                                            item?.epsPrior -
-                                                            1) *
-                                                          100
-                                                        )?.toFixed(2)}%
-                                                      </span>
-                                                    {:else}
-                                                      <span
-                                                        class="text-red-800 dark:text-red-400"
-                                                      >
-                                                        {(
-                                                          (item?.epsEst /
-                                                            item?.epsPrior -
-                                                            1) *
-                                                          100
-                                                        )?.toFixed(2)}%
-                                                      </span>
-                                                    {/if}
+                                              </td>
+                                              <td
+                                                class="text-right font-semibold"
+                                              >
+                                                {item?.epsEst !== null
+                                                  ? item?.epsEst?.toFixed(2)
+                                                  : "n/a"}
+                                                {#if item?.epsEst !== null && item?.epsPrior !== null && item?.epsPrior !== 0}
+                                                  {#if item?.epsEst / item?.epsPrior - 1 >= 0}
+                                                    <span
+                                                      class="text-green-800 dark:text-green-400"
+                                                    >
+                                                      +{(
+                                                        (item?.epsEst /
+                                                          item?.epsPrior -
+                                                          1) *
+                                                        100
+                                                      )?.toFixed(2)}%
+                                                    </span>
+                                                  {:else}
+                                                    <span
+                                                      class="text-red-800 dark:text-red-400"
+                                                    >
+                                                      {(
+                                                        (item?.epsEst /
+                                                          item?.epsPrior -
+                                                          1) *
+                                                        100
+                                                      )?.toFixed(2)}%
+                                                    </span>
                                                   {/if}
-                                                </td>
-                                              </tr>
-                                            {/if}
+                                                {/if}
+                                              </td>
+                                            </tr>
                                           </tbody>
                                         </table>
                                       </div>
@@ -1186,11 +1124,9 @@
                                 class="w-7 h-7 inline-block"
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"
-                                ><path
-                                  fill="currentColor"
-                                  d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
-                                /></svg
                               >
+                                <path fill="currentColor" d={arrowIcon} />
+                              </svg>
                             </label>
                           </div>
                         </label>
@@ -1206,11 +1142,9 @@
                         class="w-6 h-6 m-auto"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
-                        ><path
-                          fill="currentColor"
-                          d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2l10 10l-10 10Z"
-                        /></svg
                       >
+                        <path fill="currentColor" d={arrowIcon} />
+                      </svg>
                     </label>
                   </div>
 
@@ -1233,31 +1167,17 @@
                               <HoverStockChart symbol={item?.symbol} />
                               <span class="truncate"> · {item?.name}</span>
                             </span>
-                            {#if isExpanded}
-                              <svg
-                                class="h-4 w-4"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fill-rule="evenodd"
-                                  d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-                                  clip-rule="evenodd"
-                                />
-                              </svg>
-                            {:else}
-                              <svg
-                                class="h-4 w-4"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fill-rule="evenodd"
-                                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                  clip-rule="evenodd"
-                                />
-                              </svg>
-                            {/if}
+                            <svg
+                              class="h-4 w-4"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fill-rule="evenodd"
+                                d={isExpanded ? chevronUpIcon : chevronDownIcon}
+                                clip-rule="evenodd"
+                              />
+                            </svg>
                           </div>
 
                           <!-- Expanded Content -->
@@ -1326,87 +1246,87 @@
                                         </td>
                                       </tr>
                                     {/if}
-                                    {#if item?.revenueEst !== null}
-                                      <tr
-                                        class="border-b border-gray-300 dark:border-gray-800"
+                                    <tr
+                                      class="border-b border-gray-300 dark:border-gray-800"
+                                    >
+                                      <td
+                                        class="py-1.5"
+                                        title="Estimated Revenue"
+                                        >Revenue Est.</td
                                       >
-                                        <td
-                                          class="py-1.5"
-                                          title="Estimated Revenue"
-                                          >Revenue Est.</td
-                                        >
-                                        <td class="text-right font-semibold">
+                                      <td class="text-right font-semibold">
+                                        {#if item?.revenueEst !== null}
                                           {@html abbreviateNumber(
                                             item?.revenueEst,
                                             false,
                                             true,
                                           )}
-                                          {#if item?.revenuePrior !== null && item?.revenuePrior !== 0}
-                                            {#if !isFinite((item?.revenueEst / item?.revenuePrior - 1) * 100)}
-                                              <span></span>
-                                            {:else if item?.revenueEst / item?.revenuePrior - 1 >= 0}
-                                              <span
-                                                class="text-green-800 dark:text-green-400"
-                                              >
-                                                +{(
-                                                  (item?.revenueEst /
-                                                    item?.revenuePrior -
-                                                    1) *
-                                                  100
-                                                )?.toFixed(2)}%
-                                              </span>
-                                            {:else}
-                                              <span
-                                                class="text-red-800 dark:text-red-400"
-                                              >
-                                                {(
-                                                  (item?.revenueEst /
-                                                    item?.revenuePrior -
-                                                    1) *
-                                                  100
-                                                )?.toFixed(2)}%
-                                              </span>
-                                            {/if}
+                                        {:else}
+                                          n/a
+                                        {/if}
+                                        {#if item?.revenueEst !== null && item?.revenuePrior !== null && item?.revenuePrior !== 0}
+                                          {#if !isFinite((item?.revenueEst / item?.revenuePrior - 1) * 100)}
+                                            <span></span>
+                                          {:else if item?.revenueEst / item?.revenuePrior - 1 >= 0}
+                                            <span
+                                              class="text-green-800 dark:text-green-400"
+                                            >
+                                              +{(
+                                                (item?.revenueEst /
+                                                  item?.revenuePrior -
+                                                  1) *
+                                                100
+                                              )?.toFixed(2)}%
+                                            </span>
+                                          {:else}
+                                            <span
+                                              class="text-red-800 dark:text-red-400"
+                                            >
+                                              {(
+                                                (item?.revenueEst /
+                                                  item?.revenuePrior -
+                                                  1) *
+                                                100
+                                              )?.toFixed(2)}%
+                                            </span>
                                           {/if}
-                                        </td>
-                                      </tr>
-                                    {/if}
-                                    {#if item?.epsEst !== null}
-                                      <tr>
-                                        <td
-                                          class="pb-0.5 pt-1.5"
-                                          title="Estimated EPS">EPS Est.</td
-                                        >
-                                        <td class="text-right font-semibold">
-                                          {item?.epsEst?.toFixed(2)}
-                                          {#if item?.epsPrior !== null && item?.epsPrior !== 0}
-                                            {#if item?.epsEst / item?.epsPrior - 1 >= 0}
-                                              <span
-                                                class="text-green-800 dark:text-green-400"
-                                              >
-                                                +{(
-                                                  (item?.epsEst /
-                                                    item?.epsPrior -
-                                                    1) *
-                                                  100
-                                                )?.toFixed(2)}%
-                                              </span>
-                                            {:else}
-                                              <span
-                                                class="text-red-800 dark:text-red-400"
-                                              >
-                                                {(
-                                                  (item?.epsEst /
-                                                    item?.epsPrior -
-                                                    1) *
-                                                  100
-                                                )?.toFixed(2)}%
-                                              </span>
-                                            {/if}
+                                        {/if}
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td
+                                        class="pb-0.5 pt-1.5"
+                                        title="Estimated EPS">EPS Est.</td
+                                      >
+                                      <td class="text-right font-semibold">
+                                        {item?.epsEst !== null
+                                          ? item?.epsEst?.toFixed(2)
+                                          : "n/a"}
+                                        {#if item?.epsEst !== null && item?.epsPrior !== null && item?.epsPrior !== 0}
+                                          {#if item?.epsEst / item?.epsPrior - 1 >= 0}
+                                            <span
+                                              class="text-green-800 dark:text-green-400"
+                                            >
+                                              +{(
+                                                (item?.epsEst / item?.epsPrior -
+                                                  1) *
+                                                100
+                                              )?.toFixed(2)}%
+                                            </span>
+                                          {:else}
+                                            <span
+                                              class="text-red-800 dark:text-red-400"
+                                            >
+                                              {(
+                                                (item?.epsEst / item?.epsPrior -
+                                                  1) *
+                                                100
+                                              )?.toFixed(2)}%
+                                            </span>
                                           {/if}
-                                        </td>
-                                      </tr>
-                                    {/if}
+                                        {/if}
+                                      </td>
+                                    </tr>
                                   </tbody>
                                 </table>
                               </div>
