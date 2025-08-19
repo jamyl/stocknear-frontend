@@ -55,7 +55,7 @@
   import Gem from "lucide-svelte/icons/gem";
   import Plus from "lucide-svelte/icons/plus";
   import Screener from "lucide-svelte/icons/microscope";
-  import Backtesting from "lucide-svelte/icons/blocks";
+  //import Backtesting from "lucide-svelte/icons/blocks";
 
   export let data;
 
@@ -937,7 +937,7 @@
                   </a>
                 </Button>
               </Sheet.Close>
-
+              <!--
               <Sheet.Close asChild let:builder>
                 <Button
                   builders={[builder]}
@@ -964,7 +964,7 @@
                   </a>
                 </Button>
               </Sheet.Close>
-
+-->
               <Sheet.Close asChild let:builder>
                 <Button
                   builders={[builder]}
@@ -1508,7 +1508,7 @@
                     >Hedge Funds</span
                   >
                 </a>
-
+                <!--
                 <a
                   href="/backtesting"
                   class="flex flex-row items-center ml-9 w-full mt-3"
@@ -1522,6 +1522,7 @@
                     >Backtesting</span
                   >
                 </a>
+                -->
 
                 <a
                   href="/market-news"
