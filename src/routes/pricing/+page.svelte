@@ -814,7 +814,7 @@
         class="rounded-xl transform transition-all duration-300 sm:hover:-translate-y-1 relative flex flex-col relative bg-white dark:bg-zinc-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-[3px] overflow-visible border border-gray-400 dark:border-zinc-600 p-6 isolate"
       >
         <h3 class="text-3xl font-bold">Pro</h3>
-        <p class=" text-sm mt-1">Best for Profits, Not Bags</p>
+        <p class=" text-sm mt-1">Best for Profits, Not Bag Holders</p>
         <div class="mt-4">
           <span class="text-4xl font-bold">{mode ? "$15" : "$20"}</span>
           <!--
@@ -846,7 +846,7 @@
                 stroke-width="2"
                 d="M5 13l4 4L19 7"
               ></path></svg
-            ><span class="mr-2">1000 Credits/mo </span>
+            ><span class="mr-2">1,000 Credits/mo </span>
           </li>
           <li class="flex items-start text-start">
             <svg
@@ -1309,27 +1309,6 @@
                     Of course. There is a "Cancel Subscription" button in your
                     account area that you get access to after signing up. You
                     can also send us a message and we will cancel for you.
-                  </p>
-                </div>
-              </details>
-            </li>
-            <li class="border-b border-gray-300 dark:border-gray-800">
-              <details class="collapse collapse-arrow">
-                <summary
-                  class="font-semibold collapse-title text-[1rem] sm:text-xl flex items-center justify-between w-full text-left py-5"
-                >
-                  Why is Stocknear so much cheaper than other platforms?
-                </summary>
-                <div class="collapse-content">
-                  <p
-                    class="text-sm sm:text-[1rem] pb-5 dark:text-gray-200 overflow-hidden transition-all duration-300 ease-in-out"
-                  >
-                    Stocknear is a solo project, which means I handle everything
-                    myself—eliminating the need for a large team and costly
-                    overhead. This allows me to keep prices low while still
-                    delivering a high-quality service. Unlike many financial
-                    platforms that prioritize high profit margins, my goal is to
-                    make market data accessible to everyone.
                   </p>
                 </div>
               </details>
