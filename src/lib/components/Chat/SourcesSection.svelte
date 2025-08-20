@@ -11,10 +11,10 @@
 
   // Unique tickers with their URLs
   const tickersWithUrls = Array.from(
-    new Set(sources.map((s) => s.ticker).filter(Boolean)),
+    new Set(sources?.map((s) => s.ticker).filter(Boolean)),
   )?.map((ticker) => {
     // Find the first source with this ticker to get its URL
-    const source = sources.find((s) => s.ticker === ticker);
+    const source = sources?.find((s) => s.ticker === ticker);
     return {
       ticker,
       url: source?.url || `/stocks/${ticker}`, // fallback to /stocks/ if no URL
