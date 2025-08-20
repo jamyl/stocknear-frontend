@@ -26,7 +26,7 @@
     if (data?.user) {
       let subId = "";
 
-      if (subscriptionType === "lifetime") {
+      if (subscriptionType === "lifeTime") {
         subId = import.meta.env.VITE_LEMON_SQUEEZY_LIFE_TIME_ACCESS_ID;
       } else if (mode && subscriptionType === "plus") {
         subId = import.meta.env.VITE_LEMON_SQUEEZY_ANNUAL_ID_PLUS;
@@ -215,7 +215,9 @@
         class=" rounded-xl transform transition-all duration-300 sm:hover:-translate-y-1 lg:flex flex-col relative bg-white dark:bg-zinc-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-[3px] overflow-visible border border-gray-400 dark:border-zinc-600 p-6 isolate"
       >
         <h3 class="text-3xl font-bold">Basic</h3>
-        <p class=" text-sm mt-1">Ideal for Beginners</p>
+        <p class="text-muted dark:text-zinc-300 text-sm mt-1">
+          Ideal for Beginners
+        </p>
         <div class="mt-4">
           <span class="text-4xl font-bold">$0</span><span class=" text-xl ml-1"
             >/Month</span
@@ -223,7 +225,7 @@
         </div>
 
         <ul class="mt-6 mb-6 space-y-2">
-          <li class="flex flex-row items-center text-start">
+          <li class="flex flex-row items-center">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               fill="none"
@@ -238,7 +240,7 @@
               ></path></svg
             ><span class="mr-2">10 Credits/mo</span>
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               fill="none"
@@ -253,7 +255,7 @@
               ></path></svg
             ><span class="">1 Watchlist (up to 5 stocks)</span>
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               fill="none"
@@ -268,7 +270,7 @@
               ></path></svg
             ><span class="">3 Price Alerts</span>
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               fill="none"
@@ -284,7 +286,7 @@
             ><span class="">Realtime Notification</span>
           </li>
 
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               viewBox="0 0 64 64"
@@ -347,7 +349,7 @@
               >Hedge Fund Portfolio Access</span
             >
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               viewBox="0 0 64 64"
@@ -410,7 +412,7 @@
               >US Congress Portfolio Access</span
             >
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               viewBox="0 0 64 64"
@@ -474,7 +476,7 @@
             >
           </li>
 
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               viewBox="0 0 64 64"
@@ -535,7 +537,7 @@
 
             <span class="text-muted dark:text-gray-400">Stock Screener</span>
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               viewBox="0 0 64 64"
@@ -596,7 +598,7 @@
 
             <span class="text-muted dark:text-gray-400">No Ads</span>
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               viewBox="0 0 64 64"
@@ -659,7 +661,7 @@
               >Realtime Options Activity</span
             >
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               viewBox="0 0 64 64"
@@ -722,7 +724,7 @@
               >Realtime Dark Pool Trades</span
             >
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               viewBox="0 0 64 64"
@@ -813,10 +815,12 @@
         style="opacity: 1; transform: translateY(20px);"
         class="rounded-xl transform transition-all duration-300 sm:hover:-translate-y-1 relative flex flex-col relative bg-white dark:bg-zinc-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-[3px] overflow-visible border border-gray-400 dark:border-zinc-600 p-6 isolate"
       >
-        <h3 class="text-3xl font-bold">Pro</h3>
-        <p class=" text-sm mt-1">Best for Profits, Not Bag Holders</p>
+        <h3 class="text-3xl font-bold">Plus</h3>
+        <p class="text-muted dark:text-zinc-300 text-sm mt-1">
+          Best for Intermediate Investors
+        </p>
         <div class="mt-4">
-          <span class="text-4xl font-bold">{mode ? "$15" : "$20"}</span>
+          <span class="text-4xl font-bold">{mode ? "$7.50" : "$10"}</span>
           <!--
           <span class="text-pink-700 dark:text-pink-500 text-4xl font-bold ml-1"
             >{mode ? "$3.75" : "$5"}</span
@@ -829,7 +833,7 @@
             ? 'hidden'
             : ''}"
         >
-          ($180 Billed Annually)
+          ($90 Billed Annually)
         </p>
 
         <ul class="mt-6 mb-6 space-y-2">
@@ -846,9 +850,9 @@
                 stroke-width="2"
                 d="M5 13l4 4L19 7"
               ></path></svg
-            ><span class="mr-2">1,000 Credits/mo </span>
+            ><span class="mr-2">150 Credits/mo </span>
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               fill="none"
@@ -861,9 +865,9 @@
                 stroke-width="2"
                 d="M5 13l4 4L19 7"
               ></path></svg
-            ><span class="">Unlimited Watchlist up to 300 stocks</span>
+            ><span class="">Unlimited Watchlist up to 100 stocks</span>
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               fill="none"
@@ -878,7 +882,7 @@
               ></path></svg
             ><span class="">Unlimited Price Alerts</span>
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               fill="none"
@@ -896,7 +900,7 @@
             <span class="">Unlimited Stock Screener</span>
           </li>
 
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               fill="none"
@@ -912,7 +916,7 @@
             ><span class="">Realtime Notification</span>
           </li>
 
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               fill="none"
@@ -929,7 +933,7 @@
 
             <span class="">Hedge Fund Portfolio Access</span>
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               fill="none"
@@ -946,7 +950,7 @@
 
             <span class="">US Congress Portfolio Access</span>
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               fill="none"
@@ -963,7 +967,7 @@
 
             <span class="">Financial History Access</span>
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               fill="none"
@@ -981,64 +985,202 @@
             <span class="">No Ads</span>
           </li>
 
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              ><path
+              viewBox="0 0 64 64"
+              version="1.1"
+              fill="currentColor"
+              style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"
+              ><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g
+                id="SVGRepo_tracerCarrier"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 13l4 4L19 7"
-              ></path></svg
+              ></g><g id="SVGRepo_iconCarrier">
+                <rect
+                  id="Icons"
+                  x="-448"
+                  y="-64"
+                  width="1280"
+                  height="800"
+                  style="fill:none;"
+                ></rect>
+                <g id="Icons1" serif:id="Icons">
+                  <g id="Strike"> </g> <g id="H1"> </g> <g id="H2"> </g>
+                  <g id="H3"> </g> <g id="list-ul"> </g>
+                  <g id="hamburger-1"> </g> <g id="hamburger-2"> </g>
+                  <g id="list-ol"> </g> <g id="list-task"> </g>
+                  <g id="trash"> </g> <g id="vertical-menu"> </g>
+                  <g id="horizontal-menu"> </g> <g id="sidebar-2"> </g>
+                  <g id="Pen"> </g> <g id="Pen1" serif:id="Pen"> </g>
+                  <g id="clock"> </g> <g id="external-link"> </g>
+                  <g id="hr"> </g> <g id="info"> </g> <g id="warning"> </g>
+                  <g id="plus-circle"> </g> <g id="minus-circle"> </g>
+                  <g id="vue"> </g> <g id="cog"> </g> <g id="logo"> </g>
+                  <path
+                    id="times"
+                    d="M32.033,29.19l15.55,-15.55l2.863,2.863l-15.55,15.55l15.55,15.55l-2.863,2.863l-15.55,-15.55l-15.55,15.55l-2.863,-2.863l15.55,-15.55l-15.55,-15.55l2.863,-2.863l15.55,15.55Z"
+                  ></path>
+                  <path
+                    d="M32.033,29.19l15.55,-15.55l2.863,2.863l-15.55,15.55l15.55,15.55l-2.863,2.863l-15.55,-15.55l-15.55,15.55l-2.863,-2.863l15.55,-15.55l-15.55,-15.55l2.863,-2.863l15.55,15.55Z"
+                  ></path> <g id="radio-check"> </g> <g id="eye-slash"> </g>
+                  <g id="eye"> </g> <g id="toggle-off"> </g>
+                  <g id="shredder"> </g>
+                  <g
+                    id="spinner--loading--dots-"
+                    serif:id="spinner [loading, dots]"
+                  >
+                  </g> <g id="react"> </g> <g id="check-selected"> </g>
+                  <g id="turn-off"> </g> <g id="code-block"> </g>
+                  <g id="user"> </g> <g id="coffee-bean"> </g>
+                  <g id="coffee-beans">
+                    <g id="coffee-bean1" serif:id="coffee-bean"> </g>
+                  </g> <g id="coffee-bean-filled"> </g>
+                  <g id="coffee-beans-filled">
+                    <g id="coffee-bean2" serif:id="coffee-bean"> </g>
+                  </g> <g id="clipboard"> </g> <g id="clipboard-paste"> </g>
+                  <g id="clipboard-copy"> </g> <g id="Layer1"> </g>
+                </g>
+              </g></svg
             >
 
-            <span class="">Realtime Options Activity</span>
+            <span class="text-muted dark:text-gray-400"
+              >Realtime Options Activity</span
+            >
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              ><path
+              viewBox="0 0 64 64"
+              version="1.1"
+              fill="currentColor"
+              style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"
+              ><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g
+                id="SVGRepo_tracerCarrier"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 13l4 4L19 7"
-              ></path></svg
+              ></g><g id="SVGRepo_iconCarrier">
+                <rect
+                  id="Icons"
+                  x="-448"
+                  y="-64"
+                  width="1280"
+                  height="800"
+                  style="fill:none;"
+                ></rect>
+                <g id="Icons1" serif:id="Icons">
+                  <g id="Strike"> </g> <g id="H1"> </g> <g id="H2"> </g>
+                  <g id="H3"> </g> <g id="list-ul"> </g>
+                  <g id="hamburger-1"> </g> <g id="hamburger-2"> </g>
+                  <g id="list-ol"> </g> <g id="list-task"> </g>
+                  <g id="trash"> </g> <g id="vertical-menu"> </g>
+                  <g id="horizontal-menu"> </g> <g id="sidebar-2"> </g>
+                  <g id="Pen"> </g> <g id="Pen1" serif:id="Pen"> </g>
+                  <g id="clock"> </g> <g id="external-link"> </g>
+                  <g id="hr"> </g> <g id="info"> </g> <g id="warning"> </g>
+                  <g id="plus-circle"> </g> <g id="minus-circle"> </g>
+                  <g id="vue"> </g> <g id="cog"> </g> <g id="logo"> </g>
+                  <path
+                    id="times"
+                    d="M32.033,29.19l15.55,-15.55l2.863,2.863l-15.55,15.55l15.55,15.55l-2.863,2.863l-15.55,-15.55l-15.55,15.55l-2.863,-2.863l15.55,-15.55l-15.55,-15.55l2.863,-2.863l15.55,15.55Z"
+                  ></path>
+                  <path
+                    d="M32.033,29.19l15.55,-15.55l2.863,2.863l-15.55,15.55l15.55,15.55l-2.863,2.863l-15.55,-15.55l-15.55,15.55l-2.863,-2.863l15.55,-15.55l-15.55,-15.55l2.863,-2.863l15.55,15.55Z"
+                  ></path> <g id="radio-check"> </g> <g id="eye-slash"> </g>
+                  <g id="eye"> </g> <g id="toggle-off"> </g>
+                  <g id="shredder"> </g>
+                  <g
+                    id="spinner--loading--dots-"
+                    serif:id="spinner [loading, dots]"
+                  >
+                  </g> <g id="react"> </g> <g id="check-selected"> </g>
+                  <g id="turn-off"> </g> <g id="code-block"> </g>
+                  <g id="user"> </g> <g id="coffee-bean"> </g>
+                  <g id="coffee-beans">
+                    <g id="coffee-bean1" serif:id="coffee-bean"> </g>
+                  </g> <g id="coffee-bean-filled"> </g>
+                  <g id="coffee-beans-filled">
+                    <g id="coffee-bean2" serif:id="coffee-bean"> </g>
+                  </g> <g id="clipboard"> </g> <g id="clipboard-paste"> </g>
+                  <g id="clipboard-copy"> </g> <g id="Layer1"> </g>
+                </g>
+              </g></svg
             >
 
-            <span class="">Realtime Dark Pool Trades</span>
+            <span class="text-muted dark:text-gray-400"
+              >Realtime Dark Pool Trades</span
+            >
           </li>
-          <li class="flex items-start text-start">
+          <li class="flex items-start">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              ><path
+              viewBox="0 0 64 64"
+              version="1.1"
+              fill="currentColor"
+              style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"
+              ><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g
+                id="SVGRepo_tracerCarrier"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 13l4 4L19 7"
-              ></path></svg
+              ></g><g id="SVGRepo_iconCarrier">
+                <rect
+                  id="Icons"
+                  x="-448"
+                  y="-64"
+                  width="1280"
+                  height="800"
+                  style="fill:none;"
+                ></rect>
+                <g id="Icons1" serif:id="Icons">
+                  <g id="Strike"> </g> <g id="H1"> </g> <g id="H2"> </g>
+                  <g id="H3"> </g> <g id="list-ul"> </g>
+                  <g id="hamburger-1"> </g> <g id="hamburger-2"> </g>
+                  <g id="list-ol"> </g> <g id="list-task"> </g>
+                  <g id="trash"> </g> <g id="vertical-menu"> </g>
+                  <g id="horizontal-menu"> </g> <g id="sidebar-2"> </g>
+                  <g id="Pen"> </g> <g id="Pen1" serif:id="Pen"> </g>
+                  <g id="clock"> </g> <g id="external-link"> </g>
+                  <g id="hr"> </g> <g id="info"> </g> <g id="warning"> </g>
+                  <g id="plus-circle"> </g> <g id="minus-circle"> </g>
+                  <g id="vue"> </g> <g id="cog"> </g> <g id="logo"> </g>
+                  <path
+                    id="times"
+                    d="M32.033,29.19l15.55,-15.55l2.863,2.863l-15.55,15.55l15.55,15.55l-2.863,2.863l-15.55,-15.55l-15.55,15.55l-2.863,-2.863l15.55,-15.55l-15.55,-15.55l2.863,-2.863l15.55,15.55Z"
+                  ></path>
+                  <path
+                    d="M32.033,29.19l15.55,-15.55l2.863,2.863l-15.55,15.55l15.55,15.55l-2.863,2.863l-15.55,-15.55l-15.55,15.55l-2.863,-2.863l15.55,-15.55l-15.55,-15.55l2.863,-2.863l15.55,15.55Z"
+                  ></path> <g id="radio-check"> </g> <g id="eye-slash"> </g>
+                  <g id="eye"> </g> <g id="toggle-off"> </g>
+                  <g id="shredder"> </g>
+                  <g
+                    id="spinner--loading--dots-"
+                    serif:id="spinner [loading, dots]"
+                  >
+                  </g> <g id="react"> </g> <g id="check-selected"> </g>
+                  <g id="turn-off"> </g> <g id="code-block"> </g>
+                  <g id="user"> </g> <g id="coffee-bean"> </g>
+                  <g id="coffee-beans">
+                    <g id="coffee-bean1" serif:id="coffee-bean"> </g>
+                  </g> <g id="coffee-bean-filled"> </g>
+                  <g id="coffee-beans-filled">
+                    <g id="coffee-bean2" serif:id="coffee-bean"> </g>
+                  </g> <g id="clipboard"> </g> <g id="clipboard-paste"> </g>
+                  <g id="clipboard-copy"> </g> <g id="Layer1"> </g>
+                </g>
+              </g></svg
             >
 
-            <span class="">Premium Discord Channel Access</span>
+            <span class="text-muted dark:text-gray-400"
+              >Premium Discord Channel Access</span
+            >
           </li>
         </ul>
         <div class="mt-auto pt-6 border-t border-zinc-700 mx-4">
           <label
             for={!data?.user ? "userLogin" : ""}
-            on:click={() => purchasePlan("pro")}
+            on:click={() => purchasePlan("plus")}
             class="text-white cursor-pointer w-full py-3 px-4 bg-black dark:bg-white rounded-[3px] font-semibold sm:hover:bg-default dark:sm:hover:bg-gray-100 text-white dark:text-black transition duration-100 flex items-center justify-center"
-            >Unlock Pro Access Now<svg
+            >Unlock Plus Access Now<svg
               class="w-5 h-5 ml-2"
               fill="none"
               stroke="currentColor"
@@ -1072,14 +1214,33 @@
           >
         </div>
         -->
-        <h3 class="text-3xl font-bold">Lifetime</h3>
-        <p class="text-white text-sm mt-1">No More Subscription Fatigue</p>
+        <h3 class="text-3xl font-bold">Pro</h3>
+        <p class="text-white dark:text-zinc-300 text-sm mt-1">
+          Best for Professional Investors
+        </p>
         <div class="mt-4">
-          <span class="text-white text-4xl font-bold">$449</span>
+          <span class="text-white text-4xl font-bold {!mode ? '' : ''}"
+            >{mode ? "$15" : "$20"}</span
+          >
+          <!--
+          {#if !mode}
+            <span
+              class="text-pink-700 dark:text-pink-500 text-4xl font-bold ml-1"
+              >$2</span
+            >{/if}
+            -->
+          <span class=" text-xl ml-1">/Month</span>
         </div>
+        <p
+          class="text-white dark:text-gray-400 text-sm mt-1 mx-4 {!mode
+            ? 'hidden'
+            : ''}"
+        >
+          ($180 Billed Annually)
+        </p>
 
         <ul class="mt-6 mb-6 space-y-2">
-          <li class="flex items-start text-white text-start">
+          <li class="flex flex-row items-center">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               fill="none"
@@ -1092,9 +1253,41 @@
                 stroke-width="2"
                 d="M5 13l4 4L19 7"
               ></path></svg
-            ><span class="">Everything in Pro, pay once, never again.</span>
+            ><span class="mr-2">1,000 Credits/mo</span>
           </li>
-          <li class="flex items-center text-start">
+          <li class="flex items-start text-white">
+            <svg
+              class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path></svg
+            ><span class="">Everything in Plus and ...</span>
+          </li>
+
+          <li class="flex items-start text-white">
+            <svg
+              class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path></svg
+            ><span class="">Watchlist with up to 300 stocks</span>
+          </li>
+
+          <li class="flex items-start text-white">
             <svg
               class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
               fill="none"
@@ -1108,20 +1301,60 @@
                 d="M5 13l4 4L19 7"
               ></path></svg
             >
-            <span class="font-medium">
-              Limited Offer — Only <strong
-                >{data?.getLTDCount} left
-              </strong></span
+
+            <span class="">Realtime Options Activity</span>
+          </li>
+          <li class="flex items-start text-white">
+            <svg
+              class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path></svg
             >
+
+            <span class="">Realtime Dark Pool Trades</span>
+          </li>
+          <li class="flex items-start text-white">
+            <svg
+              class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path></svg
+            >
+
+            <span class="">Premium Discord Channel Access</span>
           </li>
         </ul>
+        <!--
+        {#if !["Pro", "Plus"]?.includes(data?.user?.tier) || data?.user?.freeTrial === true}
+          <div class="mt-3 items-center text-[1rem] font-medium mb-5">
+            Promo Code: <strong>EASTERSALE</strong>
+            <br class="mb-2" />
+            Get started with <strong></strong> on Pro Monthly to test our Service!
+          </div>
+        {/if}
+        -->
 
         <div class="mt-auto pt-6 border-t border-zinc-700 mx-4">
           <label
             for={!data?.user ? "userLogin" : ""}
-            on:click={() => purchasePlan("lifetime")}
+            on:click={() => purchasePlan("pro")}
             class="cursor-pointer w-full py-3 px-4 bg-white rounded-[3px] font-semibold sm:hover:bg-gray-100 dark:sm:hover:bg-gray-100 text-black transition duration-100 flex items-center justify-center"
-            >Get Lifetime Now<svg
+            >Unlock Pro Access Now<svg
               class="w-5 h-5 ml-2"
               fill="none"
               stroke="currentColor"
@@ -1135,6 +1368,47 @@
               ></path></svg
             ></label
           >
+        </div>
+      </div>
+
+      <div
+        class="relative text-left w-full col-span-1 lg:col-span-3 text-white bg-[#18181B] dark:bg-zinc-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-[3px] overflow-visible border border-zinc-200 dark:border-zinc-600 p-6 isolate translate-y-5 opacity-100"
+      >
+        <div class="flex flex-row items-center justify-between">
+          <h3 class="text-2xl md:text-3xl font-bold">
+            Lifetime ({data?.getLTDCount} left)
+          </h3>
+          <div>
+            <span class="text-3xl md:text-4xl font-bold">$449</span>
+          </div>
+        </div>
+
+        <p class=" md:text-lg mt-4 lg:mt-2">
+          Everything in Pro, pay once, never again!
+        </p>
+
+        <div class="mt-10 flex justify-center lg:justify-end mx-4 lg:mx-0">
+          <label
+            for={data?.user ? "" : "userLogin"}
+            on:click={() => purchasePlan("lifeTime")}
+            class="cursor-pointer w-full lg:w-auto py-3 lg:mt-2 px-4 bg-white rounded-[3px] font-semibold sm:hover:bg-gray-100 dark:sm:hover:bg-gray-100 text-black transition duration-100 flex items-center justify-center lg:justify-end"
+          >
+            Get Lifetime Now
+            <svg
+              class="w-5 h-5 ml-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              ></path>
+            </svg>
+          </label>
         </div>
       </div>
     </div>
