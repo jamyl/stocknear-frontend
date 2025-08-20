@@ -50,7 +50,7 @@
   <link rel="icon" href="/favicon.ico" />
   <link
     rel="apple-touch-icon"
-    sizes="180x180"
+    sizes="64x64"
     href={baseURL + "/apple-touch-icon.png"}
   />
   <meta name="theme-color" content="#1f2937" />
@@ -67,7 +67,7 @@
   <meta property="og:url" content={canonical} />
   <meta property="og:title" content={`${title} - ${siteName}`} />
   <meta property="og:description" content={description} />
-  <!--
+
   {#if image}
     <meta property="og:image" content={image} />
     <meta property="og:image:width" content="256" />
@@ -75,7 +75,7 @@
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:alt" content={`${title} - ${siteName}`} />
   {/if}
--->
+
   {#if article}
     <meta property="article:author" content={siteName} />
     <meta property="article:publisher" content={baseURL} />
@@ -101,12 +101,11 @@
   <meta name="twitter:creator" content={twitterHandle} />
   <meta name="twitter:title" content={`${title} - ${siteName}`} />
   <meta name="twitter:description" content={description} />
-  <!--
+
   {#if image}
     <meta name="twitter:image" content={image} />
     <meta name="twitter:image:alt" content={`${title} - ${siteName}`} />
   {/if}
-  -->
 
   <!-- Apple mobile web-app -->
   <meta name="apple-mobile-web-app-title" content={siteName} />
