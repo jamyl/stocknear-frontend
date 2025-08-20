@@ -9,13 +9,30 @@
     url?: string;
   }> = [];
 
-  // Unique tickers
-  const tickers = Array.from(
+  // Unique tickers with their URLs
+  const tickersWithUrls = Array.from(
     new Set(sources.map((s) => s.ticker).filter(Boolean)),
-  );
+  )?.map((ticker) => {
+    // Find the first source with this ticker to get its URL
+    const source = sources.find((s) => s.ticker === ticker);
+    return {
+      ticker,
+      url: source?.url || `/stocks/${ticker}`, // fallback to /stocks/ if no URL
+    };
+  });
+
+  // State for expand/collapse
+  let isExpanded = false;
+  const INITIAL_DISPLAY_COUNT = 6;
+
+  // Determine which sources to display
+  $: displayedSources = isExpanded
+    ? sources
+    : sources.slice(0, INITIAL_DISPLAY_COUNT);
+  $: hasMoreSources = sources.length > INITIAL_DISPLAY_COUNT;
 </script>
 
-{#if sources && sources.length > 0}
+{#if sources && sources?.length > 0}
   <div class="w-full mt-6 pt-4 border-t border-gray-300 dark:border-gray-600">
     <div class="flex items-center gap-2 mb-4">
       <h3 class="text-[1rem] sm:text-lg font-semibold">Sources</h3>
@@ -23,12 +40,12 @@
     </div>
 
     <!-- Row 1: Tickers side-by-side -->
-    {#if tickers?.length > 0}
+    {#if tickersWithUrls?.length > 0}
       <div class="flex flex-wrap gap-2 mb-4">
-        {#each tickers as ticker}
+        {#each tickersWithUrls as { ticker, url }}
           <a
-            href={`/stocks/${ticker}`}
-            class="inline-block badge border-blue-100 dark:border-gray-800 bg-blue-50 dark:bg-primary font-semibold rounded-sm px-2 text-blue-700 dark:text-blue-400"
+            href={url}
+            class="inline-block badge border-blue-100 dark:border-gray-800 bg-blue-50 dark:bg-primary font-semibold rounded px-2 text-blue-800 dark:text-blue-400 sm:hover:text-muted dark:sm:hover:text-white"
           >
             {ticker}
           </a>
@@ -38,12 +55,12 @@
 
     <!-- Row 2: Sources side-by-side -->
     <div
-      class="sources-section grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+      class="sources-section grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 transition-all duration-300"
     >
-      {#each sources as source}
+      {#each displayedSources as source, index}
         <a
           href={source.url || "#"}
-          class="flex items-start gap-3 p-3 rounded bg-gray-100 shadow dark:bg-primary hover:bg-gray-200 dark:hover:bg-secondary transition-all duration-150"
+          class=" flex items-start gap-3 p-3 rounded bg-gray-100 shadow dark:bg-primary sm:hover:bg-gray-200 dark:sm:hover:bg-secondary transition-all"
           class:cursor-pointer={source.url}
           class:cursor-default={!source.url}
         >
@@ -72,18 +89,65 @@
         </a>
       {/each}
     </div>
+
+    <!-- Show More/Less button -->
+    {#if hasMoreSources}
+      <button
+        on:click={() => (isExpanded = !isExpanded)}
+        class="cursor-pointer group mt-4 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-all"
+      >
+        <span class="relative">
+          {#if !isExpanded}
+            <span class="flex items-center gap-1.5">
+              <span>View all {sources.length} sources</span>
+              <svg
+                class="w-4 h-4 transition-transform group-hover:translate-y-0.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </span>
+          {:else}
+            <span class="flex items-center gap-1.5">
+              <span>Show less</span>
+              <svg
+                class="w-4 h-4 transition-transform group-hover:-translate-y-0.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 15l7-7 7 7"
+                />
+              </svg>
+            </span>
+          {/if}
+        </span>
+      </button>
+    {/if}
   </div>
 {/if}
 
 <style>
-  .sources-section {
-    animation: fadeIn 0.3s ease-in;
+  .source-card {
+    animation: fadeInUp 0s ease-out forwards;
+    opacity: 0;
   }
 
-  @keyframes fadeIn {
+  @keyframes fadeInUp {
     from {
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(12px);
     }
     to {
       opacity: 1;
