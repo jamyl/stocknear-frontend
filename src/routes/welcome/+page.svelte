@@ -40,11 +40,9 @@
       });
     }, 250);
 
-    // Twitter conversion tracking event
-    if (typeof twq !== "undefined") {
-      twq("event", "tw-onuuu-qdj4l", {
-        conversion_id: data?.user?.id || null,
-      });
+    // Meta conversion tracking event
+    if (typeof fbq !== "undefined") {
+      fbq('track', 'Purchase');
     }
   });
 </script>
