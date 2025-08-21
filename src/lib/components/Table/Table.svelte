@@ -71,10 +71,10 @@
   //$: stockList = originalData.slice(0, 150);
 
   let allRows = [
-    { name: "Volume", rule: "volume", type: "int" },
+    { name: "Volume", rule: "volume", type: "decimal" },
     { name: "Call Volume", rule: "callVolume", type: "int" },
     { name: "Put Volume", rule: "putVolume", type: "int" },
-    { name: "Avg. Volume", rule: "avgVolume", type: "int" },
+    { name: "Avg. Volume", rule: "avgVolume", type: "decimal" },
     { name: "Market Cap", rule: "marketCap", type: "int" },
     { name: "Price", rule: "price", type: "float" },
     { name: "% Change", rule: "changesPercentage", type: "percentSign" },

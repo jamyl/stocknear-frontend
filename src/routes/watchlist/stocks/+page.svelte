@@ -79,8 +79,8 @@
   ];
 
   let allRows = [
-    { name: "Volume", rule: "volume", type: "int" },
-    { name: "Avg. Volume", rule: "avgVolume", type: "int" },
+    { name: "Volume", rule: "volume", type: "decimal" },
+    { name: "Avg. Volume", rule: "avgVolume", type: "decimal" },
     { name: "Market Cap", rule: "marketCap", type: "int" },
     { name: "Price", rule: "price", type: "float" },
     { name: "Change", rule: "changesPercentage", type: "percentSign" },
@@ -139,7 +139,7 @@
       type: "percent",
     },
     { name: "FCF Yield", rule: "freeCashFlowYield", type: "percent" },
-    { name: "Employees", rule: "employees", type: "int" },
+    { name: "Employees", rule: "employees", type: "decimal" },
     { name: "Debt Ratio", rule: "debtRatio", type: "float" },
     { name: "Debt / Equity", rule: "debtToEquityRatio", type: "int" },
     { name: "Profit Margin", rule: "netProfitMargin", type: "percent" },
@@ -179,7 +179,7 @@
   ];
 
   let ruleOfList = [
-    { name: "Volume", rule: "volume", type: "int" },
+    { name: "Volume", rule: "volume", type: "decimal" },
     { name: "Market Cap", rule: "marketCap", type: "int" },
     { name: "Price", rule: "price", type: "float" },
     { name: "Change", rule: "changesPercentage", type: "percentSign" },
@@ -1835,11 +1835,9 @@
                                 >
                                   {#if item?.[row?.rule] !== undefined && item?.[row?.rule] !== null}
                                     {#if row?.type === "int"}
-                                      {@html abbreviateNumber(
-                                        item[row?.rule],
-                                        false,
-                                        true,
-                                      )}
+                                      {abbreviateNumber(item[row?.rule])}
+                                    {:else if row?.type === "decimal"}
+                                      {item[row?.rule]?.toLocaleString("en-US")}
                                     {:else if row?.type === "str"}
                                       {item[row?.rule] !== null
                                         ? item[row?.rule]
