@@ -183,19 +183,6 @@
 
     <!--<Discount />-->
 
-    <!-- Simple Value Proposition -->
-    <div
-      class="text-center mb-10 p-6 bg-gradient-to-r from-gray-100 to-purple-50 dark:from-zinc-900 dark:to-zinc-800 rounded-xl max-w-2xl mx-auto"
-    >
-      <p class="text-lg font-semibold text-gray-900 dark:text-white">
-        One prevented $2,000 loss covers 10+ years of Pro subscription
-      </p>
-      <p class="text-sm text-muted dark:text-zinc-400 mt-2">
-        Join 6,000+ investors saving thousands annually with better entry and
-        exit points
-      </p>
-    </div>
-
     <div class="flex flex-row items-center justify-center">
       <div class="flex flex-row items-center ml-auto">
         <span class="text-[1rem] font-semibold mr-3"> Monthly </span>
@@ -1393,7 +1380,7 @@
         </div>
 
         <p class=" md:text-lg mt-4 lg:mt-2">
-          Everything in Pro, pay once, never again. Best investment you'll make!
+          Everything in Pro, pay once, never again.
         </p>
 
         <div class="mt-10 flex justify-center lg:justify-end mx-4 lg:mx-0">

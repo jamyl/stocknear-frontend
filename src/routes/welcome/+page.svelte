@@ -39,11 +39,6 @@
         origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
       });
     }, 250);
-
-    // Meta conversion tracking event
-    if (typeof fbq !== "undefined") {
-      fbq('track', 'Purchase');
-    }
   });
 </script>
 

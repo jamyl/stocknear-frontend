@@ -574,10 +574,10 @@
           class="w-full h-full p-2 group font-sans focus:outline-none outline-none outline-transparent transition duration-300 ease-in-out items-center relative group cursor-pointer"
           ><div class="flex leading-none items-center h-full flex-grow">
             <div
-              class="ml-2 text-left font-medium flex flex-col justify-center box-border relative text-wrap"
+              class="ml-2 text-left text-[0.95rem] flex flex-col justify-center box-border relative text-wrap"
             >
               {item?.label}
-              <div class="flex items-center">
+              <div class="flex items-center font-medium pt-1">
                 <svg
                   viewBox="0 0 76 76"
                   xmlns="http://www.w3.org/2000/svg"
@@ -606,7 +606,7 @@
                       d="M 58.5833,55.4167L 53.8333,55.4167L 53.8333,34.8333L 58.5833,39.5833L 58.5833,55.4167 Z M 49.0833,55.4167L 44.3333,55.4167L 44.3333,44.3333L 49.0833,39.5834L 49.0833,55.4167 Z M 39.5833,55.4167L 34.8333,55.4167L 34.8333,45.9167L 37.2083,36.4167L 39.5833,39.5833L 39.5833,55.4167 Z M 30.0833,55.4167L 25.3333,55.4167L 25.3333,44.3333L 30.0833,49.0833L 30.0833,55.4167 Z M 20.5833,55.4167L 15.8333,55.4167L 15.8333,53.8334L 20.5833,49.0834L 20.5833,55.4167 Z "
                     ></path></g
                   ></svg
-                ><span class="text-xs">{item?.type}</span>
+                ><span class="text-sm">{item?.type}</span>
               </div>
             </div>
           </div></button
