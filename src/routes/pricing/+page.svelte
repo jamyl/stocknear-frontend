@@ -175,13 +175,26 @@
   </div>
 
   <div class="px-3">
-    <div class="mx-auto text-center mb-8">
-      <h1 class="text-4xl sm:text-5xl font-bold pb-4">
-        Success is Well-Researched
+    <div class="mx-auto text-center mb-10">
+      <h1 class="text-4xl sm:text-5xl font-bold">
+        Professional Trading Intelligence
       </h1>
     </div>
 
     <!--<Discount />-->
+
+    <!-- Simple Value Proposition -->
+    <div
+      class="text-center mb-10 p-6 bg-gradient-to-r from-gray-100 to-purple-50 dark:from-zinc-900 dark:to-zinc-800 rounded-xl max-w-2xl mx-auto"
+    >
+      <p class="text-lg font-semibold text-gray-900 dark:text-white">
+        One prevented $2,000 loss covers 10+ years of Pro subscription
+      </p>
+      <p class="text-sm text-muted dark:text-zinc-400 mt-2">
+        Join 6,000+ investors saving thousands annually with better entry and
+        exit points
+      </p>
+    </div>
 
     <div class="flex flex-row items-center justify-center">
       <div class="flex flex-row items-center ml-auto">
@@ -215,9 +228,7 @@
         class=" rounded-xl transform transition-all duration-300 sm:hover:-translate-y-1 lg:flex flex-col relative bg-white dark:bg-zinc-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-[3px] overflow-visible border border-gray-400 dark:border-zinc-600 p-6 isolate"
       >
         <h3 class="text-3xl font-bold">Basic</h3>
-        <p class="text-muted dark:text-zinc-300 text-sm mt-1">
-          Ideal for Beginners
-        </p>
+        <p class="text-muted dark:text-zinc-300 text-sm mt-1">Get Started</p>
         <div class="mt-4">
           <span class="text-4xl font-bold">$0</span><span class=" text-xl ml-1"
             >/Month</span
@@ -816,9 +827,7 @@
         class="rounded-xl transform transition-all duration-300 sm:hover:-translate-y-1 relative flex flex-col relative bg-white dark:bg-zinc-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-[3px] overflow-visible border border-gray-400 dark:border-zinc-600 p-6 isolate"
       >
         <h3 class="text-3xl font-bold">Plus</h3>
-        <p class="text-muted dark:text-zinc-300 text-sm mt-1">
-          Best for Intermediate Investors
-        </p>
+        <p class="text-muted dark:text-zinc-300 text-sm mt-1">Most Popular</p>
         <div class="mt-4">
           <span class="text-4xl font-bold">{mode ? "$7.50" : "$10"}</span>
           <!--
@@ -1216,7 +1225,7 @@
         -->
         <h3 class="text-3xl font-bold">Pro</h3>
         <p class="text-white dark:text-zinc-300 text-sm mt-1">
-          Best for Professional Investors
+          Professional Trader
         </p>
         <div class="mt-4">
           <span class="text-white text-4xl font-bold {!mode ? '' : ''}"
@@ -1384,7 +1393,7 @@
         </div>
 
         <p class=" md:text-lg mt-4 lg:mt-2">
-          Everything in Pro, pay once, never again!
+          Everything in Pro, pay once, never again. Best investment you'll make!
         </p>
 
         <div class="mt-10 flex justify-center lg:justify-end mx-4 lg:mx-0">
