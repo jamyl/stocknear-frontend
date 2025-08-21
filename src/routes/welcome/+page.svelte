@@ -39,6 +39,13 @@
         origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
       });
     }, 250);
+
+    // Twitter conversion tracking event
+    if (typeof twq !== 'undefined') {
+      twq('event', 'tw-onuuu-qdj4l', {
+        conversion_id: data?.user?.id || null
+      });
+    }
   });
 </script>
 

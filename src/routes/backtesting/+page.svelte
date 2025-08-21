@@ -574,15 +574,6 @@
                 0: "Zero Line",
             },
         },
-        volume: {
-            label: "Volume",
-            category: "Volume",
-            operators: ["above", "below"],
-            defaultOperator: "above",
-            defaultValue: 1000000,
-            min: 0,
-            max: 999999999,
-        },
         price: {
             label: "Price",
             category: "Price",
