@@ -14,7 +14,7 @@
   export let filteredData = [];
   export let rawData = [];
 
-  let selectedTicker = "";
+  let selectedOptionData = "";
   let optionsInsightContent = "";
   let isStreaming = false;
   //  let animationClass = "";
@@ -108,7 +108,7 @@
   async function optionsInsight(optionsData) {
     if (data?.user?.tier === "Pro") {
       try {
-        selectedTicker = optionsData?.ticker;
+        selectedOptionData = optionsData;
         optionsInsightContent = ""; // Clear previous content
         isStreaming = true;
 
@@ -843,13 +843,24 @@
   ></label>
 
   <div
-    class="modal-box max-h-[900px] w-full max-w-4xl rounded w-full bg-white dark:bg-secondary border border-gray-600"
+    class="modal-box max-h-[1000px] w-full max-w-4xl rounded w-full bg-white dark:bg-secondary border border-gray-600"
   >
     <div
       class="mb-5 flex flex-row justify-between items-center border-b pb-2 border-gray-300 dark:border-gray-600"
     >
       <h3 class="font-semibold text-lg sm:text-xl text-black dark:text-white">
-        {selectedTicker} Options Insight
+        {selectedOptionData?.ticker}
+        {selectedOptionData?.put_call}
+        {selectedOptionData?.strike_price}
+        {new Date(selectedOptionData?.date_expiration)?.toLocaleDateString(
+          "en-US",
+          {
+            year: "numeric",
+            month: "short", // "short" gives "Aug", "long" would give "August"
+            day: "numeric",
+            timeZone: "UTC",
+          },
+        )} Options Insight
       </h3>
       <label
         for="optionsInsightModal"
