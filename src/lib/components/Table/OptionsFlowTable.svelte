@@ -105,7 +105,6 @@
     ticker: "none",
     expiry: "none",
     dte: "none",
-    roi: "none",
     strike: "none",
     callPut: "none",
     sentiment: "none",
@@ -164,11 +163,6 @@
         const timeA = new Date(a.date_expiration);
         const timeB = new Date(b.date_expiration);
         return sortOrder === "asc" ? timeA - timeB : timeB - timeA;
-      },
-      roi: (a, b) => {
-        const valueA = parseFloat(a.roi);
-        const valueB = parseFloat(b.roi);
-        return sortOrder === "asc" ? valueA - valueB : valueB - valueA;
       },
       strike: (a, b) => {
         const strikeA = parseFloat(a.strike_price);
@@ -245,7 +239,7 @@
   <div class="min-w-[1000px]">
     <!-- Header row using grid -->
     <div
-      class="table-driver bg-default text-white grid grid-cols-17 sticky top-0 z-10 border border-gray-300 dark:border-gray-800 font-bold text-xs uppercase"
+      class="table-driver bg-default text-white grid grid-cols-16 sticky top-0 z-10 border border-gray-300 dark:border-gray-800 font-bold text-xs uppercase"
     >
       <div
         on:click={() => sortData("time")}
@@ -323,28 +317,6 @@
           class="shrink-0 w-4 h-4 -mt-1 {sortOrders['dte'] === 'asc'
             ? 'rotate-180 inline-block'
             : sortOrders['dte'] === 'desc'
-              ? 'inline-block'
-              : 'hidden'} "
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          style="max-width:50px"
-          ><path
-            fill-rule="evenodd"
-            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-            clip-rule="evenodd"
-          ></path></svg
-        >
-      </div>
-
-      <div
-        on:click={() => sortData("roi")}
-        class="cursor-pointer p-2 text-center whitespace-nowrap"
-      >
-        % Return
-        <svg
-          class="shrink-0 w-4 h-4 -mt-1 {sortOrders['roi'] === 'asc'
-            ? 'rotate-180 inline-block'
-            : sortOrders['roi'] === 'desc'
               ? 'inline-block'
               : 'hidden'} "
           viewBox="0 0 20 20"
@@ -616,7 +588,7 @@
         let:index
         let:style
         {style}
-        class="grid grid-cols-17 gap-0"
+        class="grid grid-cols-16 gap-0"
         class:bg-[#fff]={index % 2 === 0 && $mode === "light"}
         class:bg-[#09090B]={index % 2 === 0 && $mode !== "light"}
         class:bg-[#121217]={index % 2 !== 0 && $mode !== "light"}
@@ -662,36 +634,22 @@
           >
         </div>
 
-        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
           {reformatDate(displayedData[index]?.date_expiration)}
         </div>
 
-        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
           {displayedData[index]?.dte < 0
             ? "expired"
             : displayedData[index]?.dte + "d"}
         </div>
 
-        <div
-          class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
-            index
-          ]?.roi && displayedData[index]?.roi >= 0
-            ? "text-green-800 dark:text-[#00FC50] before:content-['+']"
-            : displayedData[index]?.roi && displayedData[index]?.roi < 0
-              ? 'text-red-800 dark:text-[#FF2F1F]'
-              : ''}"
-        >
-          {displayedData[index]?.roi
-            ? abbreviateNumber(displayedData[index]?.roi) + "%"
-            : "n/a"}
-        </div>
-
-        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
           {displayedData[index]?.strike_price}
         </div>
 
         <div
-          class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
+          class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
             index
           ]?.put_call === 'Calls'
             ? 'text-green-800 dark:text-[#00FC50]'
@@ -701,7 +659,7 @@
         </div>
 
         <div
-          class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
+          class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
             index
           ]?.sentiment === 'Bullish'
             ? 'text-green-800 dark:text-[#00FC50]'
@@ -712,15 +670,15 @@
           {displayedData[index]?.sentiment}
         </div>
 
-        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
           {displayedData[index]?.underlying_price}
         </div>
 
-        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
           {displayedData[index]?.price}
         </div>
 
-        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
           {@html abbreviateNumber(
             displayedData[index]?.cost_basis,
             false,
@@ -729,7 +687,7 @@
         </div>
 
         <div
-          class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap uppercase {displayedData[
+          class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap uppercase {displayedData[
             index
           ]?.option_activity_type === 'Sweep'
             ? 'text-muted dark:text-[#C6A755]'
@@ -739,7 +697,7 @@
         </div>
 
         <div
-          class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap uppercase {[
+          class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap uppercase {[
             'At Ask',
             'Above Ask',
           ]?.includes(displayedData[index]?.execution_estimate)
@@ -757,21 +715,21 @@
             ?.replace("Midpoint", "Mid")}
         </div>
 
-        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
           {new Intl.NumberFormat("en", {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
           }).format(displayedData[index]?.size)}
         </div>
 
-        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
           {new Intl.NumberFormat("en", {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
           }).format(displayedData[index]?.volume)}
         </div>
 
-        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
           {new Intl.NumberFormat("en", {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
