@@ -16,6 +16,7 @@
 
   let selectedTicker = "";
   let optionsInsightContent = "";
+  let isStreaming = false;
   //  let animationClass = "";
   //  let animationId = "";
 
@@ -108,6 +109,9 @@
     if (data?.user?.tier === "Pro") {
       try {
         selectedTicker = optionsData?.ticker;
+        optionsInsightContent = ""; // Clear previous content
+        isStreaming = true;
+
         const clicked = document.getElementById("optionsInsightModal");
         clicked?.dispatchEvent(new MouseEvent("click"));
 
@@ -123,13 +127,53 @@
           body: JSON.stringify(postData),
         });
 
-        optionsInsightContent = await response.json();
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+        if (!response.ok || !response.body) {
+          const errorText = await response.text();
+          console.error("Response error:", errorText);
+          optionsInsightContent = "Error loading analysis. Please try again.";
+          isStreaming = false;
+          return;
         }
+
+        // Handle streaming response
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() ?? "";
+
+          for (const line of lines) {
+            if (!line.trim()) continue;
+
+            try {
+              const json = JSON.parse(line);
+
+              if (json.error) {
+                console.error("Stream error:", json.error);
+                optionsInsightContent =
+                  "Error loading analysis. Please try again.";
+                break;
+              }
+
+              if (json.content) {
+                optionsInsightContent = json.content;
+              }
+            } catch (e) {
+              console.error("Parse error:", e);
+            }
+          }
+        }
+        isStreaming = false;
       } catch (error) {
         console.error("An error occurred:", error);
-        // Handle the error appropriately (e.g., show an error message to the user)
+        optionsInsightContent = "Error loading analysis. Please try again.";
+        isStreaming = false;
       }
     } else {
       toast.error("Unlock this feature with Pro Subscription", {
@@ -799,7 +843,7 @@
   ></label>
 
   <div
-    class="modal-box max-h-96 rounded w-full bg-white dark:bg-secondary border border-gray-600"
+    class="modal-box max-h-[900px] w-full max-w-4xl rounded w-full bg-white dark:bg-secondary border border-gray-600"
   >
     <div
       class="mb-5 flex flex-row justify-between items-center border-b pb-2 border-gray-300 dark:border-gray-600"
@@ -816,8 +860,52 @@
     </div>
 
     <div class="">
-      <div class="flex flex-col items-center w-full max-w-3xl">
+      <div class="flex flex-col items-start w-full max-w-3xl">
+        {#if isStreaming && !optionsInsightContent}
+          <div class="flex items-center justify-center py-8">
+            <svg
+              class="w-6 h-6 animate-spin text-gray-600 dark:text-gray-400"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-dasharray="31.416"
+                stroke-dashoffset="31.416"
+              >
+                <animate
+                  attributeName="stroke-dasharray"
+                  dur="2s"
+                  values="0 31.416;15.708 15.708;0 31.416"
+                  repeatCount="indefinite"
+                />
+                <animate
+                  attributeName="stroke-dashoffset"
+                  dur="2s"
+                  values="0;-15.708;-31.416"
+                  repeatCount="indefinite"
+                />
+              </circle>
+            </svg>
+            <span class="ml-2 text-gray-600 dark:text-gray-400"
+              >Analyzing options flow data...</span
+            >
+          </div>
+        {/if}
         {@html optionsInsightContent}
+        {#if isStreaming && optionsInsightContent}
+          <div class="mt-2 flex items-center">
+            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span class="ml-2 text-xs text-gray-500 dark:text-gray-400"
+              >Streaming...</span
+            >
+          </div>
+        {/if}
       </div>
     </div>
   </div>
