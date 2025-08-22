@@ -14,6 +14,8 @@
   export let filteredData = [];
   export let rawData = [];
 
+  let selectedTicker = "";
+  let optionsInsightContent = "";
   //  let animationClass = "";
   //  let animationId = "";
 
@@ -105,6 +107,10 @@
   async function optionsInsight(optionsData) {
     if (data?.user?.tier === "Pro") {
       try {
+        selectedTicker = optionsData?.ticker;
+        const clicked = document.getElementById("optionsInsightModal");
+        clicked?.dispatchEvent(new MouseEvent("click"));
+
         const postData = {
           optionsData: optionsData,
         };
@@ -117,7 +123,7 @@
           body: JSON.stringify(postData),
         });
 
-        const output = await response.json();
+        optionsInsightContent = await response.json();
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -782,6 +788,40 @@
     </VirtualList>
   </div>
 </div>
+
+<input type="checkbox" id="optionsInsightModal" class="modal-toggle" />
+
+<dialog id="optionsInsightModal" class="modal bg-[#000]/40 p-3 sm:p-0">
+  <label
+    id="optionsInsightModal"
+    for="optionsInsightModal"
+    class="cursor-pointer modal-backdrop"
+  ></label>
+
+  <div
+    class="modal-box max-h-96 rounded w-full bg-white dark:bg-secondary border border-gray-600"
+  >
+    <div
+      class="mb-5 flex flex-row justify-between items-center border-b pb-2 border-gray-300 dark:border-gray-600"
+    >
+      <h3 class="font-semibold text-lg sm:text-xl text-black dark:text-white">
+        {selectedTicker} Options Insight
+      </h3>
+      <label
+        for="optionsInsightModal"
+        class="cursor-pointer absolute right-5 top-2 text-[1rem] sm:text-[1.5rem]"
+      >
+        ✕
+      </label>
+    </div>
+
+    <div class="">
+      <div class="flex flex-col items-center w-full max-w-3xl">
+        {@html optionsInsightContent}
+      </div>
+    </div>
+  </div>
+</dialog>
 
 <style>
   .heartbeat {
