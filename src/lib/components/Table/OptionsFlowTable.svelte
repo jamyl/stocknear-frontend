@@ -107,6 +107,16 @@
 
   async function optionsInsight(optionsData) {
     if (data?.user?.tier === "Pro") {
+      if (data?.user?.credits < 2) {
+        toast?.error(
+          `Insufficient credits. Your current balance is ${data?.user?.credits}.`,
+          {
+            style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+          },
+        );
+        return;
+      }
+
       try {
         selectedOptionData = optionsData;
         optionsInsightContent = ""; // Clear previous content
@@ -852,15 +862,7 @@
         {selectedOptionData?.ticker}
         {selectedOptionData?.put_call}
         {selectedOptionData?.strike_price}
-        {new Date(selectedOptionData?.date_expiration)?.toLocaleDateString(
-          "en-US",
-          {
-            year: "numeric",
-            month: "short", // "short" gives "Aug", "long" would give "August"
-            day: "numeric",
-            timeZone: "UTC",
-          },
-        )} Options Insight
+        DTE {selectedOptionData?.dte} Options Insight
       </h3>
       <label
         for="optionsInsightModal"

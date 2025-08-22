@@ -253,7 +253,7 @@
     }
       */
 
-    if (data?.user?.credits < 1) {
+    if (data?.user?.credits < 2) {
       toast.error(
         `Insufficient credits. Your current balance is ${data?.user?.credits}.`,
         {

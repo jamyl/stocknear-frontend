@@ -1,7 +1,7 @@
 import type { RequestHandler } from "./$types";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-  const { apiURL, apiKey, user } = locals;
+  const { apiURL, apiKey, user, pb} = locals;
 
   if (user?.tier !== 'Pro') {
     return new Response(
@@ -10,9 +10,26 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     );
   }
 
+   const costOfCredit = 2
+
+  if (user?.credits < costOfCredit) {
+    return new Response(
+      JSON.stringify({
+        error: `Insufficient credits. Your current balance is ${user?.credits}. Your prompt would cost ${costOfCredit} credits. Credits are reset at the start of each month.`
+      }),
+      { status: 400 }
+    );
+    
+    
+    
+  }
+  
+
+
   const data = await request.json();
   const postData = { 'optionsData': data?.optionsData };
 
+  
   try {
     const upstream = await fetch(apiURL + "/options-insight", {
       method: "POST",
@@ -60,6 +77,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         }
       }
     });
+
+      await pb?.collection("users")?.update(user?.id, {
+      credits: user?.credits - costOfCredit,
+      });
 
     return new Response(stream, {
       headers: {
