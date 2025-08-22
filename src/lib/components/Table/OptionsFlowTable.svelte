@@ -4,10 +4,8 @@
 
   import VirtualList from "svelte-tiny-virtual-list";
   import HoverStockChart from "$lib/components/HoverStockChart.svelte";
-  import { toast } from "svelte-sonner";
+  //import { toast } from "svelte-sonner";
   import { mode } from "mode-watcher";
-  import { fade, fly } from "svelte/transition";
-  import { onMount } from "svelte";
 
   export let data;
   export let optionsWatchlist;
@@ -15,50 +13,8 @@
   export let filteredData = [];
   export let rawData = [];
 
-  let animationClass = "";
-  let animationId = "";
-  let newRowIds = new Set();
-  let previousRawDataIds = new Set();
-  let isInitialLoad = true;
-
-  // Track changes in rawData to detect new API data
-  $: {
-    const currentRawDataIds = new Set(rawData.map((item) => item?.id));
-
-    if (isInitialLoad && rawData.length > 0) {
-      previousRawDataIds = currentRawDataIds;
-      isInitialLoad = false;
-    } else if (rawData.length > 0) {
-      // Only animate new rows when they come from rawData (API feed)
-      const newApiRowIds = new Set();
-      for (const id of currentRawDataIds) {
-        if (!previousRawDataIds.has(id)) {
-          newApiRowIds.add(id);
-        }
-      }
-
-      if (newApiRowIds.size > 0) {
-        // Only update newRowIds if these new IDs are also in displayedData
-        newRowIds = new Set();
-        const currentDisplayedIds = new Set(
-          displayedData.map((item) => item?.id),
-        );
-        for (const id of newApiRowIds) {
-          if (currentDisplayedIds.has(id)) {
-            newRowIds.add(id);
-          }
-        }
-
-        if (newRowIds.size > 0) {
-          setTimeout(() => {
-            newRowIds = new Set();
-          }, 800);
-        }
-      }
-
-      previousRawDataIds = currentRawDataIds;
-    }
-  }
+  //  let animationClass = "";
+  //  let animationId = "";
 
   function formatTime(timeString) {
     // Split the time string into components
@@ -143,7 +99,8 @@
       });
     }
   }
-*/
+    */
+
   let sortOrders = {
     time: "none",
     ticker: "none",
@@ -327,9 +284,9 @@
           ></path></svg
         >
       </div>
-      <!--
-      <div class="cursor-pointer p-2 text-center whitespace-nowrap">Save</div>
--->
+
+      <!--<div class="cursor-pointer p-2 text-center whitespace-nowrap">Save</div>-->
+
       <div
         on:click={() => sortData("expiry")}
         class="cursor-pointer p-2 text-center whitespace-nowrap"
@@ -632,9 +589,7 @@
         let:index
         let:style
         {style}
-        class="grid grid-cols-15 gap-0 {newRowIds.has(displayedData[index]?.id)
-          ? 'new-row-animation'
-          : ''}"
+        class="grid grid-cols-15 gap-0"
         class:bg-[#fff]={index % 2 === 0 && $mode === "light"}
         class:bg-[#09090B]={index % 2 === 0 && $mode !== "light"}
         class:bg-[#121217]={index % 2 !== 0 && $mode !== "light"}
@@ -642,7 +597,7 @@
         class:opacity-30={index + 1 === rawData?.length &&
           data?.user?.tier !== "Pro"}
       >
-        <div class="p-2 text-center text-xs sm:text-sm whitespace-nowrap">
+        <div class="p-2 text-end text-xs sm:text-sm whitespace-nowrap">
           {formatTime(displayedData[index]?.time)}
         </div>
         <div
@@ -659,7 +614,7 @@
           id={displayedData[index]?.id}
           on:click|stopPropagation={() =>
             addToWatchlist(displayedData[index]?.id)}
-          class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap {optionsWatchlist.optionsId?.includes(
+          class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap {optionsWatchlist.optionsId?.includes(
             displayedData[index]?.id,
           )
             ? 'text-[#FFA500]'
@@ -679,24 +634,23 @@
             /></svg
           >
         </div>
-        -->
-
-        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
+-->
+        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
           {reformatDate(displayedData[index]?.date_expiration)}
         </div>
 
-        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
           {displayedData[index]?.dte < 0
             ? "expired"
             : displayedData[index]?.dte + "d"}
         </div>
 
-        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
           {displayedData[index]?.strike_price}
         </div>
 
         <div
-          class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
+          class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
             index
           ]?.put_call === 'Calls'
             ? 'text-green-800 dark:text-[#00FC50]'
@@ -706,7 +660,7 @@
         </div>
 
         <div
-          class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
+          class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
             index
           ]?.sentiment === 'Bullish'
             ? 'text-green-800 dark:text-[#00FC50]'
@@ -717,7 +671,7 @@
           {displayedData[index]?.sentiment}
         </div>
 
-        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
           {displayedData[index]?.underlying_price}
         </div>
 
@@ -726,7 +680,11 @@
         </div>
 
         <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
-          {abbreviateNumber(displayedData[index]?.cost_basis)}
+          {@html abbreviateNumber(
+            displayedData[index]?.cost_basis,
+            false,
+            true,
+          )}
         </div>
 
         <div
@@ -804,57 +762,6 @@
     }
     100% {
       transform: rotate(0deg) scale(0.95);
-    }
-  }
-
-  .new-row-animation {
-    animation: slideInFade 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    position: relative;
-  }
-
-  @keyframes slideInFade {
-    0% {
-      opacity: 0;
-      transform: translateY(-15px) scale(0.98);
-      background-color: rgba(34, 197, 94, 0.15);
-      box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
-    }
-    40% {
-      opacity: 0.8;
-      transform: translateY(-5px) scale(1);
-      background-color: rgba(34, 197, 94, 0.1);
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      background-color: transparent;
-      box-shadow: none;
-    }
-  }
-
-  :global(.dark) .new-row-animation {
-    animation: slideInFadeDark 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  }
-
-  @keyframes slideInFadeDark {
-    0% {
-      opacity: 0;
-      transform: translateY(-15px) scale(0.98);
-      background-color: rgba(0, 252, 80, 0.12);
-      box-shadow: 0 0 20px rgba(0, 252, 80, 0.25);
-    }
-    40% {
-      opacity: 0.8;
-      transform: translateY(-5px) scale(1);
-      background-color: rgba(0, 252, 80, 0.08);
-      box-shadow: 0 0 10px rgba(0, 252, 80, 0.15);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      background-color: transparent;
-      box-shadow: none;
     }
   }
 </style>

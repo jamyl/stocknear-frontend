@@ -1,6 +1,6 @@
 <script lang="ts">
   import notifySound from "$lib/audio/options-flow-reader.mp3";
-  import { getCache, setCache, isOpen } from "$lib/store";
+  import { isOpen } from "$lib/store";
 
   import { onMount, onDestroy } from "svelte";
   import { toast } from "svelte-sonner";
@@ -182,25 +182,59 @@
   });
 
   async function handleDeleteRule(state) {
-    for (let i = 0; i < ruleOfList.length; i++) {
-      if (ruleOfList[i].name === state) {
-        ruleOfList.splice(i, 1); // Remove the element at index i from the ruleOfList
+    // Find the index of the rule to be deleted or updated
+    const index = ruleOfList?.findIndex((rule) => rule.name === state);
+    if (index !== -1) {
+      // Get the rule and its default values
+      const rule = ruleOfList[index];
+      const defaultCondition = allRules[state].defaultCondition;
+      const defaultValue = allRules[state].defaultValue;
+
+      // Check if current values differ from defaults
+      const isAtDefaultValues =
+        ruleCondition[state] === defaultCondition &&
+        (Array.isArray(valueMappings[state]) && Array.isArray(defaultValue)
+          ? JSON.stringify(valueMappings[state]) ===
+            JSON.stringify(defaultValue)
+          : valueMappings[state] === defaultValue);
+
+      if (!isAtDefaultValues) {
+        // If not at defaults, reset to defaults
+        ruleCondition[state] = defaultCondition;
+        valueMappings[state] = defaultValue;
+
+        // Update the rule in ruleOfList
+        ruleOfList[index] = {
+          ...rule,
+          condition: defaultCondition,
+          value: defaultValue,
+        };
+        ruleOfList = [...ruleOfList]; // Trigger reactivity
+      } else {
+        // If already at defaults, remove the rule
+        ruleOfList.splice(index, 1);
         ruleOfList = [...ruleOfList];
-        break; // Exit the loop after deleting the element
+
+        // Reset checkedItems for multi-select rules
+        if (checkedItems.has(state)) {
+          checkedItems.delete(state);
+        }
+
+        // Handle cases when the list is empty or matches the current rule name
+        if (ruleOfList?.length === 0) {
+          ruleName = "";
+          filteredData = [];
+        } else if (state === ruleName) {
+          ruleName = "";
+        }
       }
-    }
 
-    if (ruleOfList?.length === 0) {
-      ruleName = "";
-    } else if (state === ruleName) {
-      ruleName = "";
+      displayRules = allRows?.filter((row) =>
+        ruleOfList?.some((rule) => rule.name === row.rule),
+      );
+      shouldLoadWorker.set(true);
+      await saveCookieRuleOfList();
     }
-
-    displayRules = allRows?.filter((row) =>
-      ruleOfList?.some((rule) => rule.name === row.rule),
-    );
-    shouldLoadWorker.set(true);
-    await saveCookieRuleOfList();
   }
 
   async function handleResetAll() {
