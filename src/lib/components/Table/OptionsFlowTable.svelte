@@ -106,20 +106,40 @@
     */
 
   async function optionsInsight(optionsData) {
-    if (data?.user?.tier === "Pro") {
-      if (data?.user?.credits < 2) {
-        toast?.error(
-          `Insufficient credits. Your current balance is ${data?.user?.credits}.`,
-          {
-            style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
-          },
-        );
-        return;
-      }
+    optionsInsightContent = ""; // Clear previous content
 
+    if (data?.user?.tier === "Pro") {
       try {
+        // Create cache key based on options data
+        const cacheKey = `options_insight_${optionsData.ticker}_${optionsData.put_call}_${optionsData.strike_price}_${optionsData.dte}`;
+        const cacheExpiration = 30 * 60 * 1000; // 30 minutes in milliseconds
+
+        // Check cache first
+        const cachedData = getCachedOptionsInsight(cacheKey, cacheExpiration);
+
+        if (cachedData) {
+          // Use cached data - no credit deduction
+          selectedOptionData = optionsData;
+          optionsInsightContent = cachedData.content;
+
+          const clicked = document.getElementById("optionsInsightModal");
+          clicked?.dispatchEvent(new MouseEvent("click"));
+
+          return;
+        }
+
+        // Check credits only if not cached
+        if (data?.user?.credits < 2) {
+          toast?.error(
+            `Insufficient credits. Your current balance is ${data?.user?.credits}.`,
+            {
+              style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+            },
+          );
+          return;
+        }
+
         selectedOptionData = optionsData;
-        optionsInsightContent = ""; // Clear previous content
         isStreaming = true;
 
         const clicked = document.getElementById("optionsInsightModal");
@@ -149,6 +169,7 @@
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
+        let finalContent = "";
 
         while (true) {
           const { value, done } = await reader.read();
@@ -168,18 +189,32 @@
                 console.error("Stream error:", json.error);
                 optionsInsightContent =
                   "Error loading analysis. Please try again.";
-                break;
+                isStreaming = false;
+                return;
               }
 
               if (json.content) {
                 optionsInsightContent = json.content;
+                finalContent = json.content; // Store for caching
               }
             } catch (e) {
               console.error("Parse error:", e);
             }
           }
         }
+
         isStreaming = false;
+
+        // Only deduct credits and cache if we got a successful response
+        if (finalContent) {
+          // Deduct credits only for new API calls
+          if (data?.user) {
+            data.user.credits -= 2;
+          }
+
+          // Cache the result
+          setCachedOptionsInsight(cacheKey, finalContent);
+        }
       } catch (error) {
         console.error("An error occurred:", error);
         optionsInsightContent = "Error loading analysis. Please try again.";
@@ -189,6 +224,78 @@
       toast.error("Unlock this feature with Pro Subscription", {
         style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
       });
+    }
+  }
+
+  // Helper function to get cached data
+  function getCachedOptionsInsight(cacheKey, expirationMs) {
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (!cached) return null;
+
+      const parsedCache = JSON.parse(cached);
+      const now = Date.now();
+
+      // Check if cache has expired
+      if (now - parsedCache.timestamp > expirationMs) {
+        localStorage.removeItem(cacheKey);
+        return null;
+      }
+
+      return parsedCache;
+    } catch (error) {
+      console.error("Error reading cache:", error);
+      return null;
+    }
+  }
+
+  // Helper function to set cached data
+  function setCachedOptionsInsight(cacheKey, content) {
+    try {
+      const cacheData = {
+        content: content,
+        timestamp: Date.now(),
+      };
+
+      localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+
+      // Clean up old cache entries to prevent localStorage bloat
+      cleanupOldCache();
+    } catch (error) {
+      console.error("Error setting cache:", error);
+    }
+  }
+
+  // Helper function to clean up old cache entries
+  function cleanupOldCache() {
+    try {
+      const keys = Object.keys(localStorage);
+      const optionsInsightKeys = keys.filter((key) =>
+        key.startsWith("options_insight_"),
+      );
+      const maxCacheEntries = 50; // Keep only the 50 most recent entries
+
+      if (optionsInsightKeys.length > maxCacheEntries) {
+        // Sort by timestamp and remove oldest entries
+        const entries = optionsInsightKeys
+          .map((key) => {
+            try {
+              const data = JSON.parse(localStorage.getItem(key));
+              return { key, timestamp: data.timestamp || 0 };
+            } catch {
+              return { key, timestamp: 0 };
+            }
+          })
+          .sort((a, b) => b.timestamp - a.timestamp);
+
+        // Remove excess entries
+        const entriesToRemove = entries.slice(maxCacheEntries);
+        entriesToRemove.forEach((entry) => {
+          localStorage.removeItem(entry.key);
+        });
+      }
+    } catch (error) {
+      console.error("Error cleaning up cache:", error);
     }
   }
 
@@ -708,7 +815,7 @@
           class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap"
         >
           <Spark
-            class=" w-4 sm:w-5 sm:h-5 inline-block cursor-pointer shrink-0 text-black sm:hover:text-muted dark:text-white dark:sm:hover:text-gray-200"
+            class="w-5 h-5 inline-block cursor-pointer shrink-0 text-black sm:hover:text-muted dark:text-white dark:sm:hover:text-gray-200"
           />
         </div>
         <!--
@@ -844,7 +951,6 @@
 </div>
 
 <input type="checkbox" id="optionsInsightModal" class="modal-toggle" />
-
 <dialog id="optionsInsightModal" class="modal bg-[#000]/40 p-3 sm:p-0">
   <label
     id="optionsInsightModal"
@@ -853,66 +959,86 @@
   ></label>
 
   <div
-    class="modal-box max-h-[1000px] w-full max-w-4xl rounded w-full bg-white dark:bg-secondary border border-gray-600"
+    class="modal-box max-h-[80vh] sm:max-h-[1000px] w-full max-w-4xl rounded w-full bg-white dark:bg-secondary border border-gray-600 overflow-hidden overflow-y-auto"
   >
-    <div
-      class="mb-5 flex flex-row justify-between items-center border-b pb-2 border-gray-300 dark:border-gray-600"
-    >
-      <h3 class="font-semibold text-lg sm:text-xl text-black dark:text-white">
-        {selectedOptionData?.ticker}
-        {selectedOptionData?.put_call}
-        {selectedOptionData?.strike_price}
-        DTE {selectedOptionData?.dte} Options Insight
-      </h3>
-      <label
-        for="optionsInsightModal"
-        class="cursor-pointer absolute right-5 top-2 text-[1rem] sm:text-[1.5rem]"
+    <div class="relative flex flex-col w-full">
+      <!-- Sticky Header -->
+
+      <div
+        class="mb-2 px-6 fixed w-full h-fit sticky -top-6 z-40 bg-white dark:bg-secondary shadow-xs opacity-100 pb-6 pt-5 border-gray-300 dark:border-gray-600 border-b"
       >
-        ✕
-      </label>
-    </div>
+        <div class="flex flex-row items-center justify-between">
+          <h3
+            class="font-semibold text-lg sm:text-xl text-black dark:text-white pr-8"
+          >
+            {selectedOptionData?.ticker}
+            {selectedOptionData?.put_call?.replace("s", "")}
+            Strike {selectedOptionData?.strike_price}
+            DTE {selectedOptionData?.dte} Options Insight
+          </h3>
+          <label
+            for="optionsInsightModal"
+            class="inline-block cursor-pointer absolute right-0 top-3 text-[1.3rem] sm:text-[1.8rem]"
+          >
+            <svg
+              class="w-6 h-6 sm:w-8 sm:h-8"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              ><path
+                fill="currentColor"
+                d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6z"
+              /></svg
+            >
+          </label>
+        </div>
+      </div>
 
-    <div class="">
-      <div class="flex flex-col items-start w-full">
-        {#if isStreaming && !optionsInsightContent}
-          <div class="flex items-center gap-3 w-full">
-            <img
-              class="w-8 h-8 rounded-full shrink-0 animate-pulse"
-              src="/pwa-192x192.png"
-              alt="Stocknear Logo"
-              loading="lazy"
-            />
-            <div class="flex items-center space-x-2 py-2 animate-pulse">
-              Analyzing options flow order...
-            </div>
-          </div>
-        {/if}
-
-        {#if optionsInsightContent || (!isStreaming && optionsInsightContent)}
-          <div class="flex items-start gap-3 w-full">
-            <img
-              class="w-8 h-8 rounded-full shrink-0"
-              src="/pwa-192x192.png"
-              alt="Stocknear Logo"
-              loading="lazy"
-            />
-            <div class="flex-1">
-              <div class="prose prose-sm dark:prose-invert max-w-none">
-                {@html optionsInsightContent}
+      <!-- Content Area -->
+      <div class="p-3 sm:p-6">
+        <div class="flex flex-col items-start w-full">
+          {#if isStreaming && !optionsInsightContent}
+            <div class="flex items-center gap-3 w-full">
+              <img
+                class="w-8 h-8 rounded-full shrink-0 animate-pulse"
+                src="/pwa-192x192.png"
+                alt="Stocknear Logo"
+                loading="lazy"
+              />
+              <div
+                class="flex text-sm sm:text-[1rem] items-center space-x-2 py-2 animate-pulse"
+              >
+                Analyzing options flow order...
               </div>
-              {#if isStreaming && optionsInsightContent}
-                <div class="mt-2 flex items-center">
-                  <div
-                    class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"
-                  ></div>
-                  <span class="ml-1.5 text-xs text-gray-500 dark:text-gray-400"
-                    >Analyzing...</span
-                  >
-                </div>
-              {/if}
             </div>
-          </div>
-        {/if}
+          {/if}
+
+          {#if optionsInsightContent || (!isStreaming && optionsInsightContent)}
+            <div class="flex flex-col sm:flex-row items-start gap-3 w-full">
+              <img
+                class="w-8 h-8 rounded-full shrink-0"
+                src="/pwa-192x192.png"
+                alt="Stocknear Logo"
+                loading="lazy"
+              />
+              <div class="flex-1">
+                <div class="prose prose-sm dark:prose-invert max-w-none">
+                  {@html optionsInsightContent}
+                </div>
+                {#if isStreaming && optionsInsightContent}
+                  <div class="mt-2 flex items-center">
+                    <div
+                      class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"
+                    ></div>
+                    <span
+                      class="ml-1.5 text-xs text-gray-500 dark:text-gray-400"
+                      >Analyzing...</span
+                    >
+                  </div>
+                {/if}
+              </div>
+            </div>
+          {/if}
+        </div>
       </div>
     </div>
   </div>
