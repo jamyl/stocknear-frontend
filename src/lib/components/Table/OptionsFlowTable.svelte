@@ -731,18 +731,18 @@
           {reformatDate(displayedData[index]?.date_expiration)}
         </div>
 
-        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
           {displayedData[index]?.dte < 0
             ? "expired"
             : displayedData[index]?.dte + "d"}
         </div>
 
-        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
           {displayedData[index]?.strike_price}
         </div>
 
         <div
-          class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
+          class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
             index
           ]?.put_call === 'Calls'
             ? 'text-green-800 dark:text-[#00FC50]'
@@ -860,50 +860,44 @@
     </div>
 
     <div class="">
-      <div class="flex flex-col items-start w-full max-w-3xl">
+      <div class="flex flex-col items-start w-full">
         {#if isStreaming && !optionsInsightContent}
-          <div class="flex items-center justify-center py-8">
-            <svg
-              class="w-6 h-6 animate-spin text-gray-600 dark:text-gray-400"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <circle
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-dasharray="31.416"
-                stroke-dashoffset="31.416"
-              >
-                <animate
-                  attributeName="stroke-dasharray"
-                  dur="2s"
-                  values="0 31.416;15.708 15.708;0 31.416"
-                  repeatCount="indefinite"
-                />
-                <animate
-                  attributeName="stroke-dashoffset"
-                  dur="2s"
-                  values="0;-15.708;-31.416"
-                  repeatCount="indefinite"
-                />
-              </circle>
-            </svg>
-            <span class="ml-2 text-gray-600 dark:text-gray-400"
-              >Analyzing options flow data...</span
-            >
+          <div class="flex items-center gap-3 w-full">
+            <img
+              class="w-8 h-8 rounded-full shrink-0 animate-pulse"
+              src="/pwa-192x192.png"
+              alt="Stocknear Logo"
+              loading="lazy"
+            />
+            <div class="flex items-center space-x-2 py-2 animate-pulse">
+              Analyzing options flow order...
+            </div>
           </div>
         {/if}
-        {@html optionsInsightContent}
-        {#if isStreaming && optionsInsightContent}
-          <div class="mt-2 flex items-center">
-            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span class="ml-2 text-xs text-gray-500 dark:text-gray-400"
-              >Streaming...</span
-            >
+
+        {#if optionsInsightContent || (!isStreaming && optionsInsightContent)}
+          <div class="flex items-start gap-3 w-full">
+            <img
+              class="w-8 h-8 rounded-full shrink-0"
+              src="/pwa-192x192.png"
+              alt="Stocknear Logo"
+              loading="lazy"
+            />
+            <div class="flex-1">
+              <div class="prose prose-sm dark:prose-invert max-w-none">
+                {@html optionsInsightContent}
+              </div>
+              {#if isStreaming && optionsInsightContent}
+                <div class="mt-2 flex items-center">
+                  <div
+                    class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"
+                  ></div>
+                  <span class="ml-1.5 text-xs text-gray-500 dark:text-gray-400"
+                    >Analyzing...</span
+                  >
+                </div>
+              {/if}
+            </div>
           </div>
         {/if}
       </div>
