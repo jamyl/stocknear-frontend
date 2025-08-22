@@ -6,6 +6,8 @@
   import HoverStockChart from "$lib/components/HoverStockChart.svelte";
   import { toast } from "svelte-sonner";
   import { mode } from "mode-watcher";
+  import { fade, fly } from "svelte/transition";
+  import { onMount } from "svelte";
 
   export let data;
   export let optionsWatchlist;
@@ -15,6 +17,33 @@
 
   let animationClass = "";
   let animationId = "";
+  let newRowIds = new Set();
+  let previousDataIds = new Set();
+  let isInitialLoad = true;
+
+  $: {
+    const currentDataIds = new Set(displayedData.map((item) => item?.id));
+
+    if (isInitialLoad && displayedData.length > 0) {
+      previousDataIds = currentDataIds;
+      isInitialLoad = false;
+    } else if (displayedData.length > 0) {
+      newRowIds = new Set();
+      for (const id of currentDataIds) {
+        if (!previousDataIds.has(id)) {
+          newRowIds.add(id);
+        }
+      }
+
+      previousDataIds = currentDataIds;
+
+      if (newRowIds.size > 0) {
+        setTimeout(() => {
+          newRowIds = new Set();
+        }, 800);
+      }
+    }
+  }
 
   function formatTime(timeString) {
     // Split the time string into components
@@ -588,7 +617,9 @@
         let:index
         let:style
         {style}
-        class="grid grid-cols-16 gap-0"
+        class="grid grid-cols-16 gap-0 {newRowIds.has(displayedData[index]?.id)
+          ? 'new-row-animation'
+          : ''}"
         class:bg-[#fff]={index % 2 === 0 && $mode === "light"}
         class:bg-[#09090B]={index % 2 === 0 && $mode !== "light"}
         class:bg-[#121217]={index % 2 !== 0 && $mode !== "light"}
@@ -679,11 +710,7 @@
         </div>
 
         <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
-          {@html abbreviateNumber(
-            displayedData[index]?.cost_basis,
-            false,
-            true,
-          )}
+          {abbreviateNumber(displayedData[index]?.cost_basis)}
         </div>
 
         <div
@@ -761,6 +788,57 @@
     }
     100% {
       transform: rotate(0deg) scale(0.95);
+    }
+  }
+
+  .new-row-animation {
+    animation: slideInFade 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    position: relative;
+  }
+
+  @keyframes slideInFade {
+    0% {
+      opacity: 0;
+      transform: translateY(-15px) scale(0.98);
+      background-color: rgba(34, 197, 94, 0.15);
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+    }
+    40% {
+      opacity: 0.8;
+      transform: translateY(-5px) scale(1);
+      background-color: rgba(34, 197, 94, 0.1);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      background-color: transparent;
+      box-shadow: none;
+    }
+  }
+
+  :global(.dark) .new-row-animation {
+    animation: slideInFadeDark 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  @keyframes slideInFadeDark {
+    0% {
+      opacity: 0;
+      transform: translateY(-15px) scale(0.98);
+      background-color: rgba(0, 252, 80, 0.12);
+      box-shadow: 0 0 20px rgba(0, 252, 80, 0.25);
+    }
+    40% {
+      opacity: 0.8;
+      transform: translateY(-5px) scale(1);
+      background-color: rgba(0, 252, 80, 0.08);
+      box-shadow: 0 0 10px rgba(0, 252, 80, 0.15);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      background-color: transparent;
+      box-shadow: none;
     }
   }
 </style>
