@@ -773,7 +773,7 @@
                                 postDate = item?.date;
                                 postUrl = item?.link;
                               }}
-                              class=" cursor-pointer bg-black sm:hover:bg-default dark:bg-blue-600 text-white rounded px-3 py-1.5 text-sm font-semibold dark:sm:hover:bg-blue-700 ml-auto"
+                              class=" cursor-pointer bg-black sm:hover:bg-default dark:bg-white dark:text-muted text-white rounded px-3 py-1.5 text-sm font-semibold dark:sm:hover:bg-gray-100 ml-auto"
                             >
                               Read More
                             </label>
@@ -946,7 +946,7 @@
                             postContent = item?.content;
                             postDate = item?.date;
                           }}
-                          class="cursor-pointer bg-black sm:hover:bg-default dark:bg-blue-600 text-white rounded px-3 py-1.5 text-sm font-semibold dark:sm:hover:bg-blue-700 ml-auto"
+                          class="cursor-pointer bg-black sm:hover:bg-default dark:bg-white dark:text-muted text-white rounded px-3 py-1.5 text-sm font-semibold dark:sm:hover:bg-gray-100 ml-auto"
                         >
                           Read More
                         </label>
@@ -1064,7 +1064,7 @@
     </div>
 
     <p class="text-sm sm:text-[1rem] mb-4 mt-4">
-      {postContent}
+      {@html postContent}
     </p>
 
     <div class="border-b border-gray-300 dark:border-gray-600">
@@ -1081,7 +1081,7 @@
       <label
         for="executivePostModal"
         class="cursor-pointer px-4 py-1.5 rounded text-sm font-medium
-            bg-black sm:hover:bg-default dark:bg-blue-600 text-white dark:sm:hover:bg-blue-700"
+            bg-black sm:hover:bg-default dark:bg-white dark:text-muted text-white dark:sm:hover:bg-gray-100"
         tabindex="0">Close</label
       >
       <a
@@ -1089,7 +1089,7 @@
         rel="noopener noreferrer"
         target="_blank"
         class="cursor-pointer px-4 py-1.5 rounded text-sm font-medium
-            bg-black sm:hover:bg-default dark:bg-blue-600 text-white dark:sm:hover:bg-blue-700"
+            bg-black sm:hover:bg-default dark:bg-white dark:text-muted text-white dark:sm:hover:bg-gray-100"
         tabindex="0">Read Source</a
       >
     </div>
@@ -1162,7 +1162,7 @@
       <label
         for="socialPostModal"
         class="cursor-pointer px-4 py-1.5 rounded text-sm font-medium
-            bg-black sm:hover:bg-default dark:bg-blue-600 text-white dark:sm:hover:bg-blue-700"
+            bg-black sm:hover:bg-default dark:bg-white dark:text-muted text-white dark:sm:hover:bg-gray-100"
         tabindex="0">Close</label
       >
     </div>

@@ -913,7 +913,7 @@
               </p>
               <label
                 for="userLogin"
-                class="cursor-pointer bg-black dark:bg-white text-white dark:text-muted px-4 py-2 rounded sm:hover:bg-blue-700 inline-block text-sm sm:text-[1rem] font-semibold"
+                class="cursor-pointer bg-black dark:bg-white text-white dark:text-muted px-4 py-2 rounded sm:hover:bg-default inline-block text-sm sm:text-[1rem] font-semibold"
                 >Get Started</label
               >
             </div>
