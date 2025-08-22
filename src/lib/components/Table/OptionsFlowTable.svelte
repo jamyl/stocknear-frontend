@@ -4,7 +4,7 @@
 
   import VirtualList from "svelte-tiny-virtual-list";
   import HoverStockChart from "$lib/components/HoverStockChart.svelte";
-  //import { toast } from "svelte-sonner";
+  import { toast } from "svelte-sonner";
   import { mode } from "mode-watcher";
   import Spark from "lucide-svelte/icons/sparkles";
 
@@ -101,6 +101,36 @@
     }
   }
     */
+
+  async function optionsInsight(optionsData) {
+    if (data?.user?.tier === "Pro") {
+      try {
+        const postData = {
+          optionsData: optionsData,
+        };
+
+        const response = await fetch("/api/options-insight", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(postData),
+        });
+
+        const output = await response.json();
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+      } catch (error) {
+        console.error("An error occurred:", error);
+        // Handle the error appropriately (e.g., show an error message to the user)
+      }
+    } else {
+      toast.error("Unlock this feature with Pro Subscription", {
+        style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+      });
+    }
+  }
 
   let sortOrders = {
     time: "none",
@@ -447,7 +477,7 @@
         on:click={() => sortData("premium")}
         class="cursor-pointer p-2 text-center select-none whitespace-nowrap"
       >
-        Premium
+        Prem
         <svg
           class="shrink-0 w-4 h-4 -mt-1 {sortOrders['premium'] === 'asc'
             ? 'rotate-180 inline-block'
@@ -491,7 +521,7 @@
         on:click={() => sortData("exec")}
         class="cursor-pointer p-2 text-center select-none whitespace-nowrap"
       >
-        Exec.
+        Exec
         <svg
           class="shrink-0 w-4 h-4 -mt-1 {sortOrders['exec'] === 'asc'
             ? 'rotate-180 inline-block'
@@ -613,9 +643,12 @@
           />
         </div>
 
-        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
+        <div
+          on:click|stopPropagation={() => optionsInsight(displayedData[index])}
+          class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap"
+        >
           <Spark
-            class=" w-4 sm:w-5 sm:h-5 inline-block cursor-pointer shrink-0 text-gray-200"
+            class=" w-4 sm:w-5 sm:h-5 inline-block cursor-pointer shrink-0 text-black sm:hover:text-muted dark:text-white dark:sm:hover:text-gray-200"
           />
         </div>
         <!--
@@ -697,7 +730,7 @@
         </div>
 
         <div
-          class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap uppercase {displayedData[
+          class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
             index
           ]?.option_activity_type === 'Sweep'
             ? 'text-muted dark:text-[#C6A755]'
@@ -707,7 +740,7 @@
         </div>
 
         <div
-          class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap uppercase {[
+          class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap {[
             'At Ask',
             'Above Ask',
           ]?.includes(displayedData[index]?.execution_estimate)
