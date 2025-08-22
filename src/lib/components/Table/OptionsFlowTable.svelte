@@ -18,30 +18,45 @@
   let animationClass = "";
   let animationId = "";
   let newRowIds = new Set();
-  let previousDataIds = new Set();
+  let previousRawDataIds = new Set();
   let isInitialLoad = true;
 
+  // Track changes in rawData to detect new API data
   $: {
-    const currentDataIds = new Set(displayedData.map((item) => item?.id));
+    const currentRawDataIds = new Set(rawData.map((item) => item?.id));
 
-    if (isInitialLoad && displayedData.length > 0) {
-      previousDataIds = currentDataIds;
+    if (isInitialLoad && rawData.length > 0) {
+      previousRawDataIds = currentRawDataIds;
       isInitialLoad = false;
-    } else if (displayedData.length > 0) {
-      newRowIds = new Set();
-      for (const id of currentDataIds) {
-        if (!previousDataIds.has(id)) {
-          newRowIds.add(id);
+    } else if (rawData.length > 0) {
+      // Only animate new rows when they come from rawData (API feed)
+      const newApiRowIds = new Set();
+      for (const id of currentRawDataIds) {
+        if (!previousRawDataIds.has(id)) {
+          newApiRowIds.add(id);
         }
       }
 
-      previousDataIds = currentDataIds;
+      if (newApiRowIds.size > 0) {
+        // Only update newRowIds if these new IDs are also in displayedData
+        newRowIds = new Set();
+        const currentDisplayedIds = new Set(
+          displayedData.map((item) => item?.id),
+        );
+        for (const id of newApiRowIds) {
+          if (currentDisplayedIds.has(id)) {
+            newRowIds.add(id);
+          }
+        }
 
-      if (newRowIds.size > 0) {
-        setTimeout(() => {
-          newRowIds = new Set();
-        }, 800);
+        if (newRowIds.size > 0) {
+          setTimeout(() => {
+            newRowIds = new Set();
+          }, 800);
+        }
       }
+
+      previousRawDataIds = currentRawDataIds;
     }
   }
 
@@ -70,7 +85,7 @@
       dateString.substring(2, 4)
     );
   }
-
+  /*
   async function addToWatchlist(itemId) {
     if (data?.user?.tier === "Pro") {
       try {
@@ -128,7 +143,7 @@
       });
     }
   }
-
+*/
   let sortOrders = {
     time: "none",
     ticker: "none",
@@ -268,7 +283,7 @@
   <div class="min-w-[1000px]">
     <!-- Header row using grid -->
     <div
-      class="table-driver bg-default text-white grid grid-cols-16 sticky top-0 z-10 border border-gray-300 dark:border-gray-800 font-bold text-xs uppercase"
+      class="table-driver bg-default text-white grid grid-cols-15 sticky top-0 z-10 border border-gray-300 dark:border-gray-800 font-bold text-xs uppercase"
     >
       <div
         on:click={() => sortData("time")}
@@ -312,9 +327,9 @@
           ></path></svg
         >
       </div>
-
+      <!--
       <div class="cursor-pointer p-2 text-center whitespace-nowrap">Save</div>
-
+-->
       <div
         on:click={() => sortData("expiry")}
         class="cursor-pointer p-2 text-center whitespace-nowrap"
@@ -617,7 +632,7 @@
         let:index
         let:style
         {style}
-        class="grid grid-cols-16 gap-0 {newRowIds.has(displayedData[index]?.id)
+        class="grid grid-cols-15 gap-0 {newRowIds.has(displayedData[index]?.id)
           ? 'new-row-animation'
           : ''}"
         class:bg-[#fff]={index % 2 === 0 && $mode === "light"}
@@ -639,7 +654,7 @@
             assetType={displayedData[index]?.underlying_type}
           />
         </div>
-
+        <!--
         <div
           id={displayedData[index]?.id}
           on:click|stopPropagation={() =>
@@ -664,23 +679,24 @@
             /></svg
           >
         </div>
+        -->
 
-        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
           {reformatDate(displayedData[index]?.date_expiration)}
         </div>
 
-        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
           {displayedData[index]?.dte < 0
             ? "expired"
             : displayedData[index]?.dte + "d"}
         </div>
 
-        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
           {displayedData[index]?.strike_price}
         </div>
 
         <div
-          class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
+          class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
             index
           ]?.put_call === 'Calls'
             ? 'text-green-800 dark:text-[#00FC50]'
@@ -690,7 +706,7 @@
         </div>
 
         <div
-          class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
+          class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap {displayedData[
             index
           ]?.sentiment === 'Bullish'
             ? 'text-green-800 dark:text-[#00FC50]'
@@ -701,7 +717,7 @@
           {displayedData[index]?.sentiment}
         </div>
 
-        <div class="p-2 text-end text-sm sm:text-[1rem] whitespace-nowrap">
+        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
           {displayedData[index]?.underlying_price}
         </div>
 
