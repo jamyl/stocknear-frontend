@@ -6,6 +6,7 @@
   import HoverStockChart from "$lib/components/HoverStockChart.svelte";
   //import { toast } from "svelte-sonner";
   import { mode } from "mode-watcher";
+  import Spark from "lucide-svelte/icons/sparkles";
 
   export let data;
   export let optionsWatchlist;
@@ -240,7 +241,7 @@
   <div class="min-w-[1000px]">
     <!-- Header row using grid -->
     <div
-      class="table-driver bg-default text-white grid grid-cols-15 sticky top-0 z-10 border border-gray-300 dark:border-gray-800 font-bold text-xs uppercase"
+      class="table-driver bg-default text-white grid grid-cols-16 sticky top-0 z-10 border border-gray-300 dark:border-gray-800 font-bold text-xs uppercase"
     >
       <div
         on:click={() => sortData("time")}
@@ -285,7 +286,9 @@
         >
       </div>
 
-      <!--<div class="cursor-pointer p-2 text-center whitespace-nowrap">Save</div>-->
+      <div class="cursor-pointer p-2 text-center whitespace-nowrap">
+        Insight
+      </div>
 
       <div
         on:click={() => sortData("expiry")}
@@ -589,7 +592,7 @@
         let:index
         let:style
         {style}
-        class="grid grid-cols-15 gap-0"
+        class="grid grid-cols-16 gap-0"
         class:bg-[#fff]={index % 2 === 0 && $mode === "light"}
         class:bg-[#09090B]={index % 2 === 0 && $mode !== "light"}
         class:bg-[#121217]={index % 2 !== 0 && $mode !== "light"}
@@ -607,6 +610,12 @@
           <HoverStockChart
             symbol={displayedData[index]?.ticker}
             assetType={displayedData[index]?.underlying_type}
+          />
+        </div>
+
+        <div class="p-2 text-center text-sm sm:text-[1rem] whitespace-nowrap">
+          <Spark
+            class=" w-4 sm:w-5 sm:h-5 inline-block cursor-pointer shrink-0 text-gray-200"
           />
         </div>
         <!--
