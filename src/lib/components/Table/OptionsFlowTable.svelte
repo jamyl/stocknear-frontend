@@ -1,6 +1,7 @@
 <script lang="ts">
   import { screenWidth } from "$lib/store";
   import { abbreviateNumber } from "$lib/utils";
+  import { onDestroy } from "svelte";
 
   import VirtualList from "svelte-tiny-virtual-list";
   import HoverStockChart from "$lib/components/HoverStockChart.svelte";
@@ -19,6 +20,11 @@
   let isStreaming = false;
   //  let animationClass = "";
   //  let animationId = "";
+
+  // Clear all options insight cache when component is destroyed (leaving the page)
+  onDestroy(() => {
+    clearAllOptionsInsightCache();
+  });
 
   function formatTime(timeString) {
     // Split the time string into components
@@ -111,7 +117,10 @@
     if (data?.user?.tier === "Pro") {
       try {
         // Create cache key based on options data
-        const cacheKey = `options_insight_${optionsData.ticker}_${optionsData.put_call}_${optionsData.strike_price}_${optionsData.dte}`;
+        const cacheKey = `options_insight_${Object.entries(optionsData)
+          ?.sort(([a], [b]) => a.localeCompare(b)) // sort keys alphabetically
+          ?.map(([_, v]) => v ?? "") // use values, fallback empty if undefined/null
+          ?.join("_")}`;
         const cacheExpiration = 30 * 60 * 1000; // 30 minutes in milliseconds
 
         // Check cache first
@@ -296,6 +305,26 @@
       }
     } catch (error) {
       console.error("Error cleaning up cache:", error);
+    }
+  }
+
+  // Helper function to clear all options insight cache data
+  function clearAllOptionsInsightCache() {
+    try {
+      const keys = Object.keys(localStorage);
+      const optionsInsightKeys = keys.filter((key) =>
+        key.startsWith("options_insight_"),
+      );
+
+      optionsInsightKeys.forEach((key) => {
+        localStorage.removeItem(key);
+      });
+
+      console.log(
+        `Cleared ${optionsInsightKeys.length} options insight cache entries`,
+      );
+    } catch (error) {
+      console.error("Error clearing options insight cache:", error);
     }
   }
 
