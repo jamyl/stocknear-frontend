@@ -770,6 +770,21 @@
     }
 
     function handleRunBacktest() {
+        // Check if conditions are set before switching tabs
+        if (
+            buyConditionBlocks.length === 0 ||
+            sellConditionBlocks.length === 0
+        ) {
+            // Show error toast (same as runBacktest function)
+            toast?.error(
+                "Please set up both buy and sell conditions before running backtest",
+                {
+                    style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+                },
+            );
+            return; // Don't switch tabs if validation fails
+        }
+
         // Run the backtest and switch to results tab
         runBacktest();
         activeTab = "backtest";
