@@ -769,6 +769,12 @@
         sellConditions = convertBlocksToConditions(sellConditionBlocks);
     }
 
+    function handleRunBacktest() {
+        // Run the backtest and switch to results tab
+        runBacktest();
+        activeTab = "backtest";
+    }
+
     function convertBlocksToConditions(blocks) {
         return blocks.map((block, index) => ({
             indicator: block.indicator,
@@ -1200,8 +1206,8 @@
         price: { order: "none", type: "number" },
         net_amount: { order: "none", type: "number" },
         commission: { order: "none", type: "number" },
-        portfolio_value: { order: "none", type: "number" },
         return_pct: { order: "none", type: "number" },
+        portfolio_value: { order: "none", type: "number" },
     };
 
     const sortData = (key) => {
@@ -1856,6 +1862,7 @@
                             {availableIndicators}
                             mode="buy"
                             on:change={handleBuyConditionChange}
+                            on:runBacktest={handleRunBacktest}
                         />
                     </div>
                 </Tabs.Content>
@@ -1868,6 +1875,7 @@
                             {availableIndicators}
                             mode="sell"
                             on:change={handleSellConditionChange}
+                            on:runBacktest={handleRunBacktest}
                         />
                     </div>
                 </Tabs.Content>

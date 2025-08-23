@@ -187,7 +187,7 @@
         <h3 class="text-lg font-semibold capitalize">
             Define {mode} conditions
         </h3>
-        <div class="relative">
+        <div class="flex gap-2">
             <button
                 class="cursor-pointer flex items-center gap-1.5 px-2 py-2 bg-black dark:bg-white sm:hover:bg-default text-white dark:text-black rounded text-sm font-medium transition-colors"
                 on:click={() => {
@@ -196,6 +196,27 @@
             >
                 <Plus size={16} />
                 <span class="mr-1">Add Block</span>
+            </button>
+            <button
+                class="cursor-pointer inline-flex items-center text-sm gap-1 px-3 py-2 bg-black sm:hover:bg-default text-white dark:text-muted dark:bg-white dark:sm:hover:bg-gray-100 rounded font-medium transition-colors"
+                on:click={() => {
+                    dispatch("runBacktest");
+                }}
+            >
+                <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                </svg>
+                Run Backtest
             </button>
         </div>
     </div>
