@@ -44,7 +44,7 @@
     }
 
     function createConditionBlock(
-        indicator = "rsi",
+        indicator = "price",
         operator = null,
         value = null,
     ) {
