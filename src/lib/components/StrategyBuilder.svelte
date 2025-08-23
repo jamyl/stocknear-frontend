@@ -292,7 +292,7 @@
                                             </Button>
                                         </DropdownMenu.Trigger>
                                         <DropdownMenu.Content
-                                            class="w-60 max-h-[400px] overflow-y-auto scroller"
+                                            class="w-60 max-h-[400px] overflow-y-auto "
                                         >
                                             <DropdownMenu.Group>
                                                 {#each Object.entries(availableIndicators) as [key, config]}
@@ -366,7 +366,7 @@
                                             </Button>
                                         </DropdownMenu.Trigger>
                                         <DropdownMenu.Content
-                                            class="w-40 max-h-[400px] overflow-y-auto scroller"
+                                            class="w-40 max-h-[400px] overflow-y-auto scroller "
                                         >
                                             <DropdownMenu.Group>
                                                 {#each getIndicatorConfig(block.indicator).operators as op}

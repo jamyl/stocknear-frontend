@@ -606,7 +606,7 @@
                       <div class="flex flex-col items-end">
                         {#if latestInfoDate(item?.date)}
                           <label
-                            class="border-gray-300 shadow-md bg-black dark:bg-[#fff] text-white dark:text-black font-semibold text-xs rounded px-2 py-0.5 ml-3 mb-1"
+                            class="border-gray-300 shadow bg-black dark:bg-[#fff] text-white dark:text-black font-semibold text-xs rounded px-2 py-0.5 ml-3 mb-1"
                           >
                             New
                           </label>

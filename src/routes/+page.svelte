@@ -170,7 +170,7 @@
           {#each data?.selectedCards as card}
             <a
               href={card.href}
-              class="border border-gray-300 dark:border-gray-600 flex flex-col justify-center items-center p-4 bg-white dark:bg-secondary rounded-[5px] shadow font-semibold gap-2 hover:shadow-lg text-center dark:hover:shadow-dark-600 dark:hover:shadow-md"
+              class="border border-gray-300 dark:border-gray-600 flex flex-col justify-center items-center p-4 bg-white dark:bg-secondary rounded-[5px] shadow font-semibold gap-2 hover:shadow-lg text-center dark:hover:shadow-dark-600 dark:hover:shadow"
             >
               {@html card.icon}
               <div>{card.label}</div>

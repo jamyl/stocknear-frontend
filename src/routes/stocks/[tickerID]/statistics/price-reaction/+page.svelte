@@ -239,7 +239,7 @@
               class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
             >
               <div
-                class="eps-beats-driver shadow-md bg-gray-200 dark:bg-[#1C1E22] rounded p-4"
+                class="eps-beats-driver shadow bg-gray-200 dark:bg-[#1C1E22] rounded p-4"
               >
                 <div class=" text-sm mb-2 flex items-center">
                   <span>EPS Beats Estimate</span>
@@ -264,7 +264,7 @@
               </div>
 
               <div
-                class="revenue-beats-driver shadow-md bg-gray-200 dark:bg-[#1C1E22] rounded p-4"
+                class="revenue-beats-driver shadow bg-gray-200 dark:bg-[#1C1E22] rounded p-4"
               >
                 <div class=" text-sm mb-2 flex items-center">
                   <span>Revenue Beats Estimate</span>
@@ -289,7 +289,7 @@
               </div>
 
               <div
-                class="avg-price-impact-driver shadow-md bg-gray-200 dark:bg-[#1C1E22] rounded p-4"
+                class="avg-price-impact-driver shadow bg-gray-200 dark:bg-[#1C1E22] rounded p-4"
               >
                 <div class=" text-sm mb-2 flex items-center">
                   <span>Avg. Price Impact</span>
@@ -310,7 +310,7 @@
               </div>
 
               <div
-                class="volatility-impact-driver shadow-md bg-gray-200 dark:bg-[#1C1E22] rounded p-4"
+                class="volatility-impact-driver shadow bg-gray-200 dark:bg-[#1C1E22] rounded p-4"
               >
                 <div class=" text-sm mb-2 flex items-center">
                   <span>Volatility Impact</span>

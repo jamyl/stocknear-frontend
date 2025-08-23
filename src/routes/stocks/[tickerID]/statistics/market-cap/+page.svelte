@@ -664,7 +664,7 @@
                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 mt-3"
               >
                 <div
-                  class="marketCap-driver shadow-md bg-gray-100 dark:bg-[#1C1E22] rounded p-4"
+                  class="marketCap-driver shadow bg-gray-100 dark:bg-[#1C1E22] rounded p-4"
                 >
                   <div class=" text-sm mb-2 flex items-center">
                     <span>Market Cap</span>
@@ -677,7 +677,7 @@
                 </div>
 
                 <div
-                  class="category-driver shadow-md bg-gray-100 dark:bg-[#1C1E22] rounded p-4"
+                  class="category-driver shadow bg-gray-100 dark:bg-[#1C1E22] rounded p-4"
                 >
                   <div class=" text-sm mb-2 flex items-center">
                     <span>Category</span>
@@ -699,7 +699,7 @@
                 </div>
 
                 <div
-                  class="oneYearChange-driver shadow-md bg-gray-100 dark:bg-[#1C1E22] rounded p-4"
+                  class="oneYearChange-driver shadow bg-gray-100 dark:bg-[#1C1E22] rounded p-4"
                 >
                   <div class=" text-sm mb-2 flex items-center">
                     <span>1-Year Change</span>

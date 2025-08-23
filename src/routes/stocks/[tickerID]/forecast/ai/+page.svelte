@@ -728,9 +728,7 @@
               <div
                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4 mt-3"
               >
-                <div
-                  class="shadow-md bg-gray-100 dark:bg-[#1C1E22] rounded p-4"
-                >
+                <div class="shadow bg-gray-100 dark:bg-[#1C1E22] rounded p-4">
                   <div class="text-sm sm:text-[1rem] mb-2 flex items-center">
                     <span>Score Accuracy</span>
                   </div>
@@ -743,9 +741,7 @@
                   </div>
                 </div>
 
-                <div
-                  class="shadow-md bg-gray-100 dark:bg-[#1C1E22] rounded p-4"
-                >
+                <div class="shadow bg-gray-100 dark:bg-[#1C1E22] rounded p-4">
                   <div class="text-sm sm:text-[1rem] mb-2 flex items-center">
                     <span>Latest Forecast</span>
                   </div>
@@ -777,9 +773,7 @@
                   </div>
                 </div>
 
-                <div
-                  class="shadow-md bg-gray-100 dark:bg-[#1C1E22] rounded p-4"
-                >
+                <div class="shadow bg-gray-100 dark:bg-[#1C1E22] rounded p-4">
                   <div class="text-sm sm:text-[1rem] mb-2 flex items-center">
                     <span>Avg Return</span>
                   </div>

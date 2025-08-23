@@ -56,7 +56,7 @@
           {/each}
         </tr>
       </thead>
-      <tbody class="shadow-md">
+      <tbody class="shadow">
         {#each names as name, index}
           <tr class="odd:bg-[#F6F7F8] dark:odd:bg-odd">
             <th

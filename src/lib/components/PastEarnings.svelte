@@ -119,7 +119,7 @@
                 {/each}
               </tr>
             </thead>
-            <tbody class="shadow-md">
+            <tbody class="shadow">
               <tr class="bg-primary border-b-[#27272A]">
                 <th
                   class="bg-primary whitespace-nowrap text-sm sm:text-[1rem] text-white text-start border-b border-[#27272A]"

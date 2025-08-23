@@ -956,10 +956,33 @@
                   type="button"
                 >
                   {#if isLoading || isStreaming}
-                    <svg class="w-4 h-4 animate-spin text-white dark:text-black" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="31.416" stroke-dashoffset="31.416">
-                        <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite"/>
-                        <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite"/>
+                    <svg
+                      class="w-4 h-4 animate-spin text-white dark:text-black"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-dasharray="31.416"
+                        stroke-dashoffset="31.416"
+                      >
+                        <animate
+                          attributeName="stroke-dasharray"
+                          dur="2s"
+                          values="0 31.416;15.708 15.708;0 31.416"
+                          repeatCount="indefinite"
+                        />
+                        <animate
+                          attributeName="stroke-dashoffset"
+                          dur="2s"
+                          values="0;-15.708;-31.416"
+                          repeatCount="indefinite"
+                        />
                       </circle>
                     </svg>
                   {:else}
@@ -978,7 +1001,7 @@
     </main>
     {#if showSuggestions}
       <ul
-        class=" fixed bg-gray-50 dark:bg-[#2A2E39] rounded shadow-md border border-gray-300 dark:border-gray-600 z-[9999] w-56 h-fit max-h-56 overflow-y-auto scroller"
+        class=" fixed bg-gray-50 dark:bg-[#2A2E39] rounded shadow border border-gray-300 dark:border-gray-600 z-[9999] w-56 h-fit max-h-56 overflow-y-auto scroller"
         style="top: {suggestionPos?.top}px; left: {suggestionPos?.left}px;"
       >
         {#each suggestions as suggestion, i}

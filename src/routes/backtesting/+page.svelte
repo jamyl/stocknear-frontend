@@ -2195,12 +2195,12 @@
                                     class=" cursor-pointer inline-flex items-center text-sm gap-1 px-3 py-2 bg-black sm:hover:bg-default disabled:bg-black/80 text-white dark:text-muted dark:bg-white dark:sm:hover:bg-gray-100 dark:disabled:bg-white/80 rounded font-medium transition-colors"
                                 >
                                     <svg
-                                        class="h-4 w-4"
+                                        class="w-3.5 h-3.5 mr-0.5 inline-block cursor-pointer shrink-0"
                                         xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 32 32"
+                                        viewBox="0 0 16 16"
                                         ><path
                                             fill="currentColor"
-                                            d="M5 5v22h22V9.594l-.281-.313l-4-4L22.406 5zm2 2h3v6h12V7.437l3 3V25h-2v-9H9v9H7zm5 0h4v2h2V7h2v4h-8zm-1 11h10v7H11z"
+                                            d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327l4.898.696c.441.062.612.636.282.95l-3.522 3.356l.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"
                                         /></svg
                                     >
                                     <div>Save</div>

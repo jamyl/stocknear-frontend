@@ -514,7 +514,7 @@
               <!-- Suggestions Dropdown -->
               {#if showSuggestions}
                 <ul
-                  class="absolute bg-white dark:bg-default rounded-[5px] shadow-md border border-gray-300 dark:border-gray-600 mt-1 z-60 w-56 h-fit max-h-56 overflow-y-auto scroller"
+                  class="absolute bg-white dark:bg-default rounded-[5px] shadow border border-gray-300 dark:border-gray-600 mt-1 z-60 w-56 h-fit max-h-56 overflow-y-auto scroller"
                   style="top: {suggestionPos?.top}px; left: {suggestionPos?.left}px;"
                 >
                   {#each suggestions as suggestion, i}
