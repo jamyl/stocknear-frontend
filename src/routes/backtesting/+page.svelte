@@ -105,8 +105,8 @@
         { key: "rsiOversold", label: "RSI Oversold" },
         { key: "macdBullish", label: "MACD Bullish Crossover" },
         { key: "goldenCross", label: "Golden Cross (50/200 SMA)" },
-
         { key: "movingAverageBounce", label: "Moving Average Bounce" },
+        { key: "atrBreakout", label: "ATR Breakout Strategy" },
     ];
 
     // Strategy definitions for popular strategies
@@ -211,6 +211,24 @@
                     indicator: "rsi",
                     operator: "below",
                     value: 30,
+                    logicOperator: null,
+                },
+            ],
+        },
+        atrBreakout: {
+            buy: [
+                {
+                    indicator: "price",
+                    operator: "above",
+                    value: "atr_upper_2",
+                    logicOperator: null,
+                },
+            ],
+            sell: [
+                {
+                    indicator: "price",
+                    operator: "below",
+                    value: "atr_lower_2",
                     logicOperator: null,
                 },
             ],
@@ -588,6 +606,18 @@
                 "ema_50",
                 "ema_100",
                 "ema_200",
+                "atr_upper_0.5",
+                "atr_upper_1",
+                "atr_upper_1.5",
+                "atr_upper_2",
+                "atr_upper_2.5",
+                "atr_upper_3",
+                "atr_lower_0.5",
+                "atr_lower_1",
+                "atr_lower_1.5",
+                "atr_lower_2",
+                "atr_lower_2.5",
+                "atr_lower_3",
             ],
             valueLabels: {
                 sma_20: "20-Day SMA",
@@ -598,7 +628,28 @@
                 ema_50: "50-Day EMA",
                 ema_100: "100-Day EMA",
                 ema_200: "200-Day EMA",
+                "atr_upper_0.5": "Previous Close + 0.5×ATR",
+                "atr_upper_1": "Previous Close + 1×ATR",
+                "atr_upper_1.5": "Previous Close + 1.5×ATR",
+                "atr_upper_2": "Previous Close + 2×ATR",
+                "atr_upper_2.5": "Previous Close + 2.5×ATR",
+                "atr_upper_3": "Previous Close + 3×ATR",
+                "atr_lower_0.5": "Previous Close - 0.5×ATR",
+                "atr_lower_1": "Previous Close - 1×ATR",
+                "atr_lower_1.5": "Previous Close - 1.5×ATR",
+                "atr_lower_2": "Previous Close - 2×ATR",
+                "atr_lower_2.5": "Previous Close - 2.5×ATR",
+                "atr_lower_3": "Previous Close - 3×ATR",
             },
+        },
+        atr: {
+            label: "ATR (Average True Range)",
+            category: "Volatility",
+            operators: ["above", "below"],
+            defaultOperator: "above",
+            defaultValue: 2,
+            min: 0,
+            max: 50,
         },
     };
 
