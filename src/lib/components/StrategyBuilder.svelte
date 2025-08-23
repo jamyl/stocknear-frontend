@@ -183,11 +183,13 @@
 </script>
 
 <div class="">
-    <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold capitalize">
+    <div
+        class="flex flex-col sm:flex-row justify-start w-full sm:justify-between items-start sm:items-center mb-4"
+    >
+        <h3 class="text-lg font-semibold capitalize mb-5 sm:mb-0">
             Define {mode} conditions
         </h3>
-        <div class="flex gap-2">
+        <div class="flex gap-2 ml-auto sm:ml-0">
             <button
                 class="cursor-pointer flex items-center gap-1.5 px-2 py-2 bg-black dark:bg-white sm:hover:bg-default text-white dark:text-black rounded text-sm font-medium transition-colors"
                 on:click={() => {

@@ -43,6 +43,10 @@
     let isBacktesting = false;
     let backtestError = null;
 
+    // Risk Management
+    let stopLossPercentage = 5;
+    let profitTakerPercentage = null;
+
     // Cache system for backtest results
     const backtestCache = new Map();
     const CACHE_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
@@ -57,6 +61,8 @@
             sell_condition: JSON.stringify(strategyData.sell_condition),
             initial_capital: strategyData.initial_capital,
             commission: strategyData.commission,
+            profitTakerPercentage: strategyData.profit_taker,
+            stopLossPercentage: strategyData.stop_loss,
         };
         return JSON.stringify(key);
     }
@@ -82,24 +88,6 @@
     function clearAllCache() {
         backtestCache.clear();
     }
-
-    // Risk Management
-    let riskManagement = {
-        stopLoss: {
-            enabled: true,
-            type: "percentage",
-            value: 5,
-        },
-        takeProfit: {
-            enabled: true,
-            type: "percentage",
-            value: 10,
-        },
-        positionSize: {
-            type: "fixed",
-            value: 1000,
-        },
-    };
 
     const popularStrategyList = [
         { key: "rsiOversold", label: "RSI Oversold" },
@@ -311,6 +299,8 @@
             sell_condition: formattedSellConditions,
             initial_capital: initialCapital,
             commission: commissionFee,
+            stop_loss: stopLossPercentage,
+            profit_taker: profitTakerPercentage,
         };
     }
 
@@ -1855,6 +1845,16 @@
                     </li>
                     <li>
                         <button
+                            class="p-2 px-5 cursor-pointer {activeTab === 'risk'
+                                ? 'text-muted dark:text-white bg-[#EEEEEE] dark:bg-primary/90 font-semibold'
+                                : 'text-gray-600 dark:text-gray-400 sm:hover:text-muted dark:sm:hover:text-white sm:hover:bg-[#EEEEEE] dark:sm:hover:bg-primary/90'}"
+                            on:click={() => (activeTab = "risk")}
+                        >
+                            Risk
+                        </button>
+                    </li>
+                    <li>
+                        <button
                             class="p-2 px-5 cursor-pointer {activeTab ===
                             'backtest'
                                 ? 'text-muted dark:text-white bg-[#EEEEEE] dark:bg-primary/90 font-semibold'
@@ -1897,280 +1897,129 @@
 
                 <!-- Risk Management Tab Content -->
                 <Tabs.Content value="risk" class="outline-none">
-                    <div class="space-y-6">
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <!-- Stop Loss Card -->
+                    <div class="space-y-4">
+                        <div class="">
                             <div
-                                class="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/10 rounded p-6 border border-red-200 dark:border-red-800/30"
+                                class="flex flex-col sm:flex-row justify-start w-full sm:justify-between items-start sm:items-center mb-4"
                             >
-                                <div
-                                    class="flex items-center justify-between mb-4"
+                                <h3
+                                    class="text-lg font-semibold capitalize mb-5 sm:mb-0"
                                 >
-                                    <div class="flex items-center gap-2">
-                                        <div
-                                            class="p-2 bg-red-100 dark:bg-red-900/30 rounded"
-                                        >
-                                            <svg
-                                                class="w-5 h-5 text-red-600 dark:text-red-400"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
-                                                />
-                                            </svg>
-                                        </div>
-                                        <h4
-                                            class="font-semibold text-red-700 dark:text-red-400"
-                                        >
-                                            Stop Loss
-                                        </h4>
-                                    </div>
-                                    <label
-                                        class="relative inline-flex items-center cursor-pointer"
+                                    Risk Management Settings
+                                </h3>
+                                <div class="flex gap-2 ml-auto sm:ml-0">
+                                    <button
+                                        class="cursor-pointer inline-flex items-center text-sm gap-1 px-3 py-2 bg-black sm:hover:bg-default text-white dark:text-muted dark:bg-white dark:sm:hover:bg-gray-100 rounded font-medium transition-colors"
+                                        on:click={handleRunBacktest}
                                     >
-                                        <input
-                                            type="checkbox"
-                                            bind:checked={
-                                                riskManagement.stopLoss.enabled
-                                            }
-                                            class="sr-only peer"
-                                        />
-                                        <div
-                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after: dark:border-gray-800 peer-checked:bg-red-500"
-                                        ></div>
-                                    </label>
-                                </div>
-                                {#if riskManagement.stopLoss.enabled}
-                                    <div class="space-y-3">
-                                        <select
-                                            bind:value={
-                                                riskManagement.stopLoss.type
-                                            }
-                                            class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-red-300 dark:border-red-600 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                        <svg
+                                            class="w-4 h-4"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
                                         >
-                                            <option value="percentage"
-                                                >Percentage Loss</option
-                                            >
-                                            <option value="fixed"
-                                                >Fixed Amount</option
-                                            >
-                                            <option value="atr"
-                                                >ATR Multiple</option
-                                            >
-                                        </select>
-                                        <div
-                                            class="flex items-center space-x-2"
-                                        >
-                                            <input
-                                                type="number"
-                                                bind:value={
-                                                    riskManagement.stopLoss
-                                                        .value
-                                                }
-                                                min="0"
-                                                step="0.1"
-                                                class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-red-300 dark:border-red-600 rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-                                                placeholder="Enter value"
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M13 10V3L4 14h7v7l9-11h-7z"
                                             />
-                                            <span
-                                                class="px-3 py-2 bg-red-100 dark:bg-red-800/30 text-red-700 dark:text-red-400 rounded text-sm font-medium min-w-[40px] text-center"
-                                            >
-                                                {riskManagement.stopLoss
-                                                    .type === "percentage"
-                                                    ? "%"
-                                                    : riskManagement.stopLoss
-                                                            .type === "atr"
-                                                      ? "×"
-                                                      : "$"}
-                                            </span>
-                                        </div>
-                                    </div>
-                                {/if}
+                                        </svg>
+                                        Run Backtest
+                                    </button>
+                                </div>
                             </div>
 
-                            <!-- Take Profit Card -->
-                            <div
-                                class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/10 rounded p-6 border border-green-200 dark:border-green-800/30"
-                            >
-                                <div
-                                    class="flex items-center justify-between mb-4"
-                                >
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Stop Loss Section -->
+                                <div class="space-y-3">
                                     <div class="flex items-center gap-2">
-                                        <div
-                                            class="p-2 bg-green-100 dark:bg-green-900/30 rounded"
+                                        <label class="font-medium"
+                                            >Stop Loss (%)</label
                                         >
-                                            <svg
-                                                class="w-5 h-5 text-green-600 dark:text-green-400"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                                                />
-                                            </svg>
-                                        </div>
-                                        <h4
-                                            class="font-semibold text-green-700 dark:text-green-400"
-                                        >
-                                            Take Profit
-                                        </h4>
                                     </div>
-                                    <label
-                                        class="relative inline-flex items-center cursor-pointer"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            bind:checked={
-                                                riskManagement.takeProfit
-                                                    .enabled
-                                            }
-                                            class="sr-only peer"
-                                        />
-                                        <div
-                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after: dark:border-gray-800 peer-checked:bg-green-500"
-                                        ></div>
-                                    </label>
-                                </div>
-                                {#if riskManagement.takeProfit.enabled}
-                                    <div class="space-y-3">
-                                        <select
-                                            bind:value={
-                                                riskManagement.takeProfit.type
-                                            }
-                                            class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-green-300 dark:border-green-600 rounded focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                                        >
-                                            <option value="percentage"
-                                                >Percentage Gain</option
-                                            >
-                                            <option value="fixed"
-                                                >Fixed Amount</option
-                                            >
-                                            <option value="riskReward"
-                                                >Risk/Reward Ratio</option
-                                            >
-                                        </select>
-                                        <div
-                                            class="flex items-center space-x-2"
-                                        >
-                                            <input
-                                                type="number"
-                                                bind:value={
-                                                    riskManagement.takeProfit
-                                                        .value
-                                                }
-                                                min="0"
-                                                step="0.1"
-                                                class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-green-300 dark:border-green-600 rounded focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                                                placeholder="Enter value"
-                                            />
-                                            <span
-                                                class="px-3 py-2 bg-green-100 dark:bg-green-800/30 text-green-700 dark:text-green-400 rounded text-sm font-medium min-w-[40px] text-center"
-                                            >
-                                                {riskManagement.takeProfit
-                                                    .type === "percentage"
-                                                    ? "%"
-                                                    : riskManagement.takeProfit
-                                                            .type ===
-                                                        "riskReward"
-                                                      ? ":1"
-                                                      : "$"}
-                                            </span>
-                                        </div>
-                                    </div>
-                                {/if}
-                            </div>
-                        </div>
-
-                        <!-- Position Sizing Card -->
-                        <div
-                            class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10 rounded p-6 border border-blue-200 dark:border-blue-800/30"
-                        >
-                            <div class="flex items-center gap-2 mb-4">
-                                <div
-                                    class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded"
-                                >
-                                    <svg
-                                        class="w-5 h-5"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                    </svg>
-                                </div>
-                                <h4
-                                    class="font-semibold text-blue-700 dark:text-blue-400"
-                                >
-                                    Position Sizing
-                                </h4>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="space-y-2">
-                                    <label
-                                        class="block text-sm font-medium text-blue-700 dark:text-blue-400"
-                                        >Sizing Method</label
-                                    >
-                                    <select
-                                        bind:value={
-                                            riskManagement.positionSize.type
-                                        }
-                                        class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-blue-300 dark:border-blue-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                    >
-                                        <option value="fixed"
-                                            >Fixed Amount</option
-                                        >
-                                        <option value="percentage"
-                                            >% of Portfolio</option
-                                        >
-                                        <option value="kellycriterion"
-                                            >Kelly Criterion</option
-                                        >
-                                        <option value="riskbased"
-                                            >Risk-Based</option
-                                        >
-                                    </select>
-                                </div>
-                                <div class="space-y-2">
-                                    <label
-                                        class="block text-sm font-medium text-blue-700 dark:text-blue-400"
-                                        >Value</label
-                                    >
-                                    <div class="flex items-center space-x-2">
+                                    <div class="flex items-center gap-2">
                                         <input
                                             type="number"
-                                            bind:value={
-                                                riskManagement.positionSize
-                                                    .value
-                                            }
+                                            bind:value={stopLossPercentage}
                                             min="0"
-                                            step="0.1"
-                                            class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-blue-300 dark:border-blue-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                            placeholder="Enter amount"
+                                            max="100"
+                                            step="0.5"
+                                            placeholder="e.g., 5"
+                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-inherit focus:outline-none focus:ring-1 focus:ring-blue-500"
                                         />
                                         <span
-                                            class="px-3 py-2 bg-blue-100 dark:bg-blue-800/30 text-blue-700 dark:text-blue-400 rounded text-sm font-medium min-w-[40px] text-center"
+                                            class="text-sm text-gray-600 dark:text-gray-400"
+                                            >%</span
                                         >
-                                            {riskManagement.positionSize
-                                                .type === "percentage" ||
-                                            riskManagement.positionSize.type ===
-                                                "riskbased"
-                                                ? "%"
-                                                : "$"}
-                                        </span>
+                                    </div>
+                                    <p
+                                        class="text-xs text-gray-500 dark:text-gray-400"
+                                    >
+                                        Exit position if price drops by this
+                                        percentage from entry
+                                    </p>
+                                </div>
+
+                                <!-- Profit Taker Section -->
+                                <div class="space-y-3">
+                                    <div class="flex items-center gap-2">
+                                        <label class="font-medium"
+                                            >Profit Taker (%)</label
+                                        >
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <input
+                                            type="number"
+                                            bind:value={profitTakerPercentage}
+                                            min="0"
+                                            max="1000"
+                                            step="1"
+                                            placeholder="e.g., 10"
+                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-inherit focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        />
+                                        <span
+                                            class="text-sm text-gray-600 dark:text-gray-400"
+                                            >%</span
+                                        >
+                                    </div>
+                                    <p
+                                        class="text-xs text-gray-500 dark:text-gray-400"
+                                    >
+                                        Exit position if price rises by this
+                                        percentage from entry
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <div class="flex items-start">
+                                    <div class="text-sm">
+                                        <p class="font-medium mb-1">
+                                            How Risk Management Works:
+                                        </p>
+                                        <ul
+                                            class="list-disc space-y-1 text-xs sm:text-sm"
+                                        >
+                                            <li>
+                                                Leave fields empty to disable
+                                                risk management
+                                            </li>
+                                            <li>
+                                                Stop loss will trigger when
+                                                price falls below entry price
+                                                minus percentage
+                                            </li>
+                                            <li>
+                                                Profit taker will trigger when
+                                                price rises above entry price
+                                                plus percentage
+                                            </li>
+                                            <li>
+                                                Risk management exits override
+                                                strategy sell signals
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -2629,6 +2478,24 @@
                                     ></span>
                                     <span class="">{sellExplanation}</span>
                                 </div>
+                                {#if stopLossPercentage || profitTakerPercentage}
+                                    <div class="flex items-start gap-2 pt-1">
+                                        <span
+                                            class="inline-block w-2 h-2 bg-purple-500 rounded-full mt-1.5 flex-shrink-0"
+                                        ></span>
+                                        <span class="">
+                                            Risk controls:
+                                            {#if stopLossPercentage}
+                                                Stop loss at {stopLossPercentage}%
+                                            {/if}
+                                            {#if stopLossPercentage && profitTakerPercentage},
+                                            {/if}
+                                            {#if profitTakerPercentage}
+                                                Take profit at {profitTakerPercentage}%
+                                            {/if}
+                                        </span>
+                                    </div>
+                                {/if}
                                 <!--
                                 {#if riskManagement.stopLoss.enabled || riskManagement.takeProfit.enabled}
                                     <div class="flex items-start gap-2 pt-1">
