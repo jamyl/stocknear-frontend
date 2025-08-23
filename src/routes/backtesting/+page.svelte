@@ -1570,7 +1570,7 @@
 </script>
 
 <SEO
-    title="Stock Backtesting Tool - No-Code Trading Strategy Optimizer"
+    title="Stock Backtesting Tool"
     description="Build and backtest trading strategies without coding. Create custom strategies with technical indicators, screen stocks, run historical backtests, and optimize entries/exits with our free backtesting platform."
     keywords="stock backtesting, trading strategy backtesting, no-code backtesting, strategy optimizer, trading strategy builder, historical backtesting, stock strategy testing, algorithmic trading, technical indicators backtesting"
     structuredData={{
@@ -2653,7 +2653,127 @@
                 </div>
             </div>
 
+            <!-- Live Trading Recommendations -->
+            {#if activeTab === "backtest" && backtestResults?.live_recommendations && backtestResults.live_recommendations.length > 0}
+                <div class="mt-6 mb-6">
+                    <div class="">
+                        <h4
+                            class="font-semibold mb-4 text-xl sm:text-2xl flex items-center gap-2"
+                        >
+                            Live Trade Alerts
+                        </h4>
+                        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            {#each backtestResults.live_recommendations as rec}
+                                <div
+                                    class="bg-gray-100 dark:bg-secondary rounded p-4 border border-gray-300 dark:border-gray-800"
+                                >
+                                    <!-- Ticker and Recommendation -->
+                                    <div
+                                        class="flex items-center justify-between mb-3"
+                                    >
+                                        <div
+                                            class="font-semibold text-lg text-gray-900 dark:text-white"
+                                        >
+                                            {rec.ticker}
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            {#if rec.recommendation === "BUY"}
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                                                >
+                                                    <svg
+                                                        class="w-3 h-3 mr-1"
+                                                        fill="currentColor"
+                                                        viewBox="0 0 20 20"
+                                                    >
+                                                        <path
+                                                            fill-rule="evenodd"
+                                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
+                                                            clip-rule="evenodd"
+                                                        ></path>
+                                                    </svg>
+                                                    BUY
+                                                </span>
+                                            {:else if rec.recommendation === "SELL"}
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+                                                >
+                                                    <svg
+                                                        class="w-3 h-3 mr-1"
+                                                        fill="currentColor"
+                                                        viewBox="0 0 20 20"
+                                                    >
+                                                        <path
+                                                            fill-rule="evenodd"
+                                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                                                            clip-rule="evenodd"
+                                                        ></path>
+                                                    </svg>
+                                                    SELL
+                                                </span>
+                                            {:else}
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-300"
+                                                >
+                                                    <svg
+                                                        class="w-3 h-3 mr-1"
+                                                        fill="currentColor"
+                                                        viewBox="0 0 20 20"
+                                                    >
+                                                        <path
+                                                            fill-rule="evenodd"
+                                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                            clip-rule="evenodd"
+                                                        ></path>
+                                                    </svg>
+                                                    HOLD
+                                                </span>
+                                            {/if}
+                                        </div>
+                                    </div>
+
+                                    <!-- Price -->
+                                    {#if rec.last_price}
+                                        <div class="mb-3">
+                                            <div
+                                                class="text-sm text-gray-600 dark:text-gray-400"
+                                            >
+                                                Current Price
+                                            </div>
+                                            <div
+                                                class="text-lg font-semibold text-gray-900 dark:text-white"
+                                            >
+                                                ${rec.last_price.toLocaleString()}
+                                            </div>
+                                        </div>
+                                    {/if}
+
+                                    <!-- Reason -->
+                                    <div class="mb-3">
+                                        <div
+                                            class="text-sm text-gray-600 dark:text-gray-400 mb-1"
+                                        >
+                                            Signal Reason
+                                        </div>
+                                        <div
+                                            class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed"
+                                        >
+                                            {rec.reason}
+                                        </div>
+                                    </div>
+                                </div>
+                            {/each}
+                        </div>
+                    </div>
+                </div>
+            {/if}
+
             {#if activeTab === "backtest" && Object?.keys(backtestResults)?.length > 0}
+                <h4
+                    class="font-semibold mb-4 text-xl sm:text-2xl flex items-center gap-2"
+                >
+                    Trading History
+                </h4>
                 <div
                     class="w-full m-auto rounded-none sm:rounded mb-4 overflow-x-auto mt-5"
                 >
