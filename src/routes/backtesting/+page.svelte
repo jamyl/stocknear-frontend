@@ -565,6 +565,22 @@
                 volume: "Current Volume",
             },
         },
+        cci: {
+            label: "Commodity Channel Index (CCI)",
+            category: "Momentum",
+            operators: ["above", "below"],
+            defaultOperator: "below",
+            defaultValue: [-200, -100, -50, 0, 50, 100, 200],
+            valueLabels: {
+                [-200]: "CCI -200 (Extremely Oversold)",
+                [-100]: "CCI -100 (Oversold)",
+                [-50]: "CCI -50 (Weak)",
+                [0]: "CCI Zero Line",
+                [50]: "CCI +50 (Strong)",
+                [100]: "CCI +100 (Overbought)",
+                [200]: "CCI +200 (Extremely Overbought)",
+            },
+        },
     };
 
     const popularStrategyList = [
@@ -577,6 +593,7 @@
         { key: "bbMiddleBounce", label: "Bollinger Bands Middle Bounce" },
         { key: "stochOversoldBounce", label: "Stochastic Oversold Bounce" },
         { key: "obvTrend", label: "OBV Trend Following" },
+        { key: "cciOversold", label: "CCI Oversold Bounce" },
     ];
 
     // Strategy definitions for popular strategies
@@ -783,6 +800,24 @@
                     indicator: "obv",
                     operator: "below",
                     value: "obv_sma_20",
+                    logicOperator: null,
+                },
+            ],
+        },
+        cciOversold: {
+            buy: [
+                {
+                    indicator: "cci",
+                    operator: "below",
+                    value: -100,
+                    logicOperator: null,
+                },
+            ],
+            sell: [
+                {
+                    indicator: "cci",
+                    operator: "above",
+                    value: 100,
                     logicOperator: null,
                 },
             ],
