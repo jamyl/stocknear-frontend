@@ -702,15 +702,10 @@
 <!-- Start Cancel Subscription Modal -->
 <input type="checkbox" id="cancelSubscriptionModal" class="modal-toggle" />
 
-<dialog
-  id="cancelSubscriptionModal"
-  class="modal overflow-hidden p-3 sm:p-0 bg-[#000]/40"
->
+<dialog id="cancelSubscriptionModal" class="modal overflow-hidden p-3 sm:p-0">
   <label for="cancelSubscriptionModal" class="cursor-pointer modal-backdrop"
   ></label>
-  <label
-    for="cancelSubscriptionModal"
-    class="cursor-pointer modal-backdrop bg-[#000]/40"
+  <label for="cancelSubscriptionModal" class="cursor-pointer modal-backdrop"
   ></label>
 
   <!-- Desktop modal content -->
@@ -759,13 +754,11 @@
 <input type="checkbox" id="reactivateSubscriptionModal" class="modal-toggle" />
 <dialog
   id="reactivateSubscriptionModal"
-  class="modal overflow-hidden p-3 sm:p-0 bg-[#000]/40"
+  class="modal overflow-hidden p-3 sm:p-0"
 >
   <label for="reactivateSubscriptionModal" class="cursor-pointer modal-backdrop"
   ></label>
-  <label
-    for="reactivateSubscriptionModal"
-    class="cursor-pointer modal-backdrop bg-[#000]/40"
+  <label for="reactivateSubscriptionModal" class="cursor-pointer modal-backdrop"
   ></label>
 
   <!-- Desktop modal content -->
@@ -820,7 +813,7 @@
 />
 <dialog
   id="changeSubscriptionPlusAnnualModal"
-  class="modal overflow-hidden p-3 sm:p-0 bg-[#000]/40"
+  class="modal overflow-hidden p-3 sm:p-0"
 >
   <label
     for="changeSubscriptionPlusAnnualModal"
@@ -877,7 +870,7 @@
 />
 <dialog
   id="changeSubscriptionProAnnualModal"
-  class="modal overflow-hidden p-3 sm:p-0 bg-[#000]/40"
+  class="modal overflow-hidden p-3 sm:p-0"
 >
   <label
     for="changeSubscriptionProAnnualModal"

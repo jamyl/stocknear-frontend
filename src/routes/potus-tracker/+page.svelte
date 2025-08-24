@@ -1023,10 +1023,7 @@
 
 <input type="checkbox" id="executivePostModal" class="modal-toggle" />
 
-<dialog
-  id="executivePostModal"
-  class="modal modal-bottom sm:modal-middle bg-[#000]/40"
->
+<dialog id="executivePostModal" class="modal modal-bottom sm:modal-middle">
   <label for="executivePostModal" class="cursor-pointer modal-backdrop"></label>
 
   <div
@@ -1098,10 +1095,7 @@
 
 <input type="checkbox" id="socialPostModal" class="modal-toggle" />
 
-<dialog
-  id="socialPostModal"
-  class="modal modal-bottom sm:modal-middle bg-[#000]/40"
->
+<dialog id="socialPostModal" class="modal modal-bottom sm:modal-middle">
   <label for="socialPostModal" class="cursor-pointer modal-backdrop"></label>
 
   <div

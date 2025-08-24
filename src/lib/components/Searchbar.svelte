@@ -511,7 +511,7 @@
   bind:checked={searchBarModalChecked}
 />
 
-<dialog id="searchBarModal" class="modal bg-[#000]/40 p-3 min-h-96">
+<dialog id="searchBarModal" class="modal p-3 min-h-96">
   <label for="searchBarModal" class="cursor-pointer modal-backdrop"></label>
 
   <div

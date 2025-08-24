@@ -13,7 +13,7 @@
     export let strategyBlocks = [];
     export let availableIndicators = {};
     export let mode = "buy"; // 'buy' or 'sell'
-    
+
     // Modal state for indicator selection
     let currentEditingBlockId = null;
 
@@ -31,7 +31,9 @@
 
     // Update selectedIndicator when we start editing a block
     $: if (currentEditingBlockId) {
-        const currentBlock = strategyBlocks.find(b => b.id === currentEditingBlockId);
+        const currentBlock = strategyBlocks.find(
+            (b) => b.id === currentEditingBlockId,
+        );
         if (currentBlock) {
             selectedIndicator = currentBlock.indicator || "price";
             localSelected = selectedIndicator;
@@ -196,19 +198,19 @@
             dispatch("change", { blocks: strategyBlocks });
         }
     }
-    
+
     function handleIndicatorSelect(event) {
         const { indicator } = event.detail;
         if (currentEditingBlockId) {
             const newConfig = getIndicatorConfig(indicator);
             let newValue;
-            
+
             if (Array.isArray(newConfig.defaultValue)) {
                 newValue = newConfig.defaultValue[0];
             } else {
                 newValue = newConfig.defaultValue;
             }
-            
+
             updateBlock(currentEditingBlockId, {
                 indicator: indicator,
                 operator: newConfig.defaultOperator || "equals",
@@ -218,7 +220,7 @@
         currentEditingBlockId = null;
         closeIndicatorModal();
     }
-    
+
     function handleIndicatorModalClose() {
         currentEditingBlockId = null;
         closeIndicatorModal();
@@ -228,25 +230,25 @@
         // Toggle: clicking same one switches to "price" (no "all unchecked" state visible)
         localSelected = localSelected === key ? "price" : key;
         selectedIndicator = localSelected;
-        
+
         // Handle the selection if we're editing a block
         if (currentEditingBlockId) {
             const newConfig = getIndicatorConfig(selectedIndicator);
             let newValue;
-            
+
             if (Array.isArray(newConfig.defaultValue)) {
                 newValue = newConfig.defaultValue[0];
             } else {
                 newValue = newConfig.defaultValue;
             }
-            
+
             updateBlock(currentEditingBlockId, {
                 indicator: selectedIndicator,
                 operator: newConfig.defaultOperator || "equals",
                 value: newValue,
             });
         }
-        
+
         // Don't close the modal - let user continue browsing/selecting
     }
 
@@ -403,9 +405,8 @@
                                         }}
                                     >
                                         <span class="truncate">
-                                            {getIndicatorConfig(
-                                                block.indicator,
-                                            ).label}
+                                            {getIndicatorConfig(block.indicator)
+                                                .label}
                                         </span>
                                         <ChevronDown
                                             size={16}
@@ -595,154 +596,164 @@
 
 <!-- Indicator Modal -->
 {#if currentEditingBlockId !== null}
-<input type="checkbox" id="indicatorModalToggle" class="modal-toggle" checked />
+    <input
+        type="checkbox"
+        id="indicatorModalToggle"
+        class="modal-toggle"
+        checked
+    />
 
-<dialog id="indicatorModalDialog" class="modal p-2 lg:p-0">
-    <!-- Backdrop toggler points to the checkbox above -->
-    <label
-        for="indicatorModalToggle"
-        on:click={closeIndicatorModal}
-        class="cursor-pointer modal-backdrop bg-[#000]/40"
-    ></label>
+    <dialog id="indicatorModalDialog" class="modal p-2 lg:p-0">
+        <!-- Backdrop toggler points to the checkbox above -->
+        <label
+            for="indicatorModalToggle"
+            on:click={closeIndicatorModal}
+            class="cursor-pointer modal-backdrop"
+        ></label>
 
-    <div
-        class="modal-box relative bg-white dark:bg-primary z-20 mx-2 min-h-[30vh] h-[800px] rounded bg-default opacity-100 border border-gray-300 dark:border-gray-600 bp:mx-3 sm:mx-4 w-full max-w-6xl overflow-y-auto"
-    >
-        <div class="relative flex flex-col w-full">
-            <!-- Sticky Header -->
-            <div
-                class="fixed w-full h-fit sticky -top-6 z-40 bg-white dark:bg-primary opacity-100 pb-6 pt-5 border-gray-300 dark:border-gray-600 border-b"
-            >
-                <div class="flex flex-row items-center justify-between mb-2">
-                    <h2 class="text-[1rem] sm:text-xl font-semibold">
-                        Select Indicator ({totalIndicators} total)
-                    </h2>
-                    <button
-                        on:click={closeIndicatorModal}
-                        class="inline-block cursor-pointer absolute right-0 top-3 text-[1.3rem] sm:text-[1.8rem]"
-                        aria-label="Close"
-                    >
-                        <svg
-                            class="w-6 h-6 sm:w-8 sm:h-8"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                fill="currentColor"
-                                d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6z"
-                            />
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Search bar -->
-                <form
-                    class="w-full h-8"
-                    on:keydown={(e) =>
-                        e?.key === "Enter" ? e.preventDefault() : ""}
+        <div
+            class="modal-box relative bg-white dark:bg-primary z-20 mx-2 min-h-[30vh] h-[800px] rounded bg-default opacity-100 border border-gray-300 dark:border-gray-600 bp:mx-3 sm:mx-4 w-full max-w-6xl overflow-y-auto"
+        >
+            <div class="relative flex flex-col w-full">
+                <!-- Sticky Header -->
+                <div
+                    class="fixed w-full h-fit sticky -top-6 z-40 bg-white dark:bg-primary opacity-100 pb-6 pt-5 border-gray-300 dark:border-gray-600 border-b"
                 >
-                    <label for="search" class="sr-only">Search</label>
-                    <div class="relative w-full max-w-sm">
-                        <div
-                            class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
+                    <div
+                        class="flex flex-row items-center justify-between mb-2"
+                    >
+                        <h2 class="text-[1rem] sm:text-xl font-semibold">
+                            Select Indicator ({totalIndicators} total)
+                        </h2>
+                        <button
+                            on:click={closeIndicatorModal}
+                            class="inline-block cursor-pointer absolute right-0 top-3 text-[1.3rem] sm:text-[1.8rem]"
+                            aria-label="Close"
                         >
                             <svg
-                                class="w-4 h-4 text-gray-600 dark:text-gray-300"
-                                aria-hidden="true"
+                                class="w-6 h-6 sm:w-8 sm:h-8"
                                 xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 20 20"
+                                viewBox="0 0 24 24"
                             >
                                 <path
-                                    stroke="currentColor"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                                    fill="currentColor"
+                                    d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6z"
                                 />
                             </svg>
-                        </div>
+                        </button>
+                    </div>
 
-                        <div
-                            class="absolute inset-y-0 right-0 flex items-center pr-2 {searchTerm?.length >
-                            0
-                                ? ''
-                                : 'hidden'}"
-                        >
-                            <button
-                                on:click={() => (searchTerm = "")}
-                                class="cursor-pointer text-gray-600 dark:text-gray-300"
-                                tabindex="0"
-                                type="button"
-                                aria-label="Clear search"
+                    <!-- Search bar -->
+                    <form
+                        class="w-full h-8"
+                        on:keydown={(e) =>
+                            e?.key === "Enter" ? e.preventDefault() : ""}
+                    >
+                        <label for="search" class="sr-only">Search</label>
+                        <div class="relative w-full max-w-sm">
+                            <div
+                                class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
                             >
                                 <svg
-                                    class="w-5 h-5"
+                                    class="w-4 h-4 text-gray-600 dark:text-gray-300"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                    style="max-width:40px"
+                                    viewBox="0 0 20 20"
                                 >
                                     <path
+                                        stroke="currentColor"
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
                                         stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"
+                                        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
                                     />
                                 </svg>
-                            </button>
-                        </div>
-
-                        <input
-                            autocomplete="off"
-                            id="search"
-                            class="focus:outline-none placeholder-gray-800 dark:placeholder-gray-300 block w-full p-2 ps-10 text-sm border border-gray-300 dark:border-gray-600 rounded bg-gray-100 dark:bg-secondary border border-blue-500"
-                            placeholder="Search..."
-                            bind:value={searchTerm}
-                        />
-                    </div>
-                </form>
-            </div>
-
-            <!-- Content -->
-            <div class="">
-                {#each searchTerm?.length !== 0 ? Object.entries(filteredGroupedIndicators) : Object.entries(groupedIndicators) as [category, indicators]}
-                    <h4 class="mb-1 font-semibold text-lg mt-5">{category}</h4>
-                    <div class="flex flex-wrap">
-                        {#each indicators as indicator (indicator.key)}
-                            <div
-                                class="flex w-full items-center space-x-1.5 py-1.5 md:w-1/2 lg:w-1/3 lg:py-1"
-                            >
-                                <!-- Use click instead of change; drive state via localSelected -->
-                                <input
-                                    id={indicator.key}
-                                    type="checkbox"
-                                    on:click={() =>
-                                        selectIndicator(indicator.key)}
-                                    checked={localSelected === indicator.key}
-                                    class="h-[18px] w-[18px] rounded-sm ring-offset-0 lg:h-4 lg:w-4"
-                                />
-                                <div class="-mt-0.5">
-                                    <label
-                                        for={indicator.key}
-                                        class="cursor-pointer text-[1rem]"
-                                    >
-                                        {indicator.label}
-                                    </label>
-                                </div>
                             </div>
-                        {/each}
-                    </div>
-                {/each}
 
-                {#if searchTerm?.length > 0 && Object?.entries(filteredGroupedIndicators)?.length === 0}
-                    <div class="mt-5 font-semibold text-[1rem] sm:text-lg">
-                        Nothing found
-                    </div>
-                {/if}
+                            <div
+                                class="absolute inset-y-0 right-0 flex items-center pr-2 {searchTerm?.length >
+                                0
+                                    ? ''
+                                    : 'hidden'}"
+                            >
+                                <button
+                                    on:click={() => (searchTerm = "")}
+                                    class="cursor-pointer text-gray-600 dark:text-gray-300"
+                                    tabindex="0"
+                                    type="button"
+                                    aria-label="Clear search"
+                                >
+                                    <svg
+                                        class="w-5 h-5"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        style="max-width:40px"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"
+                                        />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <input
+                                autocomplete="off"
+                                id="search"
+                                class="focus:outline-none placeholder-gray-800 dark:placeholder-gray-300 block w-full p-2 ps-10 text-sm border border-gray-300 dark:border-gray-600 rounded bg-gray-100 dark:bg-secondary border border-blue-500"
+                                placeholder="Search..."
+                                bind:value={searchTerm}
+                            />
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Content -->
+                <div class="">
+                    {#each searchTerm?.length !== 0 ? Object.entries(filteredGroupedIndicators) : Object.entries(groupedIndicators) as [category, indicators]}
+                        <h4 class="mb-1 font-semibold text-lg mt-5">
+                            {category}
+                        </h4>
+                        <div class="flex flex-wrap">
+                            {#each indicators as indicator (indicator.key)}
+                                <div
+                                    class="flex w-full items-center space-x-1.5 py-1.5 md:w-1/2 lg:w-1/3 lg:py-1"
+                                >
+                                    <!-- Use click instead of change; drive state via localSelected -->
+                                    <input
+                                        id={indicator.key}
+                                        type="checkbox"
+                                        on:click={() =>
+                                            selectIndicator(indicator.key)}
+                                        checked={localSelected ===
+                                            indicator.key}
+                                        class="h-[18px] w-[18px] rounded-sm ring-offset-0 lg:h-4 lg:w-4"
+                                    />
+                                    <div class="-mt-0.5">
+                                        <label
+                                            for={indicator.key}
+                                            class="cursor-pointer text-[1rem]"
+                                        >
+                                            {indicator.label}
+                                        </label>
+                                    </div>
+                                </div>
+                            {/each}
+                        </div>
+                    {/each}
+
+                    {#if searchTerm?.length > 0 && Object?.entries(filteredGroupedIndicators)?.length === 0}
+                        <div class="mt-5 font-semibold text-[1rem] sm:text-lg">
+                            Nothing found
+                        </div>
+                    {/if}
+                </div>
             </div>
         </div>
-    </div>
-</dialog>
+    </dialog>
 {/if}
 <!-- End Indicator Modal -->

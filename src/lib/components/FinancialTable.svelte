@@ -318,7 +318,7 @@
 {/each}
 
 <input type="checkbox" id="financialPlotModal" class="modal-toggle" />
-<dialog id="financialPlotModal" class="modal bg-[#000]/40 px-3">
+<dialog id="financialPlotModal" class="modal px-3">
   <label for="financialPlotModal" class="cursor-pointer modal-backdrop"></label>
 
   <div

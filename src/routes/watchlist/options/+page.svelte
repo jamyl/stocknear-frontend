@@ -948,7 +948,7 @@
 
 <dialog
   id="optionDetailsDesktopModal"
-  class="modal {$screenWidth < 640 ? 'modal-bottom ' : ''} bg-[#000]/40 sm:px-5"
+  class="modal {$screenWidth < 640 ? 'modal-bottom ' : ''}  sm:px-5"
 >
   <div
     class="modal-box bg-white dark:bg-default w-full {rawDataHistory?.length > 0

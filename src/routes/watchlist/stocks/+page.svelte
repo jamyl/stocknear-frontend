@@ -2166,8 +2166,7 @@
 
 <dialog id="addWatchlist" class="modal modal-bottom sm:modal-middle">
   <!-- Modal backdrop for desktop -->
-  <label for="addWatchlist" class="cursor-pointer modal-backdrop bg-[#000]/40"
-  ></label>
+  <label for="addWatchlist" class="cursor-pointer modal-backdrop"></label>
 
   <!-- Desktop modal content -->
   <div
@@ -2206,10 +2205,7 @@
 <input type="checkbox" id="deleteWatchlist" class="modal-toggle" />
 
 <dialog id="deleteWatchlist" class="modal modal-middle p-3 sm:p-0">
-  <label
-    for="deleteWatchlist"
-    class="cursor-pointer modal-backdrop bg-[#000]/40"
-  ></label>
+  <label for="deleteWatchlist" class="cursor-pointer modal-backdrop"></label>
 
   <div
     class="modal-box w-full p-6 rounded border

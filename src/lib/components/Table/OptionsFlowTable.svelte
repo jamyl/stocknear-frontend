@@ -980,7 +980,7 @@
 </div>
 
 <input type="checkbox" id="optionsInsightModal" class="modal-toggle" />
-<dialog id="optionsInsightModal" class="modal bg-[#000]/40 p-3 sm:p-0">
+<dialog id="optionsInsightModal" class="modal p-3 sm:p-0">
   <label
     id="optionsInsightModal"
     for="optionsInsightModal"

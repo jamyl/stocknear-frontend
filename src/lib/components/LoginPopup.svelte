@@ -151,7 +151,7 @@ const output = await response.json();
     on:click={() => (form = [])}
     id="userLogin"
     for="userLogin"
-    class="cursor-pointer modal-backdrop bg-[#000]/40"
+    class="cursor-pointer modal-backdrop"
   ></label>
 
   <div

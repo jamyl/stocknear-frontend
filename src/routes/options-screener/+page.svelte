@@ -2273,7 +2273,7 @@
     id="ruleModal"
     for="ruleModal"
     on:click={() => (searchTerm = "")}
-    class="cursor-pointer modal-backdrop bg-[#000]/40"
+    class="cursor-pointer modal-backdrop"
   ></label>
 
   <div
@@ -2412,8 +2412,7 @@
 <input type="checkbox" id="addStrategy" class="modal-toggle" />
 
 <dialog id="addStrategy" class="modal modal-bottom sm:modal-middle">
-  <label for="addStrategy" class="cursor-pointer modal-backdrop bg-[#000]/40"
-  ></label>
+  <label for="addStrategy" class="cursor-pointer modal-backdrop"></label>
 
   <div
     class="modal-box w-full p-6 rounded border
@@ -2450,8 +2449,7 @@
 <input type="checkbox" id="deleteStrategy" class="modal-toggle" />
 
 <dialog id="deleteStrategy" class="modal modal-bottom sm:modal-middle">
-  <label for="deleteStrategy" class="cursor-pointer modal-backdrop bg-[#000]/40"
-  ></label>
+  <label for="deleteStrategy" class="cursor-pointer modal-backdrop"></label>
 
   <div
     class="modal-box w-full p-6 rounded border

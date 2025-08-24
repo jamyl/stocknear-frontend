@@ -111,7 +111,7 @@
 <!--Start Trade Modal-->
 <input type="checkbox" id="priceAlertModal" class="modal-toggle" />
 
-<dialog id="priceAlertModal" class="modal modal-middle p-2 sm:p-0 bg-[#000]/40">
+<dialog id="priceAlertModal" class="modal modal-middle p-2 sm:p-0">
   <label for="priceAlertModal" class="cursor-pointer modal-backdrop"></label>
 
   <div

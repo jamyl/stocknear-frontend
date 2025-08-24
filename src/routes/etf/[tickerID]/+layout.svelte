@@ -589,7 +589,7 @@
 <!--Start Add Watchlist Modal-->
 <input type="checkbox" id="addWatchListModal" class="modal-toggle" />
 
-<dialog id="addWatchListModal" class="modal bg-[#000]/40 p-3 sm:p-0">
+<dialog id="addWatchListModal" class="modal p-3 sm:p-0">
   <label
     id="addWatchListModal"
     for="addWatchListModal"

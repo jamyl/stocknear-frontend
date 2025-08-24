@@ -1990,7 +1990,7 @@
     id="ruleModal"
     for="ruleModal"
     on:click={() => (searchTerm = "")}
-    class="cursor-pointer modal-backdrop bg-[#000]/40"
+    class="cursor-pointer modal-backdrop"
   ></label>
 
   <div

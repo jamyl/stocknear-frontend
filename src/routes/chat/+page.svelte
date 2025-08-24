@@ -951,8 +951,7 @@
 <input type="checkbox" id="deleteThread" class="modal-toggle" />
 
 <dialog id="deleteThread" class="modal modal-middle p-3 sm:p-0">
-  <label for="deleteThread" class="cursor-pointer modal-backdrop bg-[#000]/40"
-  ></label>
+  <label for="deleteThread" class="cursor-pointer modal-backdrop"></label>
 
   <div
     class="modal-box w-full p-6 rounded shadow-xs border
