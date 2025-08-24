@@ -487,6 +487,84 @@
                 stoch_d: "Stochastic %D",
             },
         },
+        obv: {
+            label: "On-Balance Volume (OBV)",
+            category: "Volume",
+            operators: ["above", "below"],
+            defaultOperator: "above",
+            defaultValue: [
+                "obv_sma_5",
+                "obv_sma_10",
+                "obv_sma_20",
+                "obv_sma_50",
+            ],
+            valueLabels: {
+                obv_sma_5: "OBV 5-Day SMA",
+                obv_sma_10: "OBV 10-Day SMA",
+                obv_sma_20: "OBV 20-Day SMA",
+                obv_sma_50: "OBV 50-Day SMA",
+            },
+        },
+        obv_sma_5: {
+            label: "OBV 5-Day SMA",
+            category: "Volume",
+            operators: ["above", "below"],
+            defaultOperator: "above",
+            defaultValue: ["obv"],
+            valueLabels: {
+                obv: "OBV",
+            },
+        },
+        obv_sma_10: {
+            label: "OBV 10-Day SMA",
+            category: "Volume",
+            operators: ["above", "below"],
+            defaultOperator: "above",
+            defaultValue: ["obv"],
+            valueLabels: {
+                obv: "OBV",
+            },
+        },
+        obv_sma_20: {
+            label: "OBV 20-Day SMA",
+            category: "Volume",
+            operators: ["above", "below"],
+            defaultOperator: "above",
+            defaultValue: ["obv"],
+            valueLabels: {
+                obv: "OBV",
+            },
+        },
+        obv_sma_50: {
+            label: "OBV 50-Day SMA",
+            category: "Volume",
+            operators: ["above", "below"],
+            defaultOperator: "above",
+            defaultValue: ["obv"],
+            valueLabels: {
+                obv: "OBV",
+            },
+        },
+        volume: {
+            label: "Volume",
+            category: "Volume",
+            operators: ["above", "below"],
+            defaultOperator: "above",
+            defaultValue: ["volume_ma"],
+            valueLabels: {
+                volume_ma: "20-Day Volume Average",
+            },
+        },
+        volume_ma: {
+            label: "20-Day Volume Average",
+            category: "Volume",
+            operators: ["above", "below"],
+            defaultOperator: "above",
+            defaultValue: ["volume"],
+            valueLabels: {
+                volume: "Current Volume",
+            },
+        },
     };
 
     const popularStrategyList = [
@@ -498,6 +576,7 @@
         { key: "bbMeanReversion", label: "Bollinger Bands Mean Reversion" },
         { key: "bbMiddleBounce", label: "Bollinger Bands Middle Bounce" },
         { key: "stochOversoldBounce", label: "Stochastic Oversold Bounce" },
+        { key: "obvTrend", label: "OBV Trend Following" },
     ];
 
     // Strategy definitions for popular strategies
@@ -687,6 +766,24 @@
                     operator: "below",
                     value: 0,
                     logicOperator: "AND",
+                },
+            ],
+        },
+        obvTrend: {
+            buy: [
+                {
+                    indicator: "obv",
+                    operator: "above",
+                    value: "obv_sma_20",
+                    logicOperator: null,
+                },
+            ],
+            sell: [
+                {
+                    indicator: "obv",
+                    operator: "below",
+                    value: "obv_sma_20",
+                    logicOperator: null,
                 },
             ],
         },
