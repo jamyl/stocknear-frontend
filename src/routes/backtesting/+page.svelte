@@ -106,6 +106,10 @@
                 "ema_100",
                 "ema_200",
                 "vwap",
+                "parabolic_sar",
+                "donchian_upper",
+                "donchian_middle", 
+                "donchian_lower",
                 "atr_upper_0.5",
                 "atr_upper_1",
                 "atr_upper_1.5",
@@ -132,6 +136,10 @@
                 ema_100: "100-Day EMA",
                 ema_200: "200-Day EMA",
                 vwap: "VWAP",
+                parabolic_sar: "Parabolic SAR",
+                donchian_upper: "Donchian Upper Channel",
+                donchian_middle: "Donchian Middle Channel",
+                donchian_lower: "Donchian Lower Channel", 
                 "atr_upper_0.5": "Previous Close + 0.5×ATR",
                 atr_upper_1: "Previous Close + 1×ATR",
                 "atr_upper_1.5": "Previous Close + 1.5×ATR",
@@ -571,6 +579,79 @@
                 ema_200: "200-Day EMA",
             },
         },
+        williams_r: {
+            label: "Williams %R",
+            category: "Momentum", 
+            operators: ["above", "below"],
+            defaultOperator: "above",
+            defaultValue: [-80, -50, -20, 0],
+            valueLabels: {
+                "-80": "Oversold Level (-80)",
+                "-50": "Midline (-50)", 
+                "-20": "Overbought Level (-20)",
+                "0": "Zero Line",
+            },
+        },
+        mfi: {
+            label: "Money Flow Index (MFI)",
+            category: "Volume",
+            operators: ["above", "below"],
+            defaultOperator: "above", 
+            defaultValue: [20, 30, 50, 70, 80],
+            valueLabels: {
+                "20": "Oversold Level (20)",
+                "30": "Buy Level (30)",
+                "50": "Midline (50)",
+                "70": "Sell Level (70)", 
+                "80": "Overbought Level (80)",
+            },
+        },
+        parabolic_sar: {
+            label: "Parabolic SAR",
+            category: "Trend",
+            operators: ["above", "below"],
+            defaultOperator: "above",
+            defaultValue: ["price"],
+            valueLabels: {
+                price: "Current Price",
+            },
+        },
+        donchian_upper: {
+            label: "Donchian Upper Channel",
+            category: "Volatility",
+            operators: ["above", "below"],
+            defaultOperator: "above",
+            defaultValue: ["price", "donchian_middle", "donchian_lower"],
+            valueLabels: {
+                price: "Current Price",
+                donchian_middle: "Donchian Middle",
+                donchian_lower: "Donchian Lower",
+            },
+        },
+        donchian_middle: {
+            label: "Donchian Middle Channel", 
+            category: "Volatility",
+            operators: ["above", "below"],
+            defaultOperator: "above",
+            defaultValue: ["price", "donchian_upper", "donchian_lower"],
+            valueLabels: {
+                price: "Current Price", 
+                donchian_upper: "Donchian Upper",
+                donchian_lower: "Donchian Lower",
+            },
+        },
+        donchian_lower: {
+            label: "Donchian Lower Channel",
+            category: "Volatility", 
+            operators: ["above", "below"],
+            defaultOperator: "below",
+            defaultValue: ["price", "donchian_upper", "donchian_middle"],
+            valueLabels: {
+                price: "Current Price",
+                donchian_upper: "Donchian Upper", 
+                donchian_middle: "Donchian Middle",
+            },
+        },
     };
 
     const popularStrategyList = [
@@ -579,6 +660,10 @@
         { key: "goldenCross", label: "Golden Cross (50/200 SMA)" },
         { key: "movingAverageBounce", label: "Moving Average Bounce" },
         { key: "vwapCross", label: "VWAP Price Cross" },
+        { key: "williamsROversold", label: "Williams %R Oversold" },
+        { key: "mfiMomentum", label: "MFI Volume Momentum" },
+        { key: "parabolicSARTrend", label: "Parabolic SAR Trend Following" },
+        { key: "donchianBreakout", label: "Donchian Channel Breakout" },
     ];
 
     // Strategy definitions for popular strategies
@@ -701,6 +786,78 @@
                     indicator: "price",
                     operator: "below",
                     value: "vwap",
+                    logicOperator: null,
+                },
+            ],
+        },
+        williamsROversold: {
+            buy: [
+                {
+                    indicator: "williams_r",
+                    operator: "above",
+                    value: -80,
+                    logicOperator: null,
+                },
+            ],
+            sell: [
+                {
+                    indicator: "williams_r", 
+                    operator: "below",
+                    value: -20,
+                    logicOperator: null,
+                },
+            ],
+        },
+        mfiMomentum: {
+            buy: [
+                {
+                    indicator: "mfi",
+                    operator: "above",
+                    value: 30,
+                    logicOperator: null,
+                },
+            ],
+            sell: [
+                {
+                    indicator: "mfi",
+                    operator: "above", 
+                    value: 70,
+                    logicOperator: null,
+                },
+            ],
+        },
+        parabolicSARTrend: {
+            buy: [
+                {
+                    indicator: "price",
+                    operator: "above",
+                    value: "parabolic_sar",
+                    logicOperator: null,
+                },
+            ],
+            sell: [
+                {
+                    indicator: "price",
+                    operator: "below",
+                    value: "parabolic_sar",
+                    logicOperator: null,
+                },
+            ],
+        },
+        donchianBreakout: {
+            buy: [
+                {
+                    indicator: "price",
+                    operator: "above", 
+                    value: "donchian_upper",
+                    logicOperator: null,
+                },
+            ],
+            sell: [
+                {
+                    indicator: "price",
+                    operator: "below",
+                    value: "donchian_lower",
                     logicOperator: null,
                 },
             ],
