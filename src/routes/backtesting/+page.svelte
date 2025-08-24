@@ -105,6 +105,7 @@
                 "ema_50",
                 "ema_100",
                 "ema_200",
+                "vwap",
                 "atr_upper_0.5",
                 "atr_upper_1",
                 "atr_upper_1.5",
@@ -130,6 +131,7 @@
                 ema_50: "50-Day EMA",
                 ema_100: "100-Day EMA",
                 ema_200: "200-Day EMA",
+                vwap: "VWAP",
                 "atr_upper_0.5": "Previous Close + 0.5×ATR",
                 atr_upper_1: "Previous Close + 1×ATR",
                 "atr_upper_1.5": "Previous Close + 1.5×ATR",
@@ -505,46 +507,6 @@
                 obv_sma_50: "OBV 50-Day SMA",
             },
         },
-        obv_sma_5: {
-            label: "OBV 5-Day SMA",
-            category: "Volume",
-            operators: ["above", "below"],
-            defaultOperator: "above",
-            defaultValue: ["obv"],
-            valueLabels: {
-                obv: "OBV",
-            },
-        },
-        obv_sma_10: {
-            label: "OBV 10-Day SMA",
-            category: "Volume",
-            operators: ["above", "below"],
-            defaultOperator: "above",
-            defaultValue: ["obv"],
-            valueLabels: {
-                obv: "OBV",
-            },
-        },
-        obv_sma_20: {
-            label: "OBV 20-Day SMA",
-            category: "Volume",
-            operators: ["above", "below"],
-            defaultOperator: "above",
-            defaultValue: ["obv"],
-            valueLabels: {
-                obv: "OBV",
-            },
-        },
-        obv_sma_50: {
-            label: "OBV 50-Day SMA",
-            category: "Volume",
-            operators: ["above", "below"],
-            defaultOperator: "above",
-            defaultValue: ["obv"],
-            valueLabels: {
-                obv: "OBV",
-            },
-        },
         volume: {
             label: "Volume",
             category: "Volume",
@@ -581,6 +543,34 @@
                 [200]: "CCI +200 (Extremely Overbought)",
             },
         },
+        vwap: {
+            label: "Volume Weighted Average Price (VWAP)",
+            category: "Volume",
+            operators: ["above", "below"],
+            defaultOperator: "above",
+            defaultValue: [
+                "price",
+                "sma_20",
+                "sma_50", 
+                "sma_100",
+                "sma_200",
+                "ema_20",
+                "ema_50",
+                "ema_100", 
+                "ema_200"
+            ],
+            valueLabels: {
+                price: "Current Price",
+                sma_20: "20-Day SMA",
+                sma_50: "50-Day SMA",
+                sma_100: "100-Day SMA",
+                sma_200: "200-Day SMA",
+                ema_20: "20-Day EMA",
+                ema_50: "50-Day EMA",
+                ema_100: "100-Day EMA",
+                ema_200: "200-Day EMA",
+            },
+        },
     };
 
     const popularStrategyList = [
@@ -588,12 +578,7 @@
         { key: "macdBullish", label: "MACD Bullish Crossover" },
         { key: "goldenCross", label: "Golden Cross (50/200 SMA)" },
         { key: "movingAverageBounce", label: "Moving Average Bounce" },
-        { key: "atrBreakout", label: "ATR Breakout Strategy" },
-        { key: "bbMeanReversion", label: "Bollinger Bands Mean Reversion" },
-        { key: "bbMiddleBounce", label: "Bollinger Bands Middle Bounce" },
-        { key: "stochOversoldBounce", label: "Stochastic Oversold Bounce" },
-        { key: "obvTrend", label: "OBV Trend Following" },
-        { key: "cciOversold", label: "CCI Oversold Bounce" },
+        { key: "vwapCross", label: "VWAP Price Cross" },
     ];
 
     // Strategy definitions for popular strategies
@@ -702,12 +687,12 @@
                 },
             ],
         },
-        atrBreakout: {
+        vwapCross: {
             buy: [
                 {
                     indicator: "price",
                     operator: "above",
-                    value: "atr_upper_2",
+                    value: "vwap",
                     logicOperator: null,
                 },
             ],
@@ -715,109 +700,7 @@
                 {
                     indicator: "price",
                     operator: "below",
-                    value: "atr_lower_2",
-                    logicOperator: null,
-                },
-            ],
-        },
-        bbMeanReversion: {
-            buy: [
-                {
-                    indicator: "price",
-                    operator: "below",
-                    value: "bb_lower",
-                    logicOperator: null,
-                },
-            ],
-            sell: [
-                {
-                    indicator: "price",
-                    operator: "above",
-                    value: "bb_upper",
-                    logicOperator: null,
-                },
-            ],
-        },
-        bbMiddleBounce: {
-            buy: [
-                {
-                    indicator: "price",
-                    operator: "above",
-                    value: "bb_middle",
-                    logicOperator: null,
-                },
-            ],
-            sell: [
-                {
-                    indicator: "price",
-                    operator: "below",
-                    value: "bb_middle",
-                    logicOperator: null,
-                },
-            ],
-        },
-        stochOversoldBounce: {
-            buy: [
-                {
-                    indicator: "stoch_k",
-                    operator: "below",
-                    value: 20,
-                    logicOperator: null,
-                },
-                {
-                    indicator: "stoch_crossover",
-                    operator: "above",
-                    value: 0,
-                    logicOperator: "AND",
-                },
-            ],
-            sell: [
-                {
-                    indicator: "stoch_k",
-                    operator: "above",
-                    value: 80,
-                    logicOperator: null,
-                },
-                {
-                    indicator: "stoch_crossover",
-                    operator: "below",
-                    value: 0,
-                    logicOperator: "AND",
-                },
-            ],
-        },
-        obvTrend: {
-            buy: [
-                {
-                    indicator: "obv",
-                    operator: "above",
-                    value: "obv_sma_20",
-                    logicOperator: null,
-                },
-            ],
-            sell: [
-                {
-                    indicator: "obv",
-                    operator: "below",
-                    value: "obv_sma_20",
-                    logicOperator: null,
-                },
-            ],
-        },
-        cciOversold: {
-            buy: [
-                {
-                    indicator: "cci",
-                    operator: "below",
-                    value: -100,
-                    logicOperator: null,
-                },
-            ],
-            sell: [
-                {
-                    indicator: "cci",
-                    operator: "above",
-                    value: 100,
+                    value: "vwap",
                     logicOperator: null,
                 },
             ],
