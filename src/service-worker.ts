@@ -26,19 +26,19 @@ const ICONS = {
 
 
 self.addEventListener('install', (event) => {
+  // Skip waiting immediately for faster activation
+  self.skipWaiting();
+  
+  // Cache essential assets in background (non-blocking)
   event.waitUntil(
-    (async () => {
-      const cache = await caches.open(CACHE);
-      
-      // Only cache essential assets
+    caches.open(CACHE).then(cache => {
       console.log('[SW] Caching essential assets...');
-      await cache.addAll(ESSENTIAL_ASSETS).catch(err => {
-        console.error('[SW] Essential assets caching failed:', err);
+      return cache.addAll(ESSENTIAL_ASSETS).catch(err => {
+        console.warn('[SW] Essential assets caching failed:', err);
       });
-      
-      await self.skipWaiting();
+    }).then(() => {
       console.log('[SW] Service Worker installed');
-    })()
+    })
   );
 });
 

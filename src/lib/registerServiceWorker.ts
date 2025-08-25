@@ -1,38 +1,32 @@
-// Optimized Service Worker Registration
-export async function registerServiceWorker() {
+// Non-blocking Service Worker Registration
+export function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) {
     console.log('[SW] Service Workers not supported');
     return;
   }
 
-  // Check if already registered
-  const existingRegistration = await navigator.serviceWorker.getRegistration();
-  if (existingRegistration) {
-    console.log('[SW] Service worker already registered');
-    return existingRegistration;
-  }
-
-  // Wait for window load to not block critical rendering path
-  if (document.readyState === 'loading') {
-    await new Promise(resolve => {
-      window.addEventListener('load', resolve, { once: true });
-    });
-  }
-
-  try {
-    // Use requestIdleCallback for non-blocking registration
+  // Defer registration completely until after page is interactive
+  const deferredRegistration = () => {
+    // Use requestIdleCallback with very low priority
     if ('requestIdleCallback' in window) {
-      requestIdleCallback(async () => {
-        await performRegistration();
-      }, { timeout: 2000 });
+      requestIdleCallback(() => {
+        performRegistration();
+      }, { timeout: 10000 }); // Very long timeout
     } else {
-      // Fallback with setTimeout for browsers without requestIdleCallback
-      setTimeout(async () => {
-        await performRegistration();
-      }, 1000);
+      // Use setTimeout with significant delay
+      setTimeout(() => {
+        performRegistration();
+      }, 3000);
     }
-  } catch (error) {
-    console.error('[SW] Registration failed:', error);
+  };
+
+  // Wait for complete page load + additional delay
+  if (document.readyState === 'complete') {
+    setTimeout(deferredRegistration, 2000);
+  } else {
+    window.addEventListener('load', () => {
+      setTimeout(deferredRegistration, 2000);
+    }, { once: true });
   }
 }
 
@@ -70,44 +64,50 @@ export async function registerServiceWorkerImmediate() {
   }
 }
 
-async function performRegistration() {
-  try {
-    const registration = await navigator.serviceWorker.register('/service-worker.js', {
-      // updateViaCache helps with faster updates
+function performRegistration() {
+  // Check if already registered (non-blocking check)
+  navigator.serviceWorker.getRegistration().then(existingRegistration => {
+    if (existingRegistration) {
+      console.log('[SW] Service worker already registered');
+      return;
+    }
+
+    // Perform actual registration
+    navigator.serviceWorker.register('/service-worker.js', {
       updateViaCache: 'none',
       scope: '/'
+    }).then(registration => {
+      console.log('[SW] Registration successful');
+      setupUpdateHandlers(registration);
+    }).catch(error => {
+      console.error('[SW] Registration failed:', error);
     });
-
-    console.log('[SW] Registration successful');
-    
-    setupUpdateHandlers(registration);
-
-  } catch (error) {
-    console.error('[SW] Registration failed:', error);
-  }
+  }).catch(() => {
+    // If getRegistration fails, try direct registration
+    navigator.serviceWorker.register('/service-worker.js', {
+      updateViaCache: 'none',
+      scope: '/'
+    }).then(registration => {
+      console.log('[SW] Registration successful');
+      setupUpdateHandlers(registration);
+    }).catch(error => {
+      console.error('[SW] Registration failed:', error);
+    });
+  });
 }
 
 function setupUpdateHandlers(registration: ServiceWorkerRegistration) {
-  // Handle updates
+  // Minimal update handling - don't interrupt user
   registration.addEventListener('updatefound', () => {
     const newWorker = registration.installing;
     if (!newWorker) return;
 
     newWorker.addEventListener('statechange', () => {
       if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-        console.log('[SW] New version available');
-        
-        if (window.confirm('A new version is available! Reload to update?')) {
-          newWorker.postMessage({ type: 'SKIP_WAITING' });
-          window.location.reload();
-        }
+        console.log('[SW] New version available - will activate on next visit');
+        // Don't prompt user immediately - let them finish current session
       }
     });
-  });
-
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    console.log('[SW] Controller changed, reloading...');
-    window.location.reload();
   });
 }
 
