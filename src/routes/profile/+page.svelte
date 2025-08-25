@@ -193,26 +193,63 @@
   });
 
   async function handlePushUnsubscribe() {
-    unsubscribe();
-    isPushSubscribed = false;
-    toast.success("Push notification deactivated successfully!", {
-      style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
-    });
+    loading = true;
+    try {
+      await unsubscribe();
+      isPushSubscribed = false;
+      toast.success("Push notification deactivated successfully!", {
+        style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+      });
+    } catch (error) {
+      console.error('Error unsubscribing:', error);
+      toast.error("Failed to deactivate push notifications. Please try again.", {
+        style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+      });
+    }
+    loading = false;
   }
 
   async function handlePushSubscribe() {
     loading = true;
-    const output = await subscribeUser();
-    if (output?.success === true) {
-      isPushSubscribed = true;
-      toast.success("Push notification activated successfully!", {
-        style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
-      });
-    } else {
-      toast.error("Your browser does not support push notifications...", {
+    
+    try {
+      // First check if notifications are allowed
+      const permission = await requestNotificationPermission();
+      if (!permission) {
+        toast.error("Please allow notifications in your browser settings", {
+          style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+        });
+        loading = false;
+        return;
+      }
+      
+      // Try to subscribe with retry logic
+      let output = await subscribeUser();
+      
+      // If failed, wait a bit and retry once (service worker might be initializing)
+      if (!output?.success) {
+        console.log('First attempt failed, retrying in 2 seconds...');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        output = await subscribeUser();
+      }
+      
+      if (output?.success === true) {
+        isPushSubscribed = true;
+        toast.success("Push notification activated successfully!", {
+          style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+        });
+      } else {
+        toast.error("Failed to activate push notifications. Please try again or check if your browser supports push notifications.", {
+          style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
+        });
+      }
+    } catch (error) {
+      console.error('Error subscribing to push notifications:', error);
+      toast.error("An error occurred. Please try again.", {
         style: `border-radius: 5px; background: #fff; color: #000; border-color: ${$mode === "light" ? "#F9FAFB" : "#4B5563"}; font-size: 15px;`,
       });
     }
+    
     loading = false;
   }
 
@@ -473,12 +510,28 @@
                   {#if isPushSubscribed}
                     <p class="mb-3">Push notifications are currently active.</p>
                     <div class="mt-3">
-                      <button
-                        class="shadow-xs border border-gray-300 dark:border-gray-600 w-fit px-5 py-1.5 bg-white text-black text-sm font-semibold rounded sm:hover:bg-white/80 transition ease-out duration-100"
-                        type="button"
-                        on:click={handlePushUnsubscribe}
-                        >Disable notifications</button
-                      >
+                      {#if !loading}
+                        <button
+                          class="shadow-xs border border-gray-300 dark:border-gray-600 w-fit px-5 py-1.5 bg-white text-black text-sm font-semibold rounded sm:hover:bg-white/80 transition ease-out duration-100"
+                          type="button"
+                          on:click={handlePushUnsubscribe}
+                          >Disable notifications</button
+                        >
+                      {:else}
+                        <button
+                          class="cursor-not-allowed shadow-xs border border-gray-300 dark:border-gray-600 w-fit px-5 py-1.5 bg-white/60 text-black text-sm font-semibold rounded transition ease-out duration-100"
+                          disabled
+                          >
+                          <div class="flex flex-row m-auto items-center">
+                            <svg class="mr-2 w-4 h-4 animate-spin" viewBox="0 0 20 20">
+                              <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="25.132741228718345" stroke-dashoffset="25.132741228718345">
+                                <animateTransform attributeName="transform" type="rotate" from="0 10 10" to="360 10 10" dur="1s" repeatCount="indefinite"/>
+                              </circle>
+                            </svg>
+                            Processing...
+                          </div>
+                        </button>
+                      {/if}
                     </div>
                   {:else}
                     <p class="mb-3">

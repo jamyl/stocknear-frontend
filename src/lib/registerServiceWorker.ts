@@ -5,6 +5,13 @@ export async function registerServiceWorker() {
     return;
   }
 
+  // Check if already registered
+  const existingRegistration = await navigator.serviceWorker.getRegistration();
+  if (existingRegistration) {
+    console.log('[SW] Service worker already registered');
+    return existingRegistration;
+  }
+
   // Wait for window load to not block critical rendering path
   if (document.readyState === 'loading') {
     await new Promise(resolve => {
@@ -29,6 +36,40 @@ export async function registerServiceWorker() {
   }
 }
 
+// Immediate registration for push notifications
+export async function registerServiceWorkerImmediate() {
+  if (!('serviceWorker' in navigator)) {
+    console.log('[SW] Service Workers not supported');
+    return null;
+  }
+
+  try {
+    // Check if already registered
+    let registration = await navigator.serviceWorker.getRegistration();
+    if (registration) {
+      console.log('[SW] Service worker already registered (immediate)');
+      return registration;
+    }
+
+    // Register immediately
+    console.log('[SW] Registering service worker immediately...');
+    registration = await navigator.serviceWorker.register('/service-worker.js', {
+      updateViaCache: 'none',
+      scope: '/'
+    });
+    
+    console.log('[SW] Service worker registered successfully (immediate)');
+    
+    // Setup update handling
+    setupUpdateHandlers(registration);
+    
+    return registration;
+  } catch (error) {
+    console.error('[SW] Immediate registration failed:', error);
+    return null;
+  }
+}
+
 async function performRegistration() {
   try {
     const registration = await navigator.serviceWorker.register('/service-worker.js', {
@@ -38,40 +79,44 @@ async function performRegistration() {
     });
 
     console.log('[SW] Registration successful');
-
-    // Check for updates periodically (every hour)
-    setInterval(() => {
-      registration.update();
-    }, 60 * 60 * 1000);
-
-    // Handle updates
-    registration.addEventListener('updatefound', () => {
-      const newWorker = registration.installing;
-      if (!newWorker) return;
-
-      newWorker.addEventListener('statechange', () => {
-        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          // New service worker available
-          console.log('[SW] New version available');
-          
-          // Optional: Show update notification to user
-          if (window.confirm('A new version is available! Reload to update?')) {
-            newWorker.postMessage({ type: 'SKIP_WAITING' });
-            window.location.reload();
-          }
-        }
-      });
-    });
-
-    // Handle controller change (when new SW takes over)
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      console.log('[SW] Controller changed, reloading...');
-      window.location.reload();
-    });
+    
+    setupUpdateHandlers(registration);
 
   } catch (error) {
     console.error('[SW] Registration failed:', error);
   }
+}
+
+function setupUpdateHandlers(registration: ServiceWorkerRegistration) {
+  // Check for updates periodically (every hour)
+  setInterval(() => {
+    registration.update();
+  }, 60 * 60 * 1000);
+
+  // Handle updates
+  registration.addEventListener('updatefound', () => {
+    const newWorker = registration.installing;
+    if (!newWorker) return;
+
+    newWorker.addEventListener('statechange', () => {
+      if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+        // New service worker available
+        console.log('[SW] New version available');
+        
+        // Optional: Show update notification to user
+        if (window.confirm('A new version is available! Reload to update?')) {
+          newWorker.postMessage({ type: 'SKIP_WAITING' });
+          window.location.reload();
+        }
+      }
+    });
+  });
+
+  // Handle controller change (when new SW takes over)
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    console.log('[SW] Controller changed, reloading...');
+    window.location.reload();
+  });
 }
 
 // Prefetch critical resources after SW is ready
