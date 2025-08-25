@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { abbreviateNumber } from "$lib/utils";
+  import { abbreviateNumber, removeCompanyStrings } from "$lib/utils";
   import { mode } from "mode-watcher";
   import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
   import { Button } from "$lib/components/shadcn/button/index.js";
@@ -8,8 +8,6 @@
   import { onMount } from "svelte";
 
   export let tickerList = [];
-
-  let downloadWorker: Worker | undefined;
 
   let selectedPlotPeriod = "1D";
   let config = null;
@@ -20,6 +18,16 @@
   let historicalData = {};
 
   async function fetchPlotData(tickerList, timePeriod = "one-day") {
+    // Create cache key based on tickers and time period
+    const cacheKey = `plotData-${tickerList.join(",")}-${timePeriod}`;
+
+    // Check cache first
+    const cachedData = getCache(cacheKey, "tickerGraph");
+    if (cachedData) {
+      console.log("Using cached plot data for:", tickerList, timePeriod);
+      return cachedData;
+    }
+
     try {
       const response = await fetch("/api/chat-plot-data", {
         method: "POST",
@@ -33,7 +41,13 @@
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+
+      // Cache the response for 5 minutes
+      setCache(cacheKey, "tickerGraph", data);
+      console.log("Cached plot data for:", tickerList, timePeriod);
+
+      return data;
     } catch (error) {
       console.error(`Error fetching plot data:`, error);
       return [];
@@ -45,6 +59,41 @@
 
     isLoaded = false;
 
+    // Check if we have cached data for all tickers for 1D
+    const allTickersCached = tickerList.every((ticker) => {
+      const quoteCacheKey = `quote-${ticker}`;
+      const priceCacheKey = `plotData-${ticker}-one-day`;
+      return (
+        getCache(quoteCacheKey, "stockQuote") &&
+        getCache(priceCacheKey, "tickerGraph")
+      );
+    });
+
+    if (allTickersCached) {
+      // Use cached data
+      tickerList.forEach((ticker) => {
+        const quoteCacheKey = `quote-${ticker}`;
+        const priceCacheKey = `plotData-${ticker}-one-day`;
+
+        stockQuotes[ticker] = getCache(quoteCacheKey, "stockQuote");
+
+        priceData[ticker] = {
+          "1D": getCache(priceCacheKey, "tickerGraph") || [],
+          "5D": [],
+          "1M": [],
+          "6M": [],
+          YTD: [],
+          "1Y": [],
+          "5Y": [],
+          MAX: [],
+        };
+      });
+
+      updatePlotData();
+      isLoaded = true;
+      return;
+    }
+
     // Fetch all data from the single endpoint
     const results = await fetchPlotData(tickerList, "one-day");
 
@@ -53,8 +102,12 @@
       results.forEach((result) => {
         const { ticker, quote, priceData: prices } = result;
 
-        // Store quote data
+        // Store quote data and cache it individually
         stockQuotes[ticker] = quote;
+        setCache(`quote-${ticker}`, "stockQuote", quote);
+
+        // Cache price data individually
+        setCache(`plotData-${ticker}-one-day`, "tickerGraph", prices || []);
 
         // Initialize price data structure
         priceData[ticker] = {
@@ -105,6 +158,29 @@
       MAX: "max",
     };
 
+    // Check cache first for all tickers for this time period
+    const apiPeriod = periodMapping[timePeriod];
+    const allTickersCachedForPeriod = tickerList.every((ticker) => {
+      const cacheKey = `plotData-${ticker}-${apiPeriod}`;
+      return getCache(cacheKey, "tickerGraph");
+    });
+
+    if (allTickersCachedForPeriod) {
+      // Use cached data
+      tickerList.forEach((ticker) => {
+        const cacheKey = `plotData-${ticker}-${apiPeriod}`;
+        const cachedPriceData = getCache(cacheKey, "tickerGraph");
+
+        if (priceData[ticker]) {
+          priceData[ticker][timePeriod] = cachedPriceData || [];
+        }
+      });
+
+      updatePlotData();
+      isLoaded = true;
+      return;
+    }
+
     // Check if we need to fetch new data
     const needsFetch = tickerList.some(
       (ticker) =>
@@ -113,19 +189,24 @@
         priceData[ticker][timePeriod].length === 0,
     );
 
-    if (needsFetch) {
-      const apiPeriod = periodMapping[timePeriod];
-      if (apiPeriod) {
-        const results = await fetchPlotData(tickerList, apiPeriod);
+    if (needsFetch && apiPeriod) {
+      const results = await fetchPlotData(tickerList, apiPeriod);
 
-        if (results && results.length > 0) {
-          results.forEach((result) => {
-            const { ticker, priceData: prices } = result;
-            if (priceData[ticker]) {
-              priceData[ticker][timePeriod] = prices || [];
-            }
-          });
-        }
+      if (results && results.length > 0) {
+        results.forEach((result) => {
+          const { ticker, priceData: prices } = result;
+
+          // Cache the price data for this ticker and period
+          setCache(
+            `plotData-${ticker}-${apiPeriod}`,
+            "tickerGraph",
+            prices || [],
+          );
+
+          if (priceData[ticker]) {
+            priceData[ticker][timePeriod] = prices || [];
+          }
+        });
       }
     }
 
@@ -156,24 +237,19 @@
     return history;
   }
 
-  onMount(() => {
-    loadInitialData();
-  });
-
-  $: if (tickerList && tickerList.length > 0) {
+  $: if (tickerList && tickerList.length > 0 && typeof window !== "undefined") {
     loadInitialData();
   }
 
   function plotData() {
-    // 1) filter & parse each symbol's data into [timestamp, value] pairs
     const parsedData = {};
+    const series = [];
 
     for (const [symbol, data] of Object?.entries(rawGraphData)) {
-      // Ensure `history` exists and is an array
-      const series = Array?.isArray(data?.history) ? data?.history : [];
+      const seriesData = Array.isArray(data?.history) ? data?.history : [];
 
-      // Filter by the desired time period and map to [timestamp, value] pairs
-      parsedData[symbol] = filterDataByTimePeriod(series)?.map((item) => {
+      // Filter & map to [timestamp, value]
+      parsedData[symbol] = filterDataByTimePeriod(seriesData)?.map((item) => {
         const d = new Date(item?.date);
         return [
           Date.UTC(
@@ -182,210 +258,138 @@
             d.getUTCDate(),
             d.getUTCHours(),
             d.getUTCMinutes(),
+            d.getUTCSeconds(),
           ),
           item?.value,
         ];
       });
     }
 
-    // 3) build series entries
-    const series = Object?.entries(parsedData)?.map(([symbol, data], index) => {
-      // wrap around if more symbols than colors
-      const pair = colorPairs[index % colorPairs?.length];
+    Object.entries(parsedData).forEach(([symbol, dataPoints]) => {
+      const quote = stockQuotes[symbol];
+      if (!dataPoints?.length) return;
 
-      return {
+      const change = (dataPoints.at(-1)?.[1] / dataPoints.at(0)?.[1] - 1) * 100;
+
+      let minValue = Math.min(...dataPoints.map((d) => d[1]));
+      let maxValue = Math.max(...dataPoints.map((d) => d[1]));
+
+      const padding = 0.002;
+      const yMin = minValue * (1 - padding);
+      const yMax = maxValue * (1 + padding);
+
+      const isNegative = change < 0;
+
+      const lineColor = isNegative
+        ? "#CC261A"
+        : $mode === "light"
+          ? "#137547"
+          : "#00FC50";
+
+      const fillColorStart = isNegative
+        ? "rgba(204, 38, 26, 0.6)"
+        : "rgba(19, 117, 71, 0.6)";
+
+      const fillColorEnd = isNegative
+        ? "rgba(204, 38, 26, 0.01)"
+        : "rgba(19, 117, 71, 0.01)";
+
+      // Add main series
+      series.push({
         name: symbol,
-        type: "spline", // or "area" if you still want fill
-        data,
-        color: $mode === "light" ? pair?.light : pair?.dark,
-        lineWidth: 1.5,
+        type: "area",
+        data: dataPoints,
+        color: lineColor,
+        lineWidth: 2,
         marker: { enabled: false },
-      };
+        fillColor: {
+          linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+          stops: [
+            [0, fillColorStart],
+            [1, fillColorEnd],
+          ],
+        },
+        zIndex: 2,
+      });
+
+      // Previous close line
+      if (quote?.previousClose) {
+        const firstTime = dataPoints[0][0];
+        const lastTime = dataPoints[dataPoints.length - 1][0];
+        series.push({
+          name: `${symbol} Prev Close`,
+          type: "line",
+          data: [
+            [firstTime, quote.previousClose],
+            [lastTime, quote.previousClose],
+          ],
+          color: $mode === "light" ? "#9CA3AF" : "#6B7280",
+          lineWidth: 1,
+          dashStyle: "Dot",
+          marker: { enabled: false },
+          showInLegend: false,
+          enableMouseTracking: false,
+          zIndex: 1,
+        });
+      }
     });
 
     return {
       chart: {
         backgroundColor: $mode === "light" ? "#fff" : "#09090B",
         animation: false,
-        height: 400,
-        events: {
-          render: function () {
-            const chart = this;
-
-            // 0) Destroy any stray labels when series count shrinks
-            if (chart?.customLabels) {
-              // if we have more labels than series, kill the extras
-              const extra = chart.customLabels.length - chart.series.length;
-              if (extra > 0) {
-                for (
-                  let j = chart.series.length;
-                  j < chart.customLabels.length;
-                  j++
-                ) {
-                  chart.customLabels[j].destroy();
-                }
-                // truncate the array
-                chart.customLabels.length = chart.series.length;
-              }
-            } else {
-              chart.customLabels = [];
-            }
-
-            // 1) Loop over current series and create/update their labels
-            chart.series.forEach((serie, i) => {
-              if (!serie.points?.length) return;
-
-              const lastPoint = serie.points[serie.points.length - 1];
-              const value = lastPoint.y;
-              const xPos = chart.plotWidth + 10;
-              const yPos = lastPoint.plotY + chart.plotTop - 15;
-
-              if (!chart.customLabels[i]) {
-                // new series → draw a label
-                chart.customLabels[i] = chart.renderer
-                  .label(value, xPos, yPos, "bubble", 0, 0, true)
-                  .attr({ padding: 5, r: 4, fill: serie.color, zIndex: 10 })
-                  .css({ color: "#fff", fontSize: "11px" })
-                  .add();
-              } else {
-                // existing series → move & update text
-                chart.customLabels[i]
-                  .attr({ text: value, x: xPos, y: yPos })
-                  .toFront();
-              }
-            });
-          },
-        },
+        height: 200,
       },
       credits: { enabled: false },
-      title: {
-        text: `<h3 class="mt-3 mb-1"></h3>`,
-        useHTML: true,
-        style: { color: $mode === "light" ? "black" : "white" },
-      },
       tooltip: {
         shared: true,
         useHTML: true,
-        backgroundColor: "rgba(0, 0, 0, 0.8)",
-        borderColor: "rgba(255, 255, 255, 0.2)",
+        backgroundColor: "rgba(0,0,0,0.8)",
+        borderColor: "rgba(255,255,255,0.2)",
         borderWidth: 1,
-        style: {
-          color: "#fff",
-          fontSize: "16px",
-          padding: "10px",
-        },
+        style: { color: "white", fontSize: "16px", padding: "10px" },
         borderRadius: 4,
         formatter: function () {
-          // Format the date based on the selected period
-          const date = new Date(this?.x);
-          let formattedDate;
+          const date = new Date(this.x);
+          const formattedDate =
+            selectedPlotPeriod === "1D"
+              ? date.toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  timeZone: "UTC",
+                });
 
-          if (selectedPlotPeriod === "1D" || selectedPlotPeriod === "5D") {
-            formattedDate = date?.toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit",
-              timeZone: "UTC",
-            });
-          } else {
-            formattedDate = date?.toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-              timeZone: "UTC",
-            });
-          }
-
-          let tooltipContent = `<span class="m-auto text-[1rem] font-[501] ">${formattedDate}</span><br>`;
-
-          // If shared, this.points is an array
-          if (this.points) {
-            this.points.forEach((point) => {
-              const formattedValue = `$${point.y?.toFixed(2)}`;
-
-              tooltipContent += `
-        <span style="display:inline-block; width:10px; height:10px; background-color:${point.color}; border-radius:5%; margin-right:3px;"></span>
-        <span class="font-semibold text-xs">${point.series.name}:</span> 
-        <span class="font-normal text-sm">${formattedValue}</span><br>`;
-            });
-          } else {
-            // Non-shared, handle single point
-            const formattedValue = `$${this.y?.toFixed(2)}`;
-
-            tooltipContent += `
-      <span style="display:inline-block; width:10px; height:10px; background-color:${this.color}; border-radius:5%; margin-right:3px;"></span>
-      <span class="font-semibold text-xs">${this.series.name}:</span> 
-      <span class="font-normal text-sm">${formattedValue}</span><br>`;
-          }
-
-          return tooltipContent;
+          let content = "";
+          this.points?.forEach((point) => {
+            content += `<span class="text-white text-[1rem] font-[501]">${point.series.name}: ${point.y}</span><br>`;
+          });
+          content += `<span class="text-white m-auto text-black text-sm font-normal">${formattedDate}</span><br>`;
+          return content;
         },
       },
       xAxis: {
         type: "datetime",
         tickLength: 0,
-        crosshair: {
-          color: $mode === "light" ? "black" : "white",
-          width: 1,
-          dashStyle: "Solid",
-        },
         labels: {
           style: { color: $mode === "light" ? "black" : "white" },
-          distance: 10,
-          formatter() {
-            const d = new Date(this.value);
-            if (selectedPlotPeriod === "1D" || selectedPlotPeriod === "5D") {
-              return `<span class="text-xs">${d.toLocaleTimeString("en-US", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-                timeZone: "UTC",
-              })}</span>`;
-            }
-            return `<span class="text-xs">${d.toLocaleDateString("en-US", {
-              year: "2-digit",
-              month: "short",
-              timeZone: "UTC",
-            })}</span>`;
-          },
-        },
-        tickPositioner() {
-          const { min, max } = this.getExtremes();
-          const ticks = [];
-          const count =
-            selectedPlotPeriod === "1D" ? 3 : $screenWidth < 640 ? 2 : 5;
-          const interval = Math.floor((max - min) / count);
-          for (let i = 0; i <= count; i++) {
-            ticks.push(min + i * interval);
-          }
-          return ticks;
         },
       },
       yAxis: {
-        startOnTick: true,
-        endOnTick: true,
+        min: Math.min(...series.flatMap((s) => s.data.map((p) => p[1]))),
+        max: Math.max(...series.flatMap((s) => s.data.map((p) => p[1]))),
+        startOnTick: false,
+        endOnTick: false,
+        opposite: true,
         gridLineWidth: 1,
         gridLineColor: $mode === "light" ? "#e5e7eb" : "#111827",
-        title: { text: null },
-        labels: {
-          style: { color: $mode === "light" ? "black" : "white" },
-          formatter: function () {
-            return `$${this.value?.toFixed(2)}`;
-          },
-        },
-        opposite: true,
+        labels: { style: { color: $mode === "light" ? "black" : "white" } },
       },
-      plotOptions: {
-        series: {
-          animation: false,
-          marker: { enabled: false },
-          states: { hover: { enabled: false } },
-          legendSymbol: "rectangle",
-        },
-      },
-      legend: {
-        enabled: false,
-      },
-
+      plotOptions: { series: { animation: false, marker: { enabled: false } } },
+      legend: { enabled: false },
       series,
     };
   }
@@ -393,171 +397,176 @@
 
 {#if tickerList?.length > 0}
   <div class="w-full mb-5">
-    <h2 class="text-lg sm:text-xl font-semibold mb-3 -mt-8">
-      {tickerList?.join(", ")} Overview
-    </h2>
-    {#if config && isLoaded}
-      <div
-        class="w-full relative mt-2 mb-2 flex flex-col sm:flex-row items-start sm:items-center justify-between z-10"
-      >
-        <div class="flex w-fit space-x-2">
-          {#each ["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"] as item}
-            <label
-              on:click={() => changePlotPeriod(item)}
-              class="px-2 sm:px-3 py-1 {selectedPlotPeriod === item
-                ? 'bg-gray-300 dark:bg-white text-muted'
-                : 'text-muted dark:text-white bg-gray-100 dark:bg-table text-opacity-[0.6]'} text-xs border border-gray-200 dark:border-gray-700 font-semibold transition ease-out duration-100 sm:hover:bg-white sm:hover:text-black rounded-[2px] cursor-pointer"
+    {#if config && isLoaded && Object.keys(stockQuotes).length > 0}
+      {#each tickerList as ticker, index}
+        {@const quote = stockQuotes[ticker]}
+        {#if quote}
+          <div class="bg-gray-50 dark:bg-primary/10 rounded p-6 mb-6">
+            <!-- Header with company name and price info -->
+            <div
+              class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6"
             >
-              {item}
-            </label>
-          {/each}
-        </div>
-      </div>
-      <div
-        class="shadow-xs border border-gray-300 dark:border-gray-800 rounded w-full h-[300px] sm:h-[400px]"
-        use:highcharts={config}
-      ></div>
+              <div class="mb-4 sm:mb-0">
+                <div class="flex items-center gap-2 mb-2">
+                  <img
+                    src={`https://financialmodelingprep.com/image-stock/${ticker}.png`}
+                    alt="logo"
+                    class="shrink-0 w-5 h-5 rounded-full"
+                  />
 
-      <!-- Stock Metric Cards -->
-      {#if tickerList?.length > 0 && Object.keys(stockQuotes).length > 0}
-        <div class="mt-6 space-y-4">
-          {#each tickerList as ticker, index}
-            {@const quote = stockQuotes[ticker]}
-            {#if quote}
-              <div
-                class="bg-gray-100 dark:bg-primary/60 border border-gray-300 dark:border-gray-800 rounded p-4"
-              >
-                <div class="flex items-center justify-between mb-3">
-                  <h3 class="font-semibold text-lg">{ticker}</h3>
-                  <div class="flex items-center gap-2">
-                    <span class="text-2xl font-bold">
-                      ${quote?.price?.toFixed(2) || "--"}
-                    </span>
-                    <span
-                      class="text-sm {quote?.changesPercentage >= 0
-                        ? 'text-green-500'
-                        : 'text-red-500'}"
-                    >
-                      {quote?.changesPercentage >= 0
-                        ? "+"
-                        : ""}{quote?.changesPercentage?.toFixed(2) || 0}%
-                    </span>
-                  </div>
+                  <h1 class="text-lg font-bold">
+                    {ticker?.toUpperCase()}
+                  </h1>
                 </div>
+                <div class="flex items-baseline gap-3">
+                  <span class="text-3xl">
+                    {quote?.price?.toFixed(2) || "n/a"}
+                  </span>
 
-                <div
-                  class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm"
-                >
-                  <div>
-                    <div class="text-gray-500 dark:text-gray-400">
-                      Prev Close
-                    </div>
-                    <div class="font-medium text-gray-900 dark:text-white">
-                      ${quote?.previousClose?.toFixed(2) || "--"}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div class="text-gray-500 dark:text-gray-400">Open</div>
-                    <div class="font-medium text-gray-900 dark:text-white">
-                      ${quote?.open?.toFixed(2) || "--"}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div class="text-gray-500 dark:text-gray-400">
-                      Day Range
-                    </div>
-                    <div class="font-medium text-gray-900 dark:text-white">
-                      ${quote?.dayLow?.toFixed(2) || "--"} - ${quote?.dayHigh?.toFixed(
-                        2,
-                      ) || "--"}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div class="text-gray-500 dark:text-gray-400">
-                      52W Range
-                    </div>
-                    <div class="font-medium text-gray-900 dark:text-white">
-                      ${quote?.yearLow?.toFixed(2) || "--"} - ${quote?.yearHigh?.toFixed(
-                        2,
-                      ) || "--"}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div class="text-gray-500 dark:text-gray-400">Volume</div>
-                    <div class="font-medium text-gray-900 dark:text-white">
-                      {abbreviateNumber(quote?.volume) || "--"}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div class="text-gray-500 dark:text-gray-400">
-                      Avg Volume
-                    </div>
-                    <div class="font-medium text-gray-900 dark:text-white">
-                      {abbreviateNumber(quote?.avgVolume) || "--"}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div class="text-gray-500 dark:text-gray-400">
-                      P/E Ratio
-                    </div>
-                    <div class="font-medium text-gray-900 dark:text-white">
-                      {quote?.pe?.toFixed(2) || "--"}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div class="text-gray-500 dark:text-gray-400">
-                      Market Cap
-                    </div>
-                    <div class="font-medium text-gray-900 dark:text-white">
-                      {abbreviateNumber(quote?.marketCap) || "--"}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div class="text-gray-500 dark:text-gray-400">EPS</div>
-                    <div class="font-medium text-gray-900 dark:text-white">
-                      ${quote?.eps?.toFixed(2) || "--"}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div class="text-gray-500 dark:text-gray-400">Beta</div>
-                    <div class="font-medium text-gray-900 dark:text-white">
-                      {quote?.beta?.toFixed(2) || "--"}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div class="text-gray-500 dark:text-gray-400">Exchange</div>
-                    <div class="font-medium text-gray-900 dark:text-white">
-                      {quote?.exchange || "--"}
-                    </div>
-                  </div>
+                  <span
+                    class="text-lg font-medium {(quote?.changesPercentage ||
+                      0) >= 0
+                      ? 'text-green-500'
+                      : 'text-red-500'}"
+                  >
+                    {(quote?.changesPercentage || 0) >= 0
+                      ? "+"
+                      : ""}${quote?.change?.toFixed(2) || "0.00"} ({(quote?.changesPercentage ||
+                      0) >= 0
+                      ? "+"
+                      : ""}{quote?.changesPercentage?.toFixed(2) || "0.00"}%)
+                  </span>
                 </div>
               </div>
-            {/if}
-          {/each}
-        </div>
-      {/if}
+              <div class="text-right">
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                  Updated {new Date(quote?.timestamp * 1000).toLocaleDateString(
+                    "en-US",
+                    {
+                      month: "short",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                      timeZone: "UTC",
+                    },
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <!-- Time period buttons -->
+            <div class="flex w-fit space-x-1 mb-6">
+              {#each ["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"] as item}
+                <button
+                  on:click={() => changePlotPeriod(item)}
+                  class="px-3 py-1.5 text-sm font-medium transition-colors duration-200 {selectedPlotPeriod ===
+                  item
+                    ? ' border-b-2 border-gray-900 dark:border-white'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}"
+                >
+                  {item}
+                </button>
+              {/each}
+            </div>
+
+            <!-- Chart -->
+            <div class="w-full h-[200px] mb-6" use:highcharts={config}></div>
+
+            <!-- Financial metrics grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
+              <div>
+                <div class="text-gray-500 dark:text-gray-400 mb-1">
+                  Prev Close
+                </div>
+                <div class="font-medium">
+                  ${quote?.previousClose?.toFixed(2) || "n/a"}
+                </div>
+              </div>
+
+              <div>
+                <div class="text-gray-500 dark:text-gray-400 mb-1">
+                  52W Range
+                </div>
+                <div class="font-medium">
+                  ${quote?.yearLow?.toFixed(2) || "n/a"} - ${quote?.yearHigh?.toFixed(
+                    2,
+                  ) || "n/a"}
+                </div>
+              </div>
+
+              <div>
+                <div class="text-gray-500 dark:text-gray-400 mb-1">
+                  Market Cap
+                </div>
+                <div class="font-medium">
+                  {abbreviateNumber(quote?.marketCap) || "n/a"}
+                </div>
+              </div>
+
+              <div>
+                <div class="text-gray-500 dark:text-gray-400 mb-1">Open</div>
+                <div class="font-medium">
+                  ${quote?.open?.toFixed(2) || "n/a"}
+                </div>
+              </div>
+
+              <div>
+                <div class="text-gray-500 dark:text-gray-400 mb-1">
+                  P/E Ratio
+                </div>
+                <div class="font-medium">
+                  {quote?.pe?.toFixed(2) || "n/a"}
+                </div>
+              </div>
+
+              <div>
+                <div class="text-gray-500 dark:text-gray-400 mb-1">
+                  Dividend Yield
+                </div>
+                <div class="font-medium">
+                  {quote?.dividendYield
+                    ? (quote.dividendYield * 100).toFixed(3) + "%"
+                    : "n/a"}
+                </div>
+              </div>
+
+              <div>
+                <div class="text-gray-500 dark:text-gray-400 mb-1">
+                  Day Range
+                </div>
+                <div class="font-medium">
+                  ${quote?.dayLow?.toFixed(2) || "n/a"} - ${quote?.dayHigh?.toFixed(
+                    2,
+                  ) || "n/a"}
+                </div>
+              </div>
+
+              <div>
+                <div class="text-gray-500 dark:text-gray-400 mb-1">Volume</div>
+                <div class="font-medium">
+                  {quote?.volume?.toLocaleString("en-US") || "n/a"}
+                </div>
+              </div>
+
+              <div>
+                <div class="text-gray-500 dark:text-gray-400 mb-1">EPS</div>
+                <div class="font-medium">
+                  {quote?.eps?.toFixed(2) || "n/a"}
+                </div>
+              </div>
+            </div>
+          </div>
+        {/if}
+      {/each}
     {:else}
-      <div
-        class="mt-2 flex justify-center items-center h-96 border border-gray-300 dark:border-gray-800 rounded"
-      >
-        <div class="relative">
-          <label
-            class="shadow-xs bg-default dark:bg-secondary rounded h-14 w-14 flex justify-center items-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-          >
-            <span
-              class="loading loading-spinner loading-md text-white dark:text-white"
-            ></span>
-          </label>
+      <div class="bg-gray-50 dark:bg-gray-900 rounded p-6">
+        <div class="flex justify-center items-center h-96">
+          <div class="relative">
+            <div
+              class="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"
+            ></div>
+          </div>
         </div>
       </div>
     {/if}

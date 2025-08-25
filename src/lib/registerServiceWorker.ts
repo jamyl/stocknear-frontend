@@ -147,5 +147,5 @@ export function setupCacheCleanup() {
     navigator.serviceWorker.controller?.postMessage({
       type: 'CLEANUP_CACHE'
     });
-  },  10 * 60 * 1000);
+  },   10 * 60 * 1000);
 }
