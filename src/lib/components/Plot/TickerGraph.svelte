@@ -469,14 +469,14 @@
 </script>
 
 {#if tickerList?.length > 0}
-  <div class="w-full">
+  <div class="w-full border-t border-gray-400 dark:border-gray-600 pt-10">
     <div
       class="border border-gray-300 dark:border-gray-800 bg-white dark:bg-default rounded p-6"
     >
       <!-- Header -->
 
-      <div class="flex items-center gap-2 mb-6 text-gray-400">
-        <div class="ml-auto text-sm">
+      <div class="flex items-center gap-2 mb-6">
+        <div class="ml-auto text-xs">
           {#if displayTickerList?.length > 0}
             {@const firstTicker = displayTickerList[0]}
             {@const firstQuote = stockQuotes[firstTicker]}

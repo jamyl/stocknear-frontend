@@ -239,17 +239,6 @@
         </div>
       {:else}
         <div class="w-full">
-          {#if message?.role === "system" && message?.sources && message?.sources?.length > 0 && isLatestSystemMessage}
-            <div class="mt-6 hidden lg:block">
-              <TickerGraph
-                tickerList={[
-                  ...new Set(message.sources?.map((item) => item?.ticker)),
-                ]}
-                sources={message.sources}
-              />
-            </div>
-          {/if}
-
           {#if message?.role === "user" && editMode}
             <div
               class="p-3 border border-gray-200 dark:border-gray-800 rounded-[5px] bg-gray-200 dark:bg-table"
@@ -315,6 +304,17 @@
               questions={message.relatedQuestions}
               on:question-click={handleRelatedQuestionClick}
             />
+          {/if}
+
+          {#if message?.role === "system" && message?.sources && message?.sources?.length > 0 && isLatestSystemMessage}
+            <div class="mt-6 hidden lg:block">
+              <TickerGraph
+                tickerList={[
+                  ...new Set(message.sources?.map((item) => item?.ticker)),
+                ]}
+                sources={message.sources}
+              />
+            </div>
           {/if}
         </div>
         {#if message?.role === "system"}
