@@ -3,16 +3,8 @@
 
 declare let self: ServiceWorkerGlobalScope;
 
-import { build, files, version } from "$service-worker";
-
-const CACHE = `cache-${version}`;
-const RUNTIME_CACHE = `runtime-${version}`;
-
-// Minimal caching - only cache essential files
-const ESSENTIAL_ASSETS = [
-  '/',
-  '/manifest.json'
-];
+// Minimal service worker - only for push notifications
+const version = Date.now().toString();
 
 function getIconPath(size: string) {
   return new URL(`/pwa-${size}.png`, self.location.origin).href;
@@ -26,20 +18,9 @@ const ICONS = {
 
 
 self.addEventListener('install', (event) => {
-  // Skip waiting immediately for faster activation
+  // Skip waiting immediately
   self.skipWaiting();
-  
-  // Cache essential assets in background (non-blocking)
-  event.waitUntil(
-    caches.open(CACHE).then(cache => {
-      console.log('[SW] Caching essential assets...');
-      return cache.addAll(ESSENTIAL_ASSETS).catch(err => {
-        console.warn('[SW] Essential assets caching failed:', err);
-      });
-    }).then(() => {
-      console.log('[SW] Service Worker installed');
-    })
-  );
+  console.log('[SW] Service Worker installed');
 });
 
 self.addEventListener('activate', (event) => {
@@ -48,56 +29,21 @@ self.addEventListener('activate', (event) => {
       await self.clients.claim();
       console.log('[SW] Clients claimed');
       
-      // Clean up old caches
+      // Clean up ALL caches to remove performance bottleneck
       const keys = await caches.keys();
       await Promise.all(
-        keys
-          .filter(key => key !== CACHE && key !== RUNTIME_CACHE)
-          .map(key => {
-            console.log('[SW] Deleting old cache:', key);
-            return caches.delete(key);
-          })
+        keys.map(key => {
+          console.log('[SW] Deleting cache:', key);
+          return caches.delete(key);
+        })
       );
-      console.log('[SW] Old caches cleaned');
+      console.log('[SW] All caches cleaned');
     })()
   );
 });
 
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  
-  const url = new URL(event.request.url);
-  
-  // Skip caching for external requests and API calls
-  if (!url.origin.includes(self.location.origin) || 
-      url.pathname.startsWith('/api/')) {
-    return;
-  }
-
-  event.respondWith(
-    (async () => {
-      // Network-first strategy - minimal caching
-      try {
-        const networkResponse = await fetch(event.request);
-        return networkResponse;
-      } catch (error) {
-        // Only fallback to cache for essential assets
-        const cachedResponse = await caches.match(event.request);
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-        
-        // Return offline page for documents
-        if (event.request.destination === 'document') {
-          const offlinePage = await caches.match('/');
-          if (offlinePage) return offlinePage;
-        }
-        
-        throw error;
-      }
-    })()
-  );
-});
+// REMOVED: fetch event listener to eliminate performance bottleneck
+// The service worker no longer intercepts any network requests
 
 self.addEventListener('push', (event: PushEvent) => {
   if (!event.data) return;
