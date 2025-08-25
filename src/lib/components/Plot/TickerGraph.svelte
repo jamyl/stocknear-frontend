@@ -3,6 +3,7 @@
   import { mode } from "mode-watcher";
   import { getCache, setCache } from "$lib/store";
   import highcharts from "$lib/highcharts.ts";
+  import { onMount, tick } from "svelte";
 
   export let tickerList = [];
   export let sources = [];
@@ -22,6 +23,7 @@
   let selectedPlotPeriod = "1D";
   let config = null;
   let isLoaded = false;
+  let isLoading = false;
   let rawGraphData = {};
   let stockQuotes = {};
   let priceData = {};
@@ -76,7 +78,9 @@
 
   async function loadInitialData() {
     if (!displayTickerList || displayTickerList.length === 0) return;
-
+    if (isLoading) return; // Prevent duplicate loading
+    
+    isLoading = true;
     isLoaded = false;
 
     const allTickersCached = displayTickerList.every((ticker) => {
@@ -108,6 +112,7 @@
 
       updatePlotData();
       isLoaded = true;
+      isLoading = false;
       return;
     }
 
@@ -138,6 +143,7 @@
     }
 
     isLoaded = true;
+    isLoading = false;
   }
   /*
   async function changePlotPeriod(timePeriod) {
@@ -210,7 +216,7 @@
   function updatePlotData() {
     rawGraphData = {};
 
-    tickerList.forEach((ticker) => {
+    displayTickerList.forEach((ticker) => {
       const data = priceData[ticker]?.[selectedPlotPeriod] || [];
       rawGraphData[ticker] = {
         history: data.map((item) => ({
@@ -463,8 +469,30 @@
     return names[ticker?.toUpperCase()] || ticker?.toUpperCase();
   }
 
-  $: if (tickerList && tickerList.length > 0 && typeof window !== "undefined") {
-    loadInitialData();
+  // Keep track of last loaded ticker list to prevent unnecessary reloads
+  let lastTickerList = "";
+  
+  // Combined reactive statement for both ticker list and sources changes
+  $: {
+    const currentTickerKey = displayTickerList.join(",");
+    const shouldLoad = displayTickerList && 
+                      displayTickerList.length > 0 && 
+                      typeof window !== "undefined" &&
+                      currentTickerKey !== lastTickerList;
+    
+    if (shouldLoad) {
+      lastTickerList = currentTickerKey;
+      tick().then(() => {
+        loadInitialData();
+      });
+    }
+  }
+  
+  // React to sources changes to ensure proper rendering
+  $: if (sources && sources.length > 0 && displayTickerList.length > 0 && Object.keys(stockQuotes).length > 0) {
+    tick().then(() => {
+      updatePlotData();
+    });
   }
 </script>
 
