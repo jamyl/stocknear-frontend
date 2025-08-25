@@ -6,7 +6,7 @@
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
 
-  //import TickerGraph from "$lib/components/Plot/TickerGraph.svelte";
+  import TickerGraph from "$lib/components/Plot/TickerGraph.svelte";
   import SourcesSection from "$lib/components/Chat/SourcesSection.svelte";
   import Related from "$lib/components/Chat/Related.svelte";
 
@@ -216,7 +216,7 @@
     <div
       class="rounded p-3 min-w-14 max-w-[80vw] {message?.role === 'user'
         ? 'ml-auto group/turn-messages'
-        : message?.role === 'system' && message?.callComponent?.tickerList
+        : message?.role === 'system'
           ? 'mr-auto w-full'
           : 'mr-auto w-fit border-b rounded-none border-gray-300 dark:border-gray-700'}"
     >
@@ -239,6 +239,12 @@
         </div>
       {:else}
         <div class="w-full">
+          {#if editable && isLatestSystemMessage}
+            <div class="mt-6">
+              <TickerGraph tickerList={["AMD"]} />
+            </div>
+          {/if}
+
           {#if message?.role === "user" && editMode}
             <div
               class="p-3 border border-gray-200 dark:border-gray-800 rounded-[5px] bg-gray-200 dark:bg-table"
@@ -292,14 +298,6 @@
               {/if}
             </p>
           {/if}
-
-          <!--
-          {#if message?.callComponent?.plot && message?.callComponent?.tickerList?.length > 0}
-            <div class="mt-6">
-              <TickerGraph tickerList={message?.callComponent?.tickerList} />
-            </div>
-          {/if}
-          -->
 
           <!-- Sources Section - Perplexity Style -->
           {#if message?.sources && message?.sources?.length > 0 && !isStreaming}
