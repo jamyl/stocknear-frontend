@@ -312,6 +312,7 @@
                 tickerList={[
                   ...new Set(message.sources?.map((item) => item?.ticker)),
                 ]}
+                sources={message.sources}
               />
             </div>
           {/if}

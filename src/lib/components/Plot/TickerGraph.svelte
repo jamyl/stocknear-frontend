@@ -5,9 +5,18 @@
   import highcharts from "$lib/highcharts.ts";
 
   export let tickerList = [];
+  export let sources = [];
 
-  // Limit to maximum 2 tickers for side-by-side display
-  $: displayTickerList = tickerList?.slice(0, 2) ?? [];
+  // Limit to maximum 3 tickers
+  $: displayTickerList = tickerList?.slice(0, 3) ?? [];
+  
+  // Create a map of ticker to URL from sources
+  $: tickerUrlMap = sources?.reduce((acc, source) => {
+    if (source?.ticker && source?.url) {
+      acc[source.ticker] = source.url;
+    }
+    return acc;
+  }, {}) || {};
 
   let selectedPlotPeriod = "1D";
   let config = null;
@@ -581,11 +590,13 @@
                   </div>
                 </div>
 
-                <div class="mt-6">
-                  <a href="/" class="text-[#00d4ff] hover:underline text-sm">
-                    More about {ticker?.toUpperCase()}
-                  </a>
-                </div>
+                {#if tickerUrlMap[ticker]}
+                  <div class="mt-6">
+                    <a href={tickerUrlMap[ticker]} class="text-[#00d4ff] hover:underline text-sm">
+                      More about {ticker?.toUpperCase()}
+                    </a>
+                  </div>
+                {/if}
               </div>
             {/if}
           {/each}
