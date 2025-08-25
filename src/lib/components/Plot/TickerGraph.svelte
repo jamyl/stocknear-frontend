@@ -290,7 +290,7 @@
       chart: {
         backgroundColor: $mode === "light" ? "#fff" : "#09090B",
         animation: false,
-        height: 280,
+        height: 200,
       },
       credits: { enabled: false },
       title: { text: null },
@@ -490,7 +490,7 @@
         -->
 
         <!-- Chart -->
-        <div class="w-full h-[280px] mb-8" use:highcharts={config}></div>
+        <div class="w-full h-[200px] mb-8" use:highcharts={config}></div>
 
         <!-- Stock Details - Side by Side -->
         <div class="space-y-8">
