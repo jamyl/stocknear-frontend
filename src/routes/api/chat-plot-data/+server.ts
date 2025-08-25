@@ -15,7 +15,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     }
     const fetchPromises = tickerList.map(async (ticker: string) => {
         const postData = { ticker };
-        const response = await fetch(apiURL + "/get-quote", {
+        const response = await fetch(apiURL + "/stock-quote", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

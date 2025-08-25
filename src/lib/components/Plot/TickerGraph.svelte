@@ -3,8 +3,9 @@
   import { mode } from "mode-watcher";
   import * as DropdownMenu from "$lib/components/shadcn/dropdown-menu/index.js";
   import { Button } from "$lib/components/shadcn/button/index.js";
-  import { screenWidth } from "$lib/store";
+  import { screenWidth, getCache, setCache } from "$lib/store";
   import highcharts from "$lib/highcharts.ts";
+  import { onMount } from "svelte";
 
   export let tickerList = [];
 
@@ -14,16 +15,103 @@
   let config = null;
   let isLoaded = false;
   let rawGraphData = {};
+  let stockQuotes = {};
+  let priceData = {};
+  let historicalData = {};
 
-  async function getPlotData(tickerList) {
-    const response = await fetch("/api/chat-plot-data", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+  async function fetchStockQuote(ticker) {
+    try {
+      const response = await fetch("/api/stock-quote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ticker }),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error(`Error fetching quote for ${ticker}:`, error);
+      return null;
+    }
+  }
+
+  async function fetchOneDayPrice(ticker) {
+    const cachedData = getCache(ticker, "oneDayPrice");
+    if (cachedData) {
+      return cachedData;
+    }
+
+    try {
+      const response = await fetch("/api/one-day-price", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ticker }),
+      });
+      const data = await response.json();
+      setCache(ticker, "oneDayPrice", data);
+      return data;
+    } catch (error) {
+      console.error(`Error fetching one day price for ${ticker}:`, error);
+      return [];
+    }
+  }
+
+  async function fetchHistoricalPrice(ticker, timePeriod) {
+    const cacheKey = `historicalPrice-${timePeriod}`;
+    const cachedData = getCache(ticker, cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
+    try {
+      const response = await fetch("/api/historical-price", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ticker, timePeriod }),
+      });
+      const data = await response.json();
+      setCache(ticker, cacheKey, data);
+      return data;
+    } catch (error) {
+      console.error(`Error fetching ${timePeriod} price for ${ticker}:`, error);
+      return [];
+    }
+  }
+
+  async function loadInitialData() {
+    if (!tickerList || tickerList.length === 0) return;
+
+    isLoaded = false;
+
+    // Fetch stock quotes and one-day prices for all tickers in parallel
+    const promises = tickerList.map(async (ticker) => {
+      const [quote, oneDayData] = await Promise.all([
+        fetchStockQuote(ticker),
+        fetchOneDayPrice(ticker),
+      ]);
+
+      stockQuotes[ticker] = quote;
+      priceData[ticker] = {
+        "1D": oneDayData,
+        "1W": [],
+        "1M": [],
+        "6M": [],
+        YTD: [],
+        "1Y": [],
+        "5Y": [],
+        MAX: [],
+      };
     });
 
-    const output = await response.json();
+    await Promise.all(promises);
+
+    // Generate initial plot data
+    updatePlotData();
+    isLoaded = true;
   }
 
   const colorPairs = [
@@ -39,59 +127,72 @@
     { light: "#20B2AA", dark: "#2DD4BF" }, // LightSeaGreen → Teal-300
   ];
 
-  function changePlotPeriod(timePeriod) {
+  async function changePlotPeriod(timePeriod) {
     isLoaded = false;
     selectedPlotPeriod = timePeriod;
 
-    // Regenerate dummy data for the new period
-    rawGraphData = generateDummyData();
-    config = plotData() || null;
-    isLoaded = true;
+    // Map period to API format
+    const periodMapping = {
+      "1D": null, // Already loaded
+      "5D": "five-days",
+      "1M": "one-month",
+      "6M": "six-months",
+      YTD: "ytd",
+      "1Y": "one-year",
+      "5Y": "five-years",
+      MAX: "max",
+    };
 
-    downloadWorker?.postMessage({
-      tickerList: tickerList,
-      category: selectedPlotCategory,
+    // Fetch historical data if not 1D and not already loaded
+    if (timePeriod !== "1D") {
+      const apiPeriod = periodMapping[timePeriod];
+      if (apiPeriod) {
+        const promises = tickerList.map(async (ticker) => {
+          if (
+            !priceData[ticker][timePeriod] ||
+            priceData[ticker][timePeriod].length === 0
+          ) {
+            const data = await fetchHistoricalPrice(ticker, apiPeriod);
+            priceData[ticker][timePeriod] = data;
+          }
+        });
+        await Promise.all(promises);
+      }
+    }
+
+    updatePlotData();
+    isLoaded = true;
+  }
+
+  function updatePlotData() {
+    // Transform priceData to the format expected by plotData
+    rawGraphData = {};
+
+    tickerList.forEach((ticker) => {
+      const data = priceData[ticker]?.[selectedPlotPeriod] || [];
+      rawGraphData[ticker] = {
+        history: data.map((item) => ({
+          date: item.time || item.date,
+          value: item.close || item.value,
+        })),
+      };
     });
+
+    config = plotData() || null;
   }
 
   function filterDataByTimePeriod(history) {
-    const now = new Date();
+    // Since we're fetching the correct period data from API,
+    // we don't need to filter it client-side
+    return history;
+  }
 
-    let thresholdDate;
+  onMount(() => {
+    loadInitialData();
+  });
 
-    switch (selectedPlotPeriod) {
-      case "1D":
-        thresholdDate = new Date(now);
-        thresholdDate.setDate(now.getDate() - 1);
-        break;
-      case "5D":
-        thresholdDate = new Date(now);
-        thresholdDate.setDate(now.getDate() - 5);
-        break;
-      case "1M":
-        thresholdDate = new Date(now);
-        thresholdDate.setMonth(now.getMonth() - 1);
-        break;
-      case "6M":
-        thresholdDate = new Date(now);
-        thresholdDate.setMonth(now.getMonth() - 6);
-        break;
-      case "YTD":
-        thresholdDate = new Date(now.getFullYear(), 0, 1);
-        break;
-      case "1Y":
-        thresholdDate = new Date(now);
-        thresholdDate.setFullYear(now.getFullYear() - 1);
-        break;
-      case "5Y":
-        thresholdDate = new Date(now);
-        thresholdDate.setFullYear(now.getFullYear() - 5);
-        break;
-      default: // "MAX"
-        thresholdDate = new Date(0);
-    }
-
-    return history?.filter((item) => new Date(item?.date) >= thresholdDate);
+  $: if (tickerList && tickerList.length > 0) {
+    loadInitialData();
   }
 
   function plotData() {
@@ -194,7 +295,7 @@
         style: { color: $mode === "light" ? "black" : "white" },
       },
       tooltip: {
-        shared: ["price", "marketCap"]?.includes(selectedPlotCategory?.value),
+        shared: true,
         useHTML: true,
         backgroundColor: "rgba(0, 0, 0, 0.8)",
         borderColor: "rgba(255, 255, 255, 0.2)",
@@ -206,20 +307,31 @@
         },
         borderRadius: 4,
         formatter: function () {
-          // Format the x value
-          const dateStr = new Date(this?.x)?.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            timeZone: "UTC",
-          });
+          // Format the date based on the selected period
+          const date = new Date(this?.x);
+          let formattedDate;
 
-          let tooltipContent = `<span class="m-auto text-[1rem] font-[501] ">${dateStr}</span><br>`;
+          if (selectedPlotPeriod === "1D" || selectedPlotPeriod === "5D") {
+            formattedDate = date?.toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+              timeZone: "UTC",
+            });
+          } else {
+            formattedDate = date?.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              timeZone: "UTC",
+            });
+          }
+
+          let tooltipContent = `<span class="m-auto text-[1rem] font-[501] ">${formattedDate}</span><br>`;
 
           // If shared, this.points is an array
           if (this.points) {
             this.points.forEach((point) => {
-              const formattedValue = point.y;
+              const formattedValue = `$${point.y?.toFixed(2)}`;
 
               tooltipContent += `
         <span style="display:inline-block; width:10px; height:10px; background-color:${point.color}; border-radius:5%; margin-right:3px;"></span>
@@ -228,7 +340,7 @@
             });
           } else {
             // Non-shared, handle single point
-            const formattedValue = this.y;
+            const formattedValue = `$${this.y?.toFixed(2)}`;
 
             tooltipContent += `
       <span style="display:inline-block; width:10px; height:10px; background-color:${this.color}; border-radius:5%; margin-right:3px;"></span>
@@ -288,7 +400,7 @@
         labels: {
           style: { color: $mode === "light" ? "black" : "white" },
           formatter: function () {
-            return this.value;
+            return `$${this.value?.toFixed(2)}`;
           },
         },
         opposite: true,
@@ -338,130 +450,130 @@
       ></div>
 
       <!-- Stock Metric Cards -->
-      {#if tickerList?.length > 0}
+      {#if tickerList?.length > 0 && Object.keys(stockQuotes).length > 0}
         <div class="mt-6 space-y-4">
           {#each tickerList as ticker, index}
-            <div
-              class="bg-gray-100 dark:bg-primary/60 border border-gray-300 dark:border-gray-800 rounded p-4"
-            >
-              <div class="flex items-center justify-start mb-3">
-                <div class="text-sm">Updated 15/08/2025</div>
-              </div>
-
+            {@const quote = stockQuotes[ticker]}
+            {#if quote}
               <div
-                class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm"
+                class="bg-gray-100 dark:bg-primary/60 border border-gray-300 dark:border-gray-800 rounded p-4"
               >
-                <div>
-                  <div class="text-gray-500 dark:text-gray-400">Prev Close</div>
-                  <div class="font-medium text-gray-900 dark:text-white">
-                    {#if ticker === "AMD"}$180.95
-                    {:else if ticker === "NVDA"}$182.02
-                    {:else if ticker === "INTC"}$23.86
-                    {:else if ticker === "AAPL"}$232.78
-                    {:else}$125.50
-                    {/if}
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class="font-semibold text-lg">{ticker}</h3>
+                  <div class="flex items-center gap-2">
+                    <span class="text-2xl font-bold">
+                      ${quote?.price?.toFixed(2) || "--"}
+                    </span>
+                    <span
+                      class="text-sm {quote?.changesPercentage >= 0
+                        ? 'text-green-500'
+                        : 'text-red-500'}"
+                    >
+                      {quote?.changesPercentage >= 0
+                        ? "+"
+                        : ""}{quote?.changesPercentage?.toFixed(2) || 0}%
+                    </span>
                   </div>
                 </div>
 
-                <div>
-                  <div class="text-gray-500 dark:text-gray-400">Open</div>
-                  <div class="font-medium text-gray-900 dark:text-white">
-                    {#if ticker === "AMD"}$180.06
-                    {:else if ticker === "NVDA"}$181.88
-                    {:else if ticker === "INTC"}$25.00
-                    {:else if ticker === "AAPL"}$234.00
-                    {:else}$126.25
-                    {/if}
+                <div
+                  class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm"
+                >
+                  <div>
+                    <div class="text-gray-500 dark:text-gray-400">
+                      Prev Close
+                    </div>
+                    <div class="font-medium text-gray-900 dark:text-white">
+                      ${quote?.previousClose?.toFixed(2) || "--"}
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <div class="text-gray-500 dark:text-gray-400">Day Range</div>
-                  <div class="font-medium text-gray-900 dark:text-white">
-                    {#if ticker === "AMD"}$176.25 - $180.14
-                    {:else if ticker === "NVDA"}$178.04 - $181.90
-                    {:else if ticker === "INTC"}$24.11 - $25.65
-                    {:else if ticker === "AAPL"}$229.34 - $234.28
-                    {:else}$124.50 - $127.80
-                    {/if}
+                  <div>
+                    <div class="text-gray-500 dark:text-gray-400">Open</div>
+                    <div class="font-medium text-gray-900 dark:text-white">
+                      ${quote?.open?.toFixed(2) || "--"}
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <div class="text-gray-500 dark:text-gray-400">52W Range</div>
-                  <div class="font-medium text-gray-900 dark:text-white">
-                    {#if ticker === "AMD"}$76.48 - $186.65
-                    {:else if ticker === "NVDA"}$86.62 - $184.48
-                    {:else if ticker === "INTC"}$17.67 - $27.55
-                    {:else if ticker === "AAPL"}$169.21 - $260.10
-                    {:else}$85.20 - $155.40
-                    {/if}
+                  <div>
+                    <div class="text-gray-500 dark:text-gray-400">
+                      Day Range
+                    </div>
+                    <div class="font-medium text-gray-900 dark:text-white">
+                      ${quote?.dayLow?.toFixed(2) || "--"} - ${quote?.dayHigh?.toFixed(
+                        2,
+                      ) || "--"}
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <div class="text-gray-500 dark:text-gray-400">Volume</div>
-                  <div class="font-medium text-gray-900 dark:text-white">
-                    {#if ticker === "AMD"}51M
-                    {:else if ticker === "NVDA"}150M
-                    {:else if ticker === "INTC"}307M
-                    {:else if ticker === "AAPL"}55M
-                    {:else}25M
-                    {/if}
+                  <div>
+                    <div class="text-gray-500 dark:text-gray-400">
+                      52W Range
+                    </div>
+                    <div class="font-medium text-gray-900 dark:text-white">
+                      ${quote?.yearLow?.toFixed(2) || "--"} - ${quote?.yearHigh?.toFixed(
+                        2,
+                      ) || "--"}
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <div class="text-gray-500 dark:text-gray-400">P/E Ratio</div>
-                  <div class="font-medium text-gray-900 dark:text-white">
-                    {#if ticker === "AMD"}106.93
-                    {:else if ticker === "NVDA"}58.40
-                    {:else if ticker === "INTC"}-5.15
-                    {:else if ticker === "AAPL"}31.90
-                    {:else}24.50
-                    {/if}
+                  <div>
+                    <div class="text-gray-500 dark:text-gray-400">Volume</div>
+                    <div class="font-medium text-gray-900 dark:text-white">
+                      {abbreviateNumber(quote?.volume) || "--"}
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <div class="text-gray-500 dark:text-gray-400">Market Cap</div>
-                  <div class="font-medium text-gray-900 dark:text-white">
-                    {#if ticker === "AMD"}$288.07B
-                    {:else if ticker === "NVDA"}$4.4T
-                    {:else if ticker === "INTC"}$107.5B
-                    {:else if ticker === "AAPL"}$3.44T
-                    {:else}$150.2B
-                    {/if}
+                  <div>
+                    <div class="text-gray-500 dark:text-gray-400">
+                      Avg Volume
+                    </div>
+                    <div class="font-medium text-gray-900 dark:text-white">
+                      {abbreviateNumber(quote?.avgVolume) || "--"}
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <div class="text-gray-500 dark:text-gray-400">
-                    Dividend Yield
+                  <div>
+                    <div class="text-gray-500 dark:text-gray-400">
+                      P/E Ratio
+                    </div>
+                    <div class="font-medium text-gray-900 dark:text-white">
+                      {quote?.pe?.toFixed(2) || "--"}
+                    </div>
                   </div>
-                  <div class="font-medium text-gray-900 dark:text-white">
-                    {#if ticker === "AMD"}—
-                    {:else if ticker === "NVDA"}0.0222%
-                    {:else if ticker === "INTC"}—
-                    {:else if ticker === "AAPL"}0.44%
-                    {:else}1.25%
-                    {/if}
-                  </div>
-                </div>
 
-                <div>
-                  <div class="text-gray-500 dark:text-gray-400">EPS</div>
-                  <div class="font-medium text-gray-900 dark:text-white">
-                    {#if ticker === "AMD"}$1.66
-                    {:else if ticker === "NVDA"}$3.09
-                    {:else if ticker === "INTC"}-$4.77
-                    {:else if ticker === "AAPL"}$7.26
-                    {:else}$5.15
-                    {/if}
+                  <div>
+                    <div class="text-gray-500 dark:text-gray-400">
+                      Market Cap
+                    </div>
+                    <div class="font-medium text-gray-900 dark:text-white">
+                      {abbreviateNumber(quote?.marketCap) || "--"}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="text-gray-500 dark:text-gray-400">EPS</div>
+                    <div class="font-medium text-gray-900 dark:text-white">
+                      ${quote?.eps?.toFixed(2) || "--"}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="text-gray-500 dark:text-gray-400">Beta</div>
+                    <div class="font-medium text-gray-900 dark:text-white">
+                      {quote?.beta?.toFixed(2) || "--"}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="text-gray-500 dark:text-gray-400">Exchange</div>
+                    <div class="font-medium text-gray-900 dark:text-white">
+                      {quote?.exchange || "--"}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            {/if}
           {/each}
         </div>
       {/if}
