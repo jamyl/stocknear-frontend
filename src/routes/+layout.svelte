@@ -19,6 +19,11 @@
   import { onMount, onDestroy } from "svelte";
   import { deferFunction } from "$lib/utils";
   import { browser } from "$app/environment";
+  import {
+    registerServiceWorker,
+    prefetchCriticalResources,
+    setupCacheCleanup,
+  } from "$lib/registerServiceWorker";
 
   import {
     clearCache,
@@ -141,27 +146,19 @@
 
     if (!browser) return;
 
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("/service-worker.js")
-        .then((registration) => {
-          //console.log("SW registered:", registration);
+    // Use optimized service worker registration
+    registerServiceWorker();
 
-          if (registration.waiting) {
-            registration.waiting.postMessage({ type: "SKIP_WAITING" });
-          }
+    // Setup cache cleanup
+    setupCacheCleanup();
 
-          navigator.serviceWorker.ready.then((reg) => {
-            //console.log("SW ready:", reg);
-            // safe to subscribe for push
-          });
-        })
-        .catch((err) => {
-          console.error("SW registration failed:", err);
-        });
-    }
+    // Prefetch critical resources after a delay
+    setTimeout(() => {
+      prefetchCriticalResources();
+    }, 5000);
 
-    if ("caches" in window) {
+    if ("caches" in window && false) {
+      // Disabled aggressive cache clearing
       // Extra safeguard: clear any leftover Cache Storage
       const keys = await caches?.keys();
       for (const key of keys) {
