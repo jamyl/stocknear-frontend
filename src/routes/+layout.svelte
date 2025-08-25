@@ -21,8 +21,6 @@
   import { browser } from "$app/environment";
   import {
     registerServiceWorker,
-    prefetchCriticalResources,
-    setupCacheCleanup,
   } from "$lib/registerServiceWorker";
 
   import {
@@ -148,14 +146,6 @@
 
     // Use optimized service worker registration
     registerServiceWorker();
-
-    // Setup cache cleanup
-    setupCacheCleanup();
-
-    // Prefetch critical resources after a delay
-    setTimeout(() => {
-      prefetchCriticalResources();
-    }, 5000);
 
     if ("caches" in window && false) {
       // Disabled aggressive cache clearing

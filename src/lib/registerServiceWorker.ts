@@ -88,11 +88,6 @@ async function performRegistration() {
 }
 
 function setupUpdateHandlers(registration: ServiceWorkerRegistration) {
-  // Check for updates periodically (every hour)
-  setInterval(() => {
-    registration.update();
-  }, 60 * 60 * 1000);
-
   // Handle updates
   registration.addEventListener('updatefound', () => {
     const newWorker = registration.installing;
@@ -100,10 +95,8 @@ function setupUpdateHandlers(registration: ServiceWorkerRegistration) {
 
     newWorker.addEventListener('statechange', () => {
       if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-        // New service worker available
         console.log('[SW] New version available');
         
-        // Optional: Show update notification to user
         if (window.confirm('A new version is available! Reload to update?')) {
           newWorker.postMessage({ type: 'SKIP_WAITING' });
           window.location.reload();
@@ -112,40 +105,10 @@ function setupUpdateHandlers(registration: ServiceWorkerRegistration) {
     });
   });
 
-  // Handle controller change (when new SW takes over)
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     console.log('[SW] Controller changed, reloading...');
     window.location.reload();
   });
 }
 
-// Prefetch critical resources after SW is ready
-export async function prefetchCriticalResources() {
-  if (!('serviceWorker' in navigator)) return;
 
-  await navigator.serviceWorker.ready;
-
-  // Send message to SW to cache critical routes
-  const criticalRoutes = [
-    '/',
-    '/stocks',
-    '/etf',
-  ];
-
-  navigator.serviceWorker.controller?.postMessage({
-    type: 'CACHE_URLS',
-    payload: criticalRoutes
-  });
-}
-
-// Cleanup old caches periodically
-export function setupCacheCleanup() {
-  if (!('serviceWorker' in navigator)) return;
-
-  // Run cleanup every 10 min
-  setInterval(() => {
-    navigator.serviceWorker.controller?.postMessage({
-      type: 'CLEANUP_CACHE'
-    });
-  },   10 * 60 * 1000);
-}
