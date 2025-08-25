@@ -19,65 +19,23 @@
   let priceData = {};
   let historicalData = {};
 
-  async function fetchStockQuote(ticker) {
+  async function fetchPlotData(tickerList, timePeriod = "one-day") {
     try {
-      const response = await fetch("/api/stock-quote", {
+      const response = await fetch("/api/chat-plot-data", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ticker }),
+        body: JSON.stringify({ tickerList, timePeriod }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       return await response.json();
     } catch (error) {
-      console.error(`Error fetching quote for ${ticker}:`, error);
-      return null;
-    }
-  }
-
-  async function fetchOneDayPrice(ticker) {
-    const cachedData = getCache(ticker, "oneDayPrice");
-    if (cachedData) {
-      return cachedData;
-    }
-
-    try {
-      const response = await fetch("/api/one-day-price", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ticker }),
-      });
-      const data = await response.json();
-      setCache(ticker, "oneDayPrice", data);
-      return data;
-    } catch (error) {
-      console.error(`Error fetching one day price for ${ticker}:`, error);
-      return [];
-    }
-  }
-
-  async function fetchHistoricalPrice(ticker, timePeriod) {
-    const cacheKey = `historicalPrice-${timePeriod}`;
-    const cachedData = getCache(ticker, cacheKey);
-    if (cachedData) {
-      return cachedData;
-    }
-
-    try {
-      const response = await fetch("/api/historical-price", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ticker, timePeriod }),
-      });
-      const data = await response.json();
-      setCache(ticker, cacheKey, data);
-      return data;
-    } catch (error) {
-      console.error(`Error fetching ${timePeriod} price for ${ticker}:`, error);
+      console.error(`Error fetching plot data:`, error);
       return [];
     }
   }
@@ -87,30 +45,34 @@
 
     isLoaded = false;
 
-    // Fetch stock quotes and one-day prices for all tickers in parallel
-    const promises = tickerList.map(async (ticker) => {
-      const [quote, oneDayData] = await Promise.all([
-        fetchStockQuote(ticker),
-        fetchOneDayPrice(ticker),
-      ]);
+    // Fetch all data from the single endpoint
+    const results = await fetchPlotData(tickerList, "one-day");
 
-      stockQuotes[ticker] = quote;
-      priceData[ticker] = {
-        "1D": oneDayData,
-        "1W": [],
-        "1M": [],
-        "6M": [],
-        YTD: [],
-        "1Y": [],
-        "5Y": [],
-        MAX: [],
-      };
-    });
+    if (results && results.length > 0) {
+      // Process results and populate our data structures
+      results.forEach((result) => {
+        const { ticker, quote, priceData: prices } = result;
 
-    await Promise.all(promises);
+        // Store quote data
+        stockQuotes[ticker] = quote;
 
-    // Generate initial plot data
-    updatePlotData();
+        // Initialize price data structure
+        priceData[ticker] = {
+          "1D": prices || [],
+          "5D": [],
+          "1M": [],
+          "6M": [],
+          YTD: [],
+          "1Y": [],
+          "5Y": [],
+          MAX: [],
+        };
+      });
+
+      // Update plot with initial data
+      updatePlotData();
+    }
+
     isLoaded = true;
   }
 
@@ -133,7 +95,7 @@
 
     // Map period to API format
     const periodMapping = {
-      "1D": null, // Already loaded
+      "1D": "one-day",
       "5D": "five-days",
       "1M": "one-month",
       "6M": "six-months",
@@ -143,20 +105,27 @@
       MAX: "max",
     };
 
-    // Fetch historical data if not 1D and not already loaded
-    if (timePeriod !== "1D") {
+    // Check if we need to fetch new data
+    const needsFetch = tickerList.some(
+      (ticker) =>
+        !priceData[ticker] ||
+        !priceData[ticker][timePeriod] ||
+        priceData[ticker][timePeriod].length === 0,
+    );
+
+    if (needsFetch) {
       const apiPeriod = periodMapping[timePeriod];
       if (apiPeriod) {
-        const promises = tickerList.map(async (ticker) => {
-          if (
-            !priceData[ticker][timePeriod] ||
-            priceData[ticker][timePeriod].length === 0
-          ) {
-            const data = await fetchHistoricalPrice(ticker, apiPeriod);
-            priceData[ticker][timePeriod] = data;
-          }
-        });
-        await Promise.all(promises);
+        const results = await fetchPlotData(tickerList, apiPeriod);
+
+        if (results && results.length > 0) {
+          results.forEach((result) => {
+            const { ticker, priceData: prices } = result;
+            if (priceData[ticker]) {
+              priceData[ticker][timePeriod] = prices || [];
+            }
+          });
+        }
       }
     }
 

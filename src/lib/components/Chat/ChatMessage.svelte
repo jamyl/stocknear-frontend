@@ -239,7 +239,7 @@
         </div>
       {:else}
         <div class="w-full">
-          {#if editable && isLatestSystemMessage}
+          {#if message?.role === "system" && editable && isLatestSystemMessage}
             <div class="mt-6">
               <TickerGraph tickerList={["AMD"]} />
             </div>
