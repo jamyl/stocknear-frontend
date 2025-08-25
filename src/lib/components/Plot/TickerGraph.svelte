@@ -1,7 +1,7 @@
 <script lang="ts">
   import { abbreviateNumber } from "$lib/utils";
   import { mode } from "mode-watcher";
-  import { screenWidth, getCache, setCache } from "$lib/store";
+  import { getCache, setCache } from "$lib/store";
   import highcharts from "$lib/highcharts.ts";
 
   export let tickerList = [];
@@ -25,6 +25,24 @@
   let rawGraphData = {};
   let stockQuotes = {};
   let priceData = {};
+
+  function convertTimestamp(unixSeconds: number | string): string {
+    if (!unixSeconds) return "";
+
+    const date = new Date(Number(unixSeconds) * 1000); // convert seconds → ms
+
+    const formatted = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/New_York",
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }).format(date);
+
+    return `${formatted} ET`; // explicitly mark Eastern Time
+  }
 
   async function fetchPlotData(tickerList, timePeriod = "one-year") {
     const cacheKey = `plotData-${tickerList.join(",")}-${timePeriod}`;
@@ -456,24 +474,20 @@
       class="border border-gray-300 dark:border-gray-800 bg-white dark:bg-default rounded p-6"
     >
       <!-- Header -->
-      <!--
+
       <div class="flex items-center gap-2 mb-6 text-gray-400">
         <div class="ml-auto text-sm">
-          Updated {new Date(
-            ?.timestamp,
-          ).toLocaleString("en-US", {
-            day: "numeric",
-            month: "short",
-            hour: "2-digit",
-            minute: "2-digit",
-            timeZone: "UTC",
-            timeZoneName: "short",
-          })}
+          {#if displayTickerList?.length > 0}
+            {@const firstTicker = displayTickerList[0]}
+            {@const firstQuote = stockQuotes[firstTicker]}
+            {#if firstQuote}
+              Updated {convertTimestamp(firstQuote?.timestamp)}
+            {/if}
+          {/if}
         </div>
       </div>
-      -->
 
-      {#if config && isLoaded && Object.keys(stockQuotes).length > 0}
+      {#if config && isLoaded && Object.keys(stockQuotes)?.length > 0}
         <!-- Stock Price Headers - Side by Side -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6">
           {#each displayTickerList as ticker, index}
@@ -535,7 +549,7 @@
         <div class="w-full h-[200px] mb-8" use:highcharts={config}></div>
 
         <!-- Stock Details - Side by Side -->
-        <div class="space-y-8">
+        <div class="space-y-4">
           {#each displayTickerList as ticker}
             {@const quote = stockQuotes[ticker]}
             {#if quote}
