@@ -9,14 +9,15 @@
 
   // Limit to maximum 3 tickers
   $: displayTickerList = tickerList?.slice(0, 3) ?? [];
-  
+
   // Create a map of ticker to URL from sources
-  $: tickerUrlMap = sources?.reduce((acc, source) => {
-    if (source?.ticker && source?.url) {
-      acc[source.ticker] = source.url;
-    }
-    return acc;
-  }, {}) || {};
+  $: tickerUrlMap =
+    sources?.reduce((acc, source) => {
+      if (source?.ticker && source?.url) {
+        acc[source.ticker] = source.url;
+      }
+      return acc;
+    }, {}) || {};
 
   let selectedPlotPeriod = "1D";
   let config = null;
@@ -48,7 +49,6 @@
 
       const data = await response.json();
       setCache(cacheKey, "tickerGraph", data);
-      console.log("Cached plot data for:", tickerList, timePeriod);
       return data;
     } catch (error) {
       console.error(`Error fetching plot data:`, error);
@@ -457,14 +457,14 @@
                 </div>
 
                 <div class="flex items-baseline gap-3 mb-2">
-                  <span class="text-2xl font-semibold text-white">
+                  <span class="text-2xl font-semibold">
                     {quote?.price?.toFixed(2) || "n/a"}
                   </span>
                   <span
                     class={`text-lg ${
                       (quote?.changesPercentage || 0) >= 0
-                        ? "text-[#16c784]"
-                        : "text-[#ea3943]"
+                        ? "text-green-800 dark:text-green-400"
+                        : "text-red-800 dark:text-red-400"
                     }`}
                   >
                     {(quote?.changesPercentage || 0) >= 0 ? "+" : "-"}{Math.abs(
@@ -506,23 +506,23 @@
           {#each displayTickerList as ticker}
             {@const quote = stockQuotes[ticker]}
             {#if quote}
-              <div class="border-l-2 border-[#333] pl-4">
+              <div class="">
                 <div class="flex justify-between items-center mb-4">
-                  <h3 class="text-white font-medium text-lg">
+                  <h3 class=" font-medium text-lg">
                     {ticker?.toUpperCase()}
                   </h3>
                 </div>
                 <div class="grid grid-cols-3 gap-x-6 gap-y-2 text-sm">
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-500 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
                       >Prev Close</span
                     >
                     <span>{quote?.previousClose?.toFixed(2) || "n/a"}</span>
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-500 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
                       >52W Range</span
                     >
                     <span
@@ -533,28 +533,28 @@
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-500 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
                       >Market Cap</span
                     >
                     <span>{abbreviateNumber(quote?.marketCap)}</span>
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-500 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
                       >Open</span
                     >
                     <span>{quote?.open?.toFixed(2) || "n/a"}</span>
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-500 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
                       >P/E Ratio</span
                     >
                     <span>{quote?.pe?.toFixed(2) || "n/a"}</span>
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-500 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
                       >Dividend Yield</span
                     >
                     <span
@@ -565,7 +565,7 @@
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-500 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
                       >Day Range</span
                     >
                     <span
@@ -576,14 +576,14 @@
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-500 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
                       >Volume</span
                     >
                     <span>{abbreviateNumber(quote?.volume) || "n/a"}</span>
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-500 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
                       >EPS</span
                     >
                     <span>{quote?.eps?.toFixed(2) || "n/a"}</span>
@@ -592,7 +592,10 @@
 
                 {#if tickerUrlMap[ticker]}
                   <div class="mt-6">
-                    <a href={tickerUrlMap[ticker]} class="text-[#00d4ff] hover:underline text-sm">
+                    <a
+                      href={tickerUrlMap[ticker]}
+                      class="text-blue-800 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white hover:underline text-sm"
+                    >
                       More about {ticker?.toUpperCase()}
                     </a>
                   </div>
