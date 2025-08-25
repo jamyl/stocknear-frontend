@@ -239,9 +239,13 @@
         </div>
       {:else}
         <div class="w-full">
-          {#if message?.role === "system" && editable && isLatestSystemMessage}
+          {#if message?.role === "system" && message?.sources && message?.sources?.length > 0 && isLatestSystemMessage}
             <div class="mt-6">
-              <TickerGraph tickerList={["AMD"]} />
+              <TickerGraph
+                tickerList={[
+                  ...new Set(message.sources?.map((item) => item?.ticker)),
+                ]}
+              />
             </div>
           {/if}
 

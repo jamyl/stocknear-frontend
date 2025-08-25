@@ -16,6 +16,7 @@
   let stockQuotes = {};
   let priceData = {};
   let historicalData = {};
+  console.log(tickerList);
 
   async function fetchPlotData(tickerList, timePeriod = "one-day") {
     // Create cache key based on tickers and time period
