@@ -121,7 +121,7 @@
 
     isLoaded = true;
   }
-
+  /*
   async function changePlotPeriod(timePeriod) {
     isLoaded = false;
     selectedPlotPeriod = timePeriod;
@@ -188,7 +188,7 @@
     updatePlotData();
     isLoaded = true;
   }
-
+*/
   function updatePlotData() {
     rawGraphData = {};
 
@@ -209,10 +209,11 @@
     const parsedData: Record<string, [number, number][]> = {};
     const series: any[] = [];
 
-    // Define colors for tickers - matching the screenshot
+    // Define colors for tickers - optimized for light/dark mode
     const tickerColors = {
-      0: "#00d4ff", // Cyan for first ticker
-      1: "#ffa500", // Orange for second ticker
+      0: $mode === "light" ? "#0066CC" : "#00d4ff", // Blue/Cyan for first ticker
+      1: $mode === "light" ? "#FF6B00" : "#ffa500", // Dark Orange/Orange for second ticker
+      2: $mode === "light" ? "#00A651" : "#00ff88", // Green for third ticker
     };
 
     // Process data and calculate percentage changes
@@ -235,15 +236,22 @@
       });
     }
 
+    // Track min/max percentage values for yAxis scaling
+    let minPercentage = 0;
+    let maxPercentage = 0;
+
     // Convert to percentage-based data
     Object.entries(parsedData).forEach(([symbol, dataPoints], index) => {
       if (!dataPoints?.length) return;
 
       const firstValue = dataPoints[0][1];
-      const percentageData = dataPoints.map((point) => [
-        point[0],
-        (point[1] / firstValue - 1) * 100,
-      ]);
+      const percentageData = dataPoints.map((point) => {
+        const percentValue = (point[1] / firstValue - 1) * 100;
+        // Update min/max tracking
+        minPercentage = Math.min(minPercentage, percentValue);
+        maxPercentage = Math.max(maxPercentage, percentValue);
+        return [point[0], percentValue];
+      });
 
       series.push({
         name: symbol,
@@ -266,7 +274,7 @@
             [firstTime, 0],
             [lastTime, 0],
           ],
-          color: "#666666",
+          color: $mode === "light" ? "#9CA3AF" : "#4B5563",
           lineWidth: 1,
           dashStyle: "Solid",
           marker: { enabled: false },
@@ -276,6 +284,22 @@
         });
       }
     });
+
+    // Calculate yMin and yMax with padding (similar to document 2)
+    // For percentage data, we'll use a slightly different approach
+    const padding = 0.1; // 10% padding for percentage values
+    const range = maxPercentage - minPercentage;
+
+    // If range is very small, add minimum padding
+    const minRange = 1; // Minimum 1% range
+    const effectiveRange = Math.max(range, minRange);
+
+    let yMin = minPercentage - effectiveRange * padding;
+    let yMax = maxPercentage + effectiveRange * padding;
+
+    // Ensure we always include 0 in the range for percentage charts
+    yMin = Math.min(yMin, -0.5);
+    yMax = Math.max(yMax, 0.5);
 
     const baseDate = new Date(
       Object.values(parsedData)?.[0]?.[0]?.[0] || new Date(),
@@ -297,7 +321,7 @@
 
     return {
       chart: {
-        backgroundColor: $mode === "light" ? "#fff" : "#09090B",
+        backgroundColor: $mode === "light" ? "#ffffff" : "#09090B",
         animation: false,
         height: 200,
       },
@@ -311,10 +335,15 @@
       tooltip: {
         shared: true,
         useHTML: true,
-        backgroundColor: "rgba(0,0,0,0.9)",
-        borderColor: "rgba(255,255,255,0.1)",
+        backgroundColor:
+          $mode === "light" ? "rgba(255,255,255,0.95)" : "rgba(0,0,0,0.9)",
+        borderColor:
+          $mode === "light" ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.1)",
         borderWidth: 1,
-        style: { color: "white", fontSize: "14px" },
+        style: {
+          color: $mode === "light" ? "#1f2937" : "white",
+          fontSize: "14px",
+        },
         borderRadius: 4,
         formatter: function () {
           const date = new Date(this.x);
@@ -329,7 +358,7 @@
               content += `<div style="color: ${point.series.color}; margin-bottom: 4px;">${point.series.name}: ${point.y >= 0 ? "+" : ""}${point.y?.toFixed(2)}%</div>`;
             }
           });
-          content += `<div style="color: #fff; font-size: 12px; margin-top: 4px;">${formattedTime}</div></div>`;
+          content += `<div style="color: ${$mode === "light" ? "#6b7280" : "#fff"}; font-size: 12px; margin-top: 4px;">${formattedTime}</div></div>`;
           return content;
         },
       },
@@ -341,13 +370,13 @@
         tickLength: 0,
         categories: null,
         crosshair: {
-          color: $mode === "light" ? "black" : "white",
+          color: $mode === "light" ? "#374151" : "#e5e7eb",
           width: 1,
           dashStyle: "Solid",
         },
         labels: {
           style: {
-            color: $mode === "light" ? "black" : "white",
+            color: $mode === "light" ? "#374151" : "#e5e7eb",
             fontSize: "12px",
             fontFamily: "monospace",
           },
@@ -369,13 +398,18 @@
       },
 
       yAxis: {
-        gridLineColor: $mode === "light" ? "#e5e7eb" : "#111827",
+        // Force y-axis to stay near the actual data range
+        min: yMin ?? null,
+        max: yMax ?? null,
+        startOnTick: false,
+        endOnTick: false,
+        gridLineColor: $mode === "light" ? "#e5e7eb" : "#1f2937",
         gridLineWidth: 1,
         title: { text: null },
         opposite: true,
         labels: {
           style: {
-            color: $mode === "light" ? "black" : "white",
+            color: $mode === "light" ? "#374151" : "#e5e7eb",
             fontSize: "12px",
             fontFamily: "monospace",
           },
@@ -397,7 +431,6 @@
       series,
     };
   }
-
   function getCompanyName(ticker) {
     const names = {
       AAPL: "Apple Inc.",
@@ -463,8 +496,8 @@
                   <span
                     class={`text-lg ${
                       (quote?.changesPercentage || 0) >= 0
-                        ? "text-green-800 dark:text-green-400"
-                        : "text-red-800 dark:text-red-400"
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-red-600 dark:text-red-400"
                     }`}
                   >
                     {(quote?.changesPercentage || 0) >= 0 ? "+" : "-"}{Math.abs(
@@ -515,14 +548,14 @@
                 <div class="grid grid-cols-3 gap-x-6 gap-y-2 text-sm">
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
                       >Prev Close</span
                     >
                     <span>{quote?.previousClose?.toFixed(2) || "n/a"}</span>
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
                       >52W Range</span
                     >
                     <span
@@ -533,28 +566,28 @@
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
                       >Market Cap</span
                     >
                     <span>{abbreviateNumber(quote?.marketCap)}</span>
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
                       >Open</span
                     >
                     <span>{quote?.open?.toFixed(2) || "n/a"}</span>
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
                       >P/E Ratio</span
                     >
                     <span>{quote?.pe?.toFixed(2) || "n/a"}</span>
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
                       >Dividend Yield</span
                     >
                     <span
@@ -565,7 +598,7 @@
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
                       >Day Range</span
                     >
                     <span
@@ -576,14 +609,14 @@
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
                       >Volume</span
                     >
                     <span>{abbreviateNumber(quote?.volume) || "n/a"}</span>
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-700 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
                       >EPS</span
                     >
                     <span>{quote?.eps?.toFixed(2) || "n/a"}</span>
@@ -594,7 +627,7 @@
                   <div class="mt-6">
                     <a
                       href={tickerUrlMap[ticker]}
-                      class="text-blue-800 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white hover:underline text-sm"
+                      class="text-blue-600 sm:hover:text-blue-800 dark:text-blue-400 dark:sm:hover:text-blue-300 hover:underline text-sm"
                     >
                       More about {ticker?.toUpperCase()}
                     </a>
