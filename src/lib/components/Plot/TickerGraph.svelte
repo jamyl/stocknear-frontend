@@ -667,7 +667,7 @@
                 </div>
 
                 {#if tickerUrlMap[ticker]}
-                  <div class="mt-6 font-sarif">
+                  <div class="mt-6 font-ans">
                     <a
                       href={tickerUrlMap[ticker]}
                       class="text-blue-600 sm:hover:text-blue-800 dark:text-blue-400 dark:sm:hover:text-blue-300 hover:underline text-sm"
