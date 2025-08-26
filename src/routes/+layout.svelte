@@ -19,9 +19,7 @@
   import { onMount, onDestroy } from "svelte";
   import { deferFunction } from "$lib/utils";
   import { browser } from "$app/environment";
-  import {
-    registerServiceWorker,
-  } from "$lib/registerServiceWorker";
+  import { registerServiceWorker } from "$lib/registerServiceWorker";
 
   import {
     clearCache,

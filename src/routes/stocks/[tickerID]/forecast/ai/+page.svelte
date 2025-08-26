@@ -243,7 +243,16 @@
   let avgReturn;
 
   function getAIScorePlot() {
-    const solidData = processedData.slice(0, -1);
+    let solidData;
+    if ($screenWidth < 640) {
+      solidData = processedData
+        ?.slice(0, -1) // all except last
+        ?.filter((_, idx) => idx % 2 === 0) // keep every 2nd point
+        ?.concat(processedData.at(-2));
+    } else {
+      solidData = processedData?.slice(0, -1); // all except last
+    }
+
     const lastTwoPoints = processedData.slice(-2); // Extract the last two points
 
     // Highcharts options for plotting the data with markers.
@@ -528,7 +537,7 @@
   let configScore = null;
 
   $: {
-    if ($stockTicker || $mode) {
+    if ($stockTicker || ($mode && typeof window !== "undefined")) {
       configScore = null;
       config = null;
       prepareDataset();
@@ -725,88 +734,7 @@
             </p>
 
             <div class="w-full mb-10 mt-3">
-              <div
-                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4 mt-3"
-              >
-                <div class="shadow bg-gray-100 dark:bg-[#1C1E22] rounded p-4">
-                  <div class="text-sm sm:text-[1rem] mb-2 flex items-center">
-                    <span>Score Accuracy</span>
-                  </div>
-                  <div class="flex items-baseline">
-                    <span class="text-xl font-bold"
-                      >{data?.getAIScore?.accuracy
-                        ? data?.getAIScore?.accuracy + "%"
-                        : "n/a"}</span
-                    >
-                  </div>
-                </div>
-
-                <div class="shadow bg-gray-100 dark:bg-[#1C1E22] rounded p-4">
-                  <div class="text-sm sm:text-[1rem] mb-2 flex items-center">
-                    <span>Latest Forecast</span>
-                  </div>
-                  <div class="flex items-baseline">
-                    <span class="text-xl font-bold">
-                      {#if isSubscribed}
-                        {[10, 9, 8, 7]?.includes(data?.getAIScore?.score)
-                          ? "Bullish"
-                          : [6, 5, 4]?.includes(data?.getAIScore?.score)
-                            ? "Hold"
-                            : "Bearish"}
-                      {:else}
-                        <a
-                          href="/pricing"
-                          class="sm:hover:text-default dark:sm:hover:text-blue-400"
-                          >Pro <svg
-                            class="w-5 h-5 mb-1 inline-block"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              fill="currentColor"
-                              d="M17 9V7c0-2.8-2.2-5-5-5S7 4.2 7 7v2c-1.7 0-3 1.3-3 3v7c0 1.7 1.3 3 3 3h10c1.7 0 3-1.3 3-3v-7c0-1.7-1.3-3-3-3M9 7c0-1.7 1.3-3 3-3s3 1.3 3 3v2H9z"
-                            />
-                          </svg></a
-                        >
-                      {/if}
-                    </span>
-                  </div>
-                </div>
-
-                <div class="shadow bg-gray-100 dark:bg-[#1C1E22] rounded p-4">
-                  <div class="text-sm sm:text-[1rem] mb-2 flex items-center">
-                    <span>Avg Return</span>
-                  </div>
-                  <div class="flex items-baseline">
-                    {#if isSubscribed}
-                      <span
-                        class="text-xl font-bold {avgReturn >= 0
-                          ? "before:content-['+'] text-green-800 dark:text-[#00FC50]"
-                          : 'text-red-800 dark:text-[#FF2F1F]'}"
-                        >{avgReturn?.toFixed(2)}%</span
-                      >
-                    {:else}
-                      <a
-                        href="/pricing"
-                        class="sm:hover:text-default dark:sm:hover:text-blue-400 text-xl font-bold"
-                      >
-                        Pro <svg
-                          class="w-5 h-5 mb-1 inline-block"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            fill="currentColor"
-                            d="M17 9V7c0-2.8-2.2-5-5-5S7 4.2 7 7v2c-1.7 0-3 1.3-3 3v7c0 1.7 1.3 3 3 3h10c1.7 0 3-1.3 3-3v-7c0-1.7-1.3-3-3-3M9 7c0-1.7 1.3-3 3-3s3 1.3 3 3v2H9z"
-                          />
-                        </svg></a
-                      >
-                    {/if}
-                  </div>
-                </div>
-              </div>
-
-              <div>
+              <div class="mt-4">
                 <div class="grow">
                   <div class="relative">
                     <!-- Apply the blur class to the chart -->
