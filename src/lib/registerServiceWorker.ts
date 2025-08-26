@@ -111,4 +111,23 @@ function setupUpdateHandlers(registration: ServiceWorkerRegistration) {
   });
 }
 
+// Monitor cache usage (optional utility)
+export async function getCacheStats() {
+  if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) {
+    return null;
+  }
+
+  return new Promise((resolve) => {
+    const messageChannel = new MessageChannel();
+    messageChannel.port1.onmessage = (event) => {
+      resolve(event.data);
+    };
+    
+    navigator.serviceWorker.controller.postMessage(
+      { type: 'GET_CACHE_SIZE' },
+      [messageChannel.port2]
+    );
+  });
+}
+
 
