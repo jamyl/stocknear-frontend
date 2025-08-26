@@ -310,9 +310,13 @@
             <div class="mt-6 hidden lg:block">
               <TickerGraph
                 tickerList={[
-                  ...new Set(message.sources?.map((item) => item?.ticker)),
+                  ...new Set(
+                    message.sources
+                      ?.map((item) => item?.ticker)
+                      ?.filter(Boolean), // removes null/undefined/empty
+                  ),
                 ]}
-                sources={message.sources}
+                sources={message?.sources}
               />
             </div>
           {/if}

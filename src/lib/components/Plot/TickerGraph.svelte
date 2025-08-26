@@ -159,13 +159,13 @@
     displayTickerList?.forEach((ticker) => {
       const data = priceData[ticker]?.[selectedPlotPeriod] || [];
       // Ensure data is an array before mapping
-      const historyData = Array.isArray(data) 
+      const historyData = Array.isArray(data)
         ? data.map((item) => ({
             date: item.time || item.date,
             value: item.close || item.value,
           }))
         : [];
-      
+
       rawGraphData[ticker] = {
         history: historyData,
       };
@@ -220,7 +220,7 @@
 
       const firstValue = dataPoints[0]?.[1];
       if (!firstValue || firstValue === 0) return;
-      
+
       const percentageData = dataPoints.map((point) => {
         const percentValue = ((point[1] || 0) / firstValue - 1) * 100;
         // Update min/max tracking
@@ -276,8 +276,10 @@
     yMin = Math.min(yMin, -0.5);
     yMax = Math.max(yMax, 0.5);
 
-    const firstData = Object.values(parsedData).find(data => data?.length > 0);
-    const baseDate = firstData?.[0]?.[0] 
+    const firstData = Object.values(parsedData).find(
+      (data) => data?.length > 0,
+    );
+    const baseDate = firstData?.[0]?.[0]
       ? new Date(firstData[0][0])
       : new Date();
     const startTime = new Date(
@@ -477,15 +479,15 @@
                   >
                 </div>
 
-                <div class="flex items-baseline gap-3 mb-2">
+                <div class="flex items-end items-baseline gap-x-2">
                   <span class="text-2xl font-semibold">
                     {quote?.price?.toFixed(2) || "n/a"}
                   </span>
                   <span
                     class={`text-lg ${
                       (quote?.changesPercentage || 0) >= 0
-                        ? "text-green-600 dark:text-green-400"
-                        : "text-red-600 dark:text-red-400"
+                        ? "text-green-800 dark:text-green-400"
+                        : "text-red-800 dark:text-red-400"
                     }`}
                   >
                     {(quote?.changesPercentage || 0) >= 0 ? "+" : "-"}{Math.abs(
