@@ -482,10 +482,10 @@
   class="w-full max-w-8xl overflow-hidden m-auto min-h-screen bg-white dark:bg-default mb-16"
 >
   <div class="flex flex-col m-auto justify-center items-center">
-    <div class="text-center mb-10 w-full px-4 sm:px-3">
+    <div class="text-center mb-10 w-full sm:px-3">
       <main class="flex flex-1 flex-col gap-4 sm:p-4 md:gap-8 text-start">
         <div
-          class="border-b border-gray-100 dark:border-gray-800 rounded-[8px] px-4 bg-gray-100 dark:bg-[#1C1E22] landscape:border-t-2 landscape:md:border-t-0"
+          class="border-b border-gray-100 dark:border-gray-800 rounded-none sm:rounded-[8px] px-4 bg-gray-100 dark:bg-[#1C1E22] landscape:border-t-2 landscape:md:border-t-0"
         >
           <div
             class="mx-auto w-full max-w-[850px] flex flex-col justify-center items-center gap-6 pb-8"
@@ -808,7 +808,7 @@
           </div>
         </div>
         {#if historyChat?.length > 0}
-          <div class="mx-auto w-full max-w-[850px]">
+          <div class="px-4 sm:px-0 pt-5 sm:pt-0 mx-auto w-full max-w-[850px]">
             <h2
               class="text-lg sm:text-xl text-start w-full font-semibold flex flex-row items-center"
             >
