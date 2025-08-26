@@ -124,10 +124,7 @@ function createRuleCheck(rule, ruleName, ruleValue) {
 
 
   if (rule.name === 'earningsDate') {
-    // Force ruleValueRaw to a lower‐cased string. If it was passed as a number/array, coerce to string first.
-    const label = String(rule.value).trim().toLowerCase();
-
-    // Get “midnight UTC” of “today”
+    // Get "midnight UTC" of "today"
     const now = new Date();
     const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 
@@ -143,12 +140,12 @@ function createRuleCheck(rule, ruleName, ruleValue) {
         fmt(new Date(todayUTC.getTime() + 86400_000))
       ],
       'next 7d': [
-        fmt(todayUTC),
-        fmt(new Date(todayUTC.getTime() + 7 * 86400_000))
+        fmt(todayUTC), // Include today for Next 7D
+        fmt(new Date(todayUTC.getTime() + 6 * 86400_000)) // Next 6 days (total 7 including today)
       ],
       'next 30d': [
-        fmt(todayUTC),
-        fmt(new Date(todayUTC.getTime() + 30 * 86400_000))
+        fmt(todayUTC), // Include today for Next 30D
+        fmt(new Date(todayUTC.getTime() + 29 * 86400_000)) // Next 29 days (total 30 including today)
       ],
       'this month': (() => {
         // first day of this month UTC
@@ -166,26 +163,38 @@ function createRuleCheck(rule, ruleName, ruleValue) {
       })()
     };
 
-    // If the label isn’t recognized, log and return “always true”
-    if (!ranges[label]) {
-      console.warn(`Unrecognized earningsDate label: "${rule.value}"`);
+    // Handle both single string and array of strings
+    const labels = Array.isArray(rule.value) 
+      ? rule.value.map(v => String(v).trim().toLowerCase())
+      : [String(rule.value).trim().toLowerCase()];
+
+    // Find the widest date range from all selected options
+    let minDate = '9999-12-31';
+    let maxDate = '0000-01-01';
+    
+    for (const label of labels) {
+      if (!ranges[label]) {
+        console.warn(`Unrecognized earningsDate label: "${label}"`);
+        continue;
+      }
+      const [start, end] = ranges[label];
+      if (start < minDate) minDate = start;
+      if (end > maxDate) maxDate = end;
+    }
+
+    // If no valid labels were found, return always true
+    if (minDate === '9999-12-31' || maxDate === '0000-01-01') {
       return () => true;
     }
 
-    const [minDateStr, maxDateStr] = ranges[label];
-
     return (item) => {
       if (!item.earningsDate) return false;
-      // Parse item.earningsDate into a UTC “YYYY-MM-DD” string
-      //  – If item.earningsDate is already "YYYY-MM-DD", new Date(...) will treat it as UTC.
-      //  – If it’s "YYYY-MM-DDThh:mm:ssZ", new Date(...) also parses it as UTC.
       const d = new Date(item.earningsDate);
       if (isNaN(d.getTime())) {
-        // If parse fails, treat as “no match”:
         return false;
       }
       const itemDateStr = d.toISOString().slice(0, 10);
-      return itemDateStr >= minDateStr && itemDateStr <= maxDateStr;
+      return itemDateStr >= minDate && itemDateStr <= maxDate;
     };
   }
 
