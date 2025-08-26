@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { abbreviateNumber } from "$lib/utils";
+  import { abbreviateNumber, removeCompanyStrings } from "$lib/utils";
   import { mode } from "mode-watcher";
   import { getCache, setCache } from "$lib/store";
   import highcharts from "$lib/highcharts.ts";
@@ -8,8 +8,7 @@
   export let tickerList = [];
   export let sources = [];
 
-  // Limit to maximum 3 tickers
-  $: displayTickerList = tickerList?.slice(0, 3) ?? [];
+  $: displayTickerList = tickerList?.slice(0, 10) ?? [];
 
   // Create a map of ticker to URL from sources
   $: tickerUrlMap =
@@ -79,7 +78,7 @@
   async function loadInitialData() {
     if (!displayTickerList || displayTickerList.length === 0) return;
     if (isLoading) return; // Prevent duplicate loading
-    
+
     isLoading = true;
     isLoaded = false;
 
@@ -455,31 +454,19 @@
       series,
     };
   }
-  function getCompanyName(ticker) {
-    const names = {
-      AAPL: "Apple Inc.",
-      AMD: "Advanced Micro Devices, Inc.",
-      GOOGL: "Alphabet Inc.",
-      MSFT: "Microsoft Corporation",
-      NVDA: "NVIDIA Corporation",
-      TSLA: "Tesla, Inc.",
-      AMZN: "Amazon.com, Inc.",
-      META: "Meta Platforms, Inc.",
-    };
-    return names[ticker?.toUpperCase()] || ticker?.toUpperCase();
-  }
 
   // Keep track of last loaded ticker list to prevent unnecessary reloads
   let lastTickerList = "";
-  
+
   // Combined reactive statement for both ticker list and sources changes
   $: {
     const currentTickerKey = displayTickerList.join(",");
-    const shouldLoad = displayTickerList && 
-                      displayTickerList.length > 0 && 
-                      typeof window !== "undefined" &&
-                      currentTickerKey !== lastTickerList;
-    
+    const shouldLoad =
+      displayTickerList &&
+      displayTickerList.length > 0 &&
+      typeof window !== "undefined" &&
+      currentTickerKey !== lastTickerList;
+
     if (shouldLoad) {
       lastTickerList = currentTickerKey;
       tick().then(() => {
@@ -487,9 +474,14 @@
       });
     }
   }
-  
+
   // React to sources changes to ensure proper rendering
-  $: if (sources && sources.length > 0 && displayTickerList.length > 0 && Object.keys(stockQuotes).length > 0) {
+  $: if (
+    sources &&
+    sources.length > 0 &&
+    displayTickerList.length > 0 &&
+    Object.keys(stockQuotes).length > 0
+  ) {
     tick().then(() => {
       updatePlotData();
     });
@@ -528,7 +520,9 @@
                     alt="logo"
                     class="w-5 h-5 rounded-full"
                   />
-                  <span class=" text-sm">{getCompanyName(ticker)}</span>
+                  <span class=" text-sm"
+                    >{removeCompanyStrings(quote?.name)}</span
+                  >
                 </div>
 
                 <div class="flex items-baseline gap-3 mb-2">
@@ -581,7 +575,7 @@
           {#each displayTickerList as ticker}
             {@const quote = stockQuotes[ticker]}
             {#if quote}
-              <div class="">
+              <div class="font-mono">
                 <div class="flex justify-between items-center mb-4">
                   <h3 class=" font-medium text-lg">
                     {ticker?.toUpperCase()}
@@ -595,6 +589,35 @@
                     >
                     <span>{quote?.previousClose?.toFixed(2) || "n/a"}</span>
                   </div>
+
+                  <div class="flex justify-between items-center gap-4">
+                    <span
+                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
+                      >Day Range</span
+                    >
+                    <span
+                      >{quote?.dayLow?.toFixed(2)} - {quote?.dayHigh?.toFixed(
+                        2,
+                      )}</span
+                    >
+                  </div>
+
+                  <div class="flex justify-between items-center gap-4">
+                    <span
+                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
+                      >P/E Ratio</span
+                    >
+                    <span>{quote?.pe?.toFixed(2) || "n/a"}</span>
+                  </div>
+
+                  <div class="flex justify-between items-center gap-4">
+                    <span
+                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
+                      >Open</span
+                    >
+                    <span>{quote?.open?.toFixed(2) || "n/a"}</span>
+                  </div>
+
                   <div class="flex justify-between items-center gap-4">
                     <span
                       class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
@@ -606,27 +629,7 @@
                       )}</span
                     >
                   </div>
-                  <div class="flex justify-between items-center gap-4">
-                    <span
-                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
-                      >Market Cap</span
-                    >
-                    <span>{abbreviateNumber(quote?.marketCap)}</span>
-                  </div>
-                  <div class="flex justify-between items-center gap-4">
-                    <span
-                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
-                      >Open</span
-                    >
-                    <span>{quote?.open?.toFixed(2) || "n/a"}</span>
-                  </div>
-                  <div class="flex justify-between items-center gap-4">
-                    <span
-                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
-                      >P/E Ratio</span
-                    >
-                    <span>{quote?.pe?.toFixed(2) || "n/a"}</span>
-                  </div>
+
                   <div class="flex justify-between items-center gap-4">
                     <span
                       class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
@@ -641,21 +644,19 @@
                   <div class="flex justify-between items-center gap-4">
                     <span
                       class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
-                      >Day Range</span
-                    >
-                    <span
-                      >{quote?.dayLow?.toFixed(2)} - {quote?.dayHigh?.toFixed(
-                        2,
-                      )}</span
-                    >
-                  </div>
-                  <div class="flex justify-between items-center gap-4">
-                    <span
-                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
                       >Volume</span
                     >
                     <span>{abbreviateNumber(quote?.volume) || "n/a"}</span>
                   </div>
+
+                  <div class="flex justify-between items-center gap-4">
+                    <span
+                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
+                      >Market Cap</span
+                    >
+                    <span>{abbreviateNumber(quote?.marketCap)}</span>
+                  </div>
+
                   <div class="flex justify-between items-center gap-4">
                     <span
                       class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
@@ -666,7 +667,7 @@
                 </div>
 
                 {#if tickerUrlMap[ticker]}
-                  <div class="mt-6">
+                  <div class="mt-6 font-sarif">
                     <a
                       href={tickerUrlMap[ticker]}
                       class="text-blue-600 sm:hover:text-blue-800 dark:text-blue-400 dark:sm:hover:text-blue-300 hover:underline text-sm"
