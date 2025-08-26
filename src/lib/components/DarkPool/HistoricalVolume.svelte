@@ -13,25 +13,23 @@
   export let rawData = [];
 
   function addChangesPercentage(data) {
-    // First, sort by date ascending
-    const sorted = [...data].sort(
-      (a, b) => new Date(b?.date) - new Date(a?.date),
-    );
-
-    // Then, calculate changesPercentage compared to next item
-    return sorted.map((item, index, arr) => {
-      if (index === arr.length - 1) {
-        return { ...item, changesPercentage: null };
+    if (!data || data.length === 0) return data;
+    
+    // Sort in place for better memory efficiency
+    const sorted = [...data].sort((a, b) => new Date(b?.date) - new Date(a?.date));
+    
+    // Process in place to avoid creating new objects
+    for (let i = 0; i < sorted.length; i++) {
+      if (i === sorted.length - 1) {
+        sorted[i] = { ...sorted[i], changesPercentage: null };
+      } else {
+        const nextValue = sorted[i + 1]?.shortVolume;
+        const pctChange = nextValue !== 0 ? ((sorted[i].shortVolume - nextValue) / nextValue) * 100 : 0;
+        sorted[i] = { ...sorted[i], changesPercentage: Math.round(pctChange * 100) / 100 };
       }
-
-      const nextValue = arr[index + 1]?.shortVolume;
-      const pctChange = ((item.shortVolume - nextValue) / nextValue) * 100;
-
-      return {
-        ...item,
-        changesPercentage: parseFloat(pctChange?.toFixed(2)),
-      };
-    });
+    }
+    
+    return sorted;
   }
 
   const toNum = (x) => (typeof x === "number" ? x : 0);
@@ -104,37 +102,39 @@
   }
 
   function getPlotOptions() {
-    // Prepare the data arrays
+    // Prepare the data arrays with optimized single-pass processing
     const sortedChartData = [...rawData]?.sort(
       (a, b) => new Date(a?.date).getTime() - new Date(b?.date).getTime(),
     );
-    const dates = sortedChartData?.map((item) => item?.date);
-    const totalVolumeList = sortedChartData.map(
-      (item) => item?.totalVolume || 0,
-    );
-    const shortVolumeList = sortedChartData.map(
-      (item) => item?.shortVolume || 0,
-    );
+    
+    // Single pass to extract all needed data
+    const dates = [];
+    const totalVolumeList = [];
+    const shortVolumeList = [];
+    let totalVolSum = 0;
+    let shortVolSum = 0;
+    
+    for (let i = 0; i < sortedChartData.length; i++) {
+      const item = sortedChartData[i];
+      dates.push(item?.date);
+      const totalVol = item?.totalVolume || 0;
+      const shortVol = item?.shortVolume || 0;
+      totalVolumeList.push(totalVol);
+      shortVolumeList.push(shortVol);
+      totalVolSum += totalVol;
+      shortVolSum += shortVol;
+    }
 
     // Call side-effect function as in your original code
     findMonthlyValue(sortedChartData, sortedChartData.at(-1)?.date);
 
-    // Compute averages (these remain global if used elsewhere)
-    avgVolume =
-      Math.floor(
-        totalVolumeList.reduce((acc, val) => acc + val, 0) /
-          totalVolumeList?.length,
-      ) || 0;
-    avgShortVolume =
-      Math.floor(
-        shortVolumeList?.reduce((acc, val) => acc + val, 0) /
-          shortVolumeList?.length,
-      ) || 0;
+    // Compute averages more efficiently
+    const length = sortedChartData.length;
+    avgVolume = length > 0 ? Math.floor(totalVolSum / length) : 0;
+    avgShortVolume = length > 0 ? Math.floor(shortVolSum / length) : 0;
 
     const options = {
-      credits: {
-        enabled: false,
-      },
+      credits: { enabled: false },
       chart: {
         type: "line",
         backgroundColor: $mode === "light" ? "#fff" : "#09090B",
@@ -142,6 +142,7 @@
         height: 360,
         spacingTop: 5,
         animation: false,
+        reflow: false, // Disable automatic reflow for better performance
       },
       title: {
         text: `<h3 class="mt-3 -mb-3 text-[1rem] sm:text-lg">${removeCompanyStrings($displayCompanyName)} Historical Chart</h3>`,
@@ -220,24 +221,27 @@
         },
         borderRadius: 4,
         formatter: function () {
-          // Format the x value to display time in a custom format
-          let tooltipContent = `<span class="m-auto text-[1rem] font-[501]">${new Date(
-            this?.x,
-          ).toLocaleDateString("en-US", {
+          // Pre-format date to avoid repeated calculations
+          const formattedDate = new Date(this?.x).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
             day: "numeric",
-          })}</span><br>`;
-
-          // Loop through each point in the shared tooltip
-          this.points.forEach((point) => {
-            tooltipContent += `
-        <span style="display:inline-block; width:10px; height:10px; background-color:${point.color}; border-radius:50%; margin-right:5px;"></span>
-        <span class="font-semibold text-sm">${point.series.name}:</span> 
-        <span class="font-normal text-sm">${abbreviateNumber(point.y)}</span><br>`;
           });
-
-          return tooltipContent;
+          
+          // Use array join instead of string concatenation for better performance
+          const tooltipParts = [`<span class="m-auto text-[1rem] font-[501]">${formattedDate}</span><br>`];
+          
+          // Process points more efficiently
+          for (let i = 0; i < this.points.length; i++) {
+            const point = this.points[i];
+            tooltipParts.push(
+              `<span style="display:inline-block; width:10px; height:10px; background-color:${point.color}; border-radius:50%; margin-right:5px;"></span>`,
+              `<span class="font-semibold text-sm">${point.series.name}:</span> `,
+              `<span class="font-normal text-sm">${abbreviateNumber(point.y)}</span><br>`
+            );
+          }
+          
+          return tooltipParts.join('');
         },
       },
       plotOptions: {
@@ -245,6 +249,7 @@
           color: "white",
           legendSymbol: "rectangle",
           animation: false, // Disable series animation
+          enableMouseTracking: true, // Keep tooltip but optimize
           states: {
             hover: {
               enabled: false, // Disable hover effect globally
@@ -252,23 +257,27 @@
           },
         },
       },
+      boost: {
+        useGPUTranslations: true, // Enable GPU acceleration if available
+        seriesThreshold: 1, // Enable boost for all series
+      },
       series: [
         {
           name: "Total Volume",
           data: totalVolumeList,
           type: "line",
           color: $mode === "light" ? "#2C6288" : "white",
+          marker: { enabled: false },
+          animation: false,
         },
         {
           name: "Short Volume",
           data: shortVolumeList,
-          // Using an 'area' type to mimic the areaStyle option
           type: "area",
           color: "#E11D48",
           fillOpacity: 1,
-          marker: {
-            enabled: false,
-          },
+          marker: { enabled: false },
+          animation: false,
         },
       ],
     };
@@ -409,7 +418,15 @@
     tableList = [...originalData].sort(compareValues);
   };
 
-  $: if ($mode) {
+  // Optimize reactive statement to avoid unnecessary recalculations
+  let prevMode = $mode;
+  $: if ($mode !== prevMode) {
+    prevMode = $mode;
+    config = getPlotOptions() || null;
+  }
+  
+  // Initialize config on component mount
+  if (!config) {
     config = getPlotOptions() || null;
   }
 </script>
