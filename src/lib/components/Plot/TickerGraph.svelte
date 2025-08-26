@@ -8,7 +8,15 @@
   export let tickerList = [];
   export let sources = [];
 
-  $: displayTickerList = tickerList?.slice(0, 10) ?? [];
+  $: displayTickerList = tickerList?.slice(0, 5) ?? [];
+
+  // State for expand/collapse
+  let isExpanded = false;
+
+  // Show only first 2 tickers initially, or all if expanded
+  $: visibleTickerList = isExpanded
+    ? displayTickerList
+    : displayTickerList.slice(0, 2);
 
   // Create a map of ticker to URL from sources
   $: tickerUrlMap =
@@ -144,81 +152,14 @@
     isLoaded = true;
     isLoading = false;
   }
-  /*
-  async function changePlotPeriod(timePeriod) {
-    isLoaded = false;
-    selectedPlotPeriod = timePeriod;
 
-    const periodMapping = {
-      "1D": "one-day",
-      "5D": "one-week",
-      "1M": "one-month",
-      "6M": "six-months",
-      YTD: "ytd",
-      "1Y": "one-year",
-      "5Y": "five-years",
-      MAX: "max",
-    };
-
-    const apiPeriod = periodMapping[timePeriod];
-    const allTickersCachedForPeriod = displayTickerList.every((ticker) => {
-      const cacheKey = `plotData-${ticker}-${apiPeriod}`;
-      return getCache(cacheKey, "tickerGraph");
-    });
-
-    if (allTickersCachedForPeriod) {
-      tickerList.forEach((ticker) => {
-        const cacheKey = `plotData-${ticker}-${apiPeriod}`;
-        const cachedPriceData = getCache(cacheKey, "tickerGraph");
-
-        if (priceData[ticker]) {
-          priceData[ticker][timePeriod] = cachedPriceData || [];
-        }
-      });
-
-      updatePlotData();
-      isLoaded = true;
-      return;
-    }
-
-    const needsFetch = tickerList.some(
-      (ticker) =>
-        !priceData[ticker] ||
-        !priceData[ticker][timePeriod] ||
-        priceData[ticker][timePeriod].length === 0,
-    );
-
-    if (needsFetch && apiPeriod) {
-      const results = await fetchPlotData(tickerList, apiPeriod);
-
-      if (results && results.length > 0) {
-        results.forEach((result) => {
-          const { ticker, priceData: prices } = result;
-
-          setCache(
-            `plotData-${ticker}-${apiPeriod}`,
-            "tickerGraph",
-            prices || [],
-          );
-
-          if (priceData[ticker]) {
-            priceData[ticker][timePeriod] = prices || [];
-          }
-        });
-      }
-    }
-
-    updatePlotData();
-    isLoaded = true;
-  }
-*/
   function updatePlotData() {
     rawGraphData = {};
 
-    displayTickerList.forEach((ticker) => {
+    displayTickerList?.forEach((ticker) => {
       const data = priceData[ticker]?.[selectedPlotPeriod] || [];
       rawGraphData[ticker] = {
-        history: data.map((item) => ({
+        history: data?.map((item) => ({
           date: item.time || item.date,
           value: item.close || item.value,
         })),
@@ -240,8 +181,8 @@
     };
 
     // Process data and calculate percentage changes
-    for (const [symbol, data] of Object.entries(rawGraphData)) {
-      const seriesData = Array.isArray(data?.history) ? data?.history : [];
+    for (const [symbol, data] of Object?.entries(rawGraphData)) {
+      const seriesData = Array?.isArray(data?.history) ? data?.history : [];
 
       parsedData[symbol] = seriesData?.map((item) => {
         const d = new Date(item?.date);
@@ -308,8 +249,7 @@
       }
     });
 
-    // Calculate yMin and yMax with padding (similar to document 2)
-    // For percentage data, we'll use a slightly different approach
+    // Calculate yMin and yMax with padding
     const padding = 0.1; // 10% padding for percentage values
     const range = maxPercentage - minPercentage;
 
@@ -494,7 +434,6 @@
       class="border border-gray-300 dark:border-gray-800 bg-white dark:bg-default rounded p-6"
     >
       <!-- Header -->
-
       <div class="flex items-center gap-2 mb-6">
         <div class="ml-auto text-xs">
           {#if displayTickerList?.length > 0}
@@ -508,7 +447,7 @@
       </div>
 
       {#if config && isLoaded && Object.keys(stockQuotes)?.length > 0}
-        <!-- Stock Price Headers - Side by Side -->
+        <!-- Stock Price Headers - Side by Side (Always visible for all tickers) -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6">
           {#each displayTickerList as ticker, index}
             {@const quote = stockQuotes[ticker]}
@@ -549,30 +488,12 @@
           {/each}
         </div>
 
-        <!-- Time Period Selector -->
-        <!--
-        <div class="flex gap-1 mb-4">
-          {#each ["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"] as item}
-            <button
-              on:click={() => changePlotPeriod(item)}
-              class={`px-4 py-2 text-sm transition-colors ${
-                selectedPlotPeriod === item
-                  ? "text-white border-b-2 border-white"
-                  : "text-gray-500 hover:text-gray-300"
-              }`}
-            >
-              {item}
-            </button>
-          {/each}
-        </div>
-        -->
-
         <!-- Chart -->
         <div class="w-full h-[200px] mb-8" use:highcharts={config}></div>
 
-        <!-- Stock Details - Side by Side -->
+        <!-- Stock Details - Collapsible section (only shows first 2 tickers initially) -->
         <div class="space-y-4">
-          {#each displayTickerList as ticker}
+          {#each visibleTickerList as ticker}
             {@const quote = stockQuotes[ticker]}
             {#if quote}
               <div class="font-mono">
@@ -584,7 +505,7 @@
                 <div class="grid grid-cols-3 gap-x-6 gap-y-2 text-sm">
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-300 whitespace-nowrap"
                       >Prev Close</span
                     >
                     <span>{quote?.previousClose?.toFixed(2) || "n/a"}</span>
@@ -592,7 +513,7 @@
 
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-300 whitespace-nowrap"
                       >Day Range</span
                     >
                     <span
@@ -604,7 +525,7 @@
 
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-300 whitespace-nowrap"
                       >P/E Ratio</span
                     >
                     <span>{quote?.pe?.toFixed(2) || "n/a"}</span>
@@ -612,7 +533,7 @@
 
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-300 whitespace-nowrap"
                       >Open</span
                     >
                     <span>{quote?.open?.toFixed(2) || "n/a"}</span>
@@ -620,7 +541,7 @@
 
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-300 whitespace-nowrap"
                       >52W Range</span
                     >
                     <span
@@ -632,7 +553,7 @@
 
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-300 whitespace-nowrap"
                       >Dividend Yield</span
                     >
                     <span
@@ -643,7 +564,7 @@
                   </div>
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-300 whitespace-nowrap"
                       >Volume</span
                     >
                     <span>{abbreviateNumber(quote?.volume) || "n/a"}</span>
@@ -651,7 +572,7 @@
 
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-300 whitespace-nowrap"
                       >Market Cap</span
                     >
                     <span>{abbreviateNumber(quote?.marketCap)}</span>
@@ -659,7 +580,7 @@
 
                   <div class="flex justify-between items-center gap-4">
                     <span
-                      class="text-gray-600 dark:text-gray-400 whitespace-nowrap"
+                      class="text-gray-600 dark:text-gray-300 whitespace-nowrap"
                       >EPS</span
                     >
                     <span>{quote?.eps?.toFixed(2) || "n/a"}</span>
@@ -667,10 +588,10 @@
                 </div>
 
                 {#if tickerUrlMap[ticker]}
-                  <div class="mt-6 font-ans">
+                  <div class="mt-6 font-sans">
                     <a
                       href={tickerUrlMap[ticker]}
-                      class="text-blue-600 sm:hover:text-blue-800 dark:text-blue-400 dark:sm:hover:text-blue-300 hover:underline text-sm"
+                      class="text-blue-800 sm:hover:text-muted dark:text-blue-400 dark:sm:hover:text-white hover:underline text-sm"
                     >
                       More about {ticker?.toUpperCase()}
                     </a>
@@ -680,6 +601,55 @@
             {/if}
           {/each}
         </div>
+
+        <!-- Expand/Collapse button for detailed stats -->
+        {#if displayTickerList.length > 2}
+          <div class="flex justify-center mb-6">
+            <button
+              on:click={() => (isExpanded = !isExpanded)}
+              class="cursor-pointer px-6 py-2 text-sm font-medium rounded
+                     text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-800"
+            >
+              {#if isExpanded}
+                <span class="flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M4.5 15.75l7.5-7.5 7.5 7.5"
+                    />
+                  </svg>
+                  Show Less Details
+                </span>
+              {:else}
+                <span class="flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                    />
+                  </svg>
+                  Show Details for All {displayTickerList.length} Tickers
+                </span>
+              {/if}
+            </button>
+          </div>
+        {/if}
       {:else}
         <!-- Loading State -->
         <div class="flex justify-center items-center h-96">
