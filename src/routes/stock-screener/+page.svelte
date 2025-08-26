@@ -47,6 +47,7 @@
   let displayRules = [];
   let selectedPopularStrategy = "";
   const popularStrategyList = [
+    { key: "earningsVolatility", label: "Earnings Volatility" },
     { key: "dividendGrowth", label: "Dividend Growth" },
     { key: "monthlyDividends", label: "Monthly Dividends" },
     { key: "topGainers1Y", label: "Top Gainers 1Y" },
@@ -2505,8 +2506,47 @@ const handleKeyDown = (event) => {
   }
 
   async function popularStrategy(state: string) {
-    ruleOfList = [];
     const strategies = {
+      earningsVolatility: {
+        name: "Earnings Volatility",
+        rules: [
+          {
+            condition: "",
+            name: "sma20",
+            value: ["Price above SMA20"],
+          },
+          {
+            condition: "",
+            name: "sma100",
+            value: ["Price above SMA100"],
+          },
+          {
+            condition: "",
+            name: "sma200",
+            value: ["Price above SMA200"],
+          },
+          {
+            condition: "over",
+            name: "returnOnEquity",
+            value: "20%",
+          },
+          {
+            condition: "under",
+            name: "debtToEquityRatio",
+            value: 1,
+          },
+          {
+            condition: "over",
+            name: "avgVolume",
+            value: "1M",
+          },
+          {
+            condition: "",
+            name: "earningsDate",
+            value: ["Next 7D"],
+          },
+        ],
+      },
       dividendGrowth: {
         name: "Dividend Growth",
         rules: [
@@ -2577,7 +2617,20 @@ const handleKeyDown = (event) => {
 
     const strategy = strategies[state];
     if (strategy) {
+      // If clicking the same strategy again, don't clear the rules
+      if (selectedPopularStrategy === strategy.name) {
+        return;
+      }
+
       selectedPopularStrategy = strategy.name;
+      ruleOfList = [];
+
+      // Clear all previous checked items and value mappings to avoid toggle behavior
+      checkedItems.clear();
+      Object.keys(valueMappings).forEach((key) => {
+        valueMappings[key] = "any";
+      });
+
       ruleOfList = strategy?.rules;
       ruleOfList?.forEach((row) => {
         ruleName = row?.name;
