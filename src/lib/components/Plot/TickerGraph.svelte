@@ -158,11 +158,16 @@
 
     displayTickerList?.forEach((ticker) => {
       const data = priceData[ticker]?.[selectedPlotPeriod] || [];
+      // Ensure data is an array before mapping
+      const historyData = Array.isArray(data) 
+        ? data.map((item) => ({
+            date: item.time || item.date,
+            value: item.close || item.value,
+          }))
+        : [];
+      
       rawGraphData[ticker] = {
-        history: data?.map((item) => ({
-          date: item.time || item.date,
-          value: item.close || item.value,
-        })),
+        history: historyData,
       };
     });
 
@@ -181,23 +186,28 @@
     };
 
     // Process data and calculate percentage changes
-    for (const [symbol, data] of Object?.entries(rawGraphData)) {
-      const seriesData = Array?.isArray(data?.history) ? data?.history : [];
+    for (const [symbol, data] of Object.entries(rawGraphData || {})) {
+      const seriesData = Array.isArray(data?.history) ? data.history : [];
 
-      parsedData[symbol] = seriesData?.map((item) => {
-        const d = new Date(item?.date);
-        return [
-          Date.UTC(
-            d.getUTCFullYear(),
-            d.getUTCMonth(),
-            d.getUTCDate(),
-            d.getUTCHours(),
-            d.getUTCMinutes(),
-            d.getUTCSeconds(),
-          ),
-          item?.value,
-        ];
-      });
+      // Only process if we have valid data
+      if (seriesData.length > 0) {
+        parsedData[symbol] = seriesData.map((item) => {
+          const d = new Date(item?.date);
+          return [
+            Date.UTC(
+              d.getUTCFullYear(),
+              d.getUTCMonth(),
+              d.getUTCDate(),
+              d.getUTCHours(),
+              d.getUTCMinutes(),
+              d.getUTCSeconds(),
+            ),
+            item?.value || 0,
+          ];
+        });
+      } else {
+        parsedData[symbol] = [];
+      }
     }
 
     // Track min/max percentage values for yAxis scaling
@@ -206,11 +216,13 @@
 
     // Convert to percentage-based data
     Object.entries(parsedData).forEach(([symbol, dataPoints], index) => {
-      if (!dataPoints?.length) return;
+      if (!Array.isArray(dataPoints) || dataPoints.length === 0) return;
 
-      const firstValue = dataPoints[0][1];
+      const firstValue = dataPoints[0]?.[1];
+      if (!firstValue || firstValue === 0) return;
+      
       const percentageData = dataPoints.map((point) => {
-        const percentValue = (point[1] / firstValue - 1) * 100;
+        const percentValue = ((point[1] || 0) / firstValue - 1) * 100;
         // Update min/max tracking
         minPercentage = Math.min(minPercentage, percentValue);
         maxPercentage = Math.max(maxPercentage, percentValue);
@@ -264,9 +276,10 @@
     yMin = Math.min(yMin, -0.5);
     yMax = Math.max(yMax, 0.5);
 
-    const baseDate = new Date(
-      Object.values(parsedData)?.[0]?.[0]?.[0] || new Date(),
-    );
+    const firstData = Object.values(parsedData).find(data => data?.length > 0);
+    const baseDate = firstData?.[0]?.[0] 
+      ? new Date(firstData[0][0])
+      : new Date();
     const startTime = new Date(
       baseDate.getFullYear(),
       baseDate.getMonth(),
