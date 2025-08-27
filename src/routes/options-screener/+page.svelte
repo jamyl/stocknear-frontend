@@ -561,8 +561,8 @@
         ruleOfList = [...ruleOfList];
 
         // Reset checkedItems for multi-select rules
-        if (checkedItems.has(state)) {
-          checkedItems.delete(state);
+        if (checkedItems?.has(state)) {
+          checkedItems?.delete(state);
         }
 
         // Handle cases when the list is empty or matches the current rule name
@@ -575,7 +575,7 @@
         }
       }
 
-      //await updateStockScreenerData();
+      await updateStockScreenerData();
     }
   }
 
@@ -2174,6 +2174,10 @@
                               >{item[row?.rule]}</span
                             >
                           {/if}
+                        {:else if row?.rule === "indexMembership"}
+                          {valueMappings[row?.rule] === "any"
+                            ? "Any"
+                            : valueMappings[row?.rule]}
                         {:else}
                           {abbreviateNumber(item[row?.rule])}
                         {/if}
