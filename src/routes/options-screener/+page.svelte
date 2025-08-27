@@ -31,6 +31,7 @@
   let expirationList = data?.getScreenerData?.expirationList;
   let selectedDate = expirationList?.at(0)?.date;
 
+  let indexDict = data?.getIndexDict ?? {};
   let infoText = {};
   let tooltipTitle;
   let removeList = false;
@@ -81,6 +82,13 @@
       label: "Asset Type",
       step: ["Stock", "ETF"],
       defaultCondition: "",
+      defaultValue: "any",
+    },
+    indexMembership: {
+      label: "Index Membership",
+      step: ["S&P100", "S&P500"],
+      defaultCondition: "",
+      category: "Stock Data",
       defaultValue: "any",
     },
     ivRank: {
@@ -404,7 +412,9 @@
     //await updateStockScreenerData();
     checkedItems = new Map(
       ruleOfList
-        ?.filter((rule) => ["optionType", "assetType"]?.includes(rule.name)) // Only include specific rules
+        ?.filter((rule) =>
+          ["optionType", "assetType", "indexMembership"]?.includes(rule.name),
+        ) // Only include specific rules
         ?.map((rule) => [rule.name, new Set(rule.value)]), // Create Map from filtered rules
     );
   }
@@ -433,6 +443,7 @@
     syncWorker.postMessage({
       stockScreenerData,
       ruleOfList,
+      indexDict,
     });
   };
 
@@ -455,6 +466,7 @@
     switch (ruleName) {
       case "optionType":
       case "assetType":
+      case "indexMembership":
         newRule = {
           name: ruleName,
           value: Array.isArray(valueMappings[ruleName])
@@ -721,7 +733,9 @@
 
   let checkedItems = new Map(
     ruleOfList
-      ?.filter((rule) => ["optionType", "assetType"]?.includes(rule.name)) // Only include specific rules
+      ?.filter((rule) =>
+        ["optionType", "assetType", "indexMembership"]?.includes(rule.name),
+      ) // Only include specific rules
       ?.map((rule) => [rule.name, new Set(rule.value)]), // Create Map from filtered rules
   );
 
@@ -806,7 +820,7 @@
       checkedItems?.set(ruleName, new Set([valueKey]));
     }
 
-    if (["optionType", "assetType"]?.includes(ruleName)) {
+    if (["optionType", "assetType", "indexMembership"]?.includes(ruleName)) {
       if (!Array.isArray(valueMappings[ruleName])) {
         valueMappings[ruleName] = [];
       }
@@ -1663,7 +1677,7 @@
                         alignOffset={0}
                         class="w-64 min-h-auto max-h-72 overflow-y-auto scroller"
                       >
-                        {#if !["optionType", "assetType"]?.includes(row?.rule)}
+                        {#if !["optionType", "assetType", "indexMembership"]?.includes(row?.rule)}
                           <DropdownMenu.Label
                             class="absolute mt-2 h-11 border-gray-300 dark:border-gray-800 border-b -top-1 z-20 fixed sticky bg-white dark:bg-default"
                           >
@@ -1813,7 +1827,7 @@
                           </DropdownMenu.Label>
                         {/if}
                         <DropdownMenu.Group class="min-h-10 mt-2">
-                          {#if !["optionType", "assetType"]?.includes(row?.rule)}
+                          {#if !["optionType", "assetType", "indexMembership"]?.includes(row?.rule)}
                             {#each row?.step as newValue, index}
                               {#if ruleCondition[row?.rule] === "between"}
                                 {#if newValue && row?.step[index + 1]}
@@ -1858,7 +1872,7 @@
                                 </DropdownMenu.Item>
                               {/if}
                             {/each}
-                          {:else if ["optionType", "assetType"]?.includes(row?.rule)}
+                          {:else if ["optionType", "assetType", "indexMembership"]?.includes(row?.rule)}
                             {#each row?.step as item}
                               <DropdownMenu.Item
                                 class="sm:hover:bg-gray-300 dark:sm:hover:bg-primary"

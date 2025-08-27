@@ -43,10 +43,29 @@ export const load = async ({ locals }) => {
     return output;
   };
 
+    const getIndexDict = async () => {
+
+  
+ const response = await fetch(apiURL + "/index-symbols", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-KEY": apiKey,
+    },
+  });
+
+    const output = await response.json();
+
+
+    return output;
+  };
+
+
   // Make sure to return a promise
   return {
     getScreenerData: await getScreenerData(),
     getAllStrategies: await getAllStrategies(),
+    getIndexDict: await getIndexDict(),
   };
 };
 
