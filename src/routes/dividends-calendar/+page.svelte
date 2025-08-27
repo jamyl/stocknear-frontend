@@ -26,7 +26,7 @@
     "M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z";
 
   // Common CSS classes
-  const borderClasses = "border border-gray-300 dark:border-gray-600";
+  const borderClasses = "border border-gray-300 dark:border-gray-800";
   const tableBorderClasses = "border border-gray-300 dark:border-gray-800";
   const navigationButtonClasses =
     "h-16 w-48 cursor-pointer border m-auto flex bg-default text-white dark:bg-primary mb-3";
@@ -48,7 +48,7 @@
   let selectedWeekday = currentWeekday;
 
   // Timeframe management
-  let timeframe = "Daily";
+  let timeframe = "Weekly";
   let expandedItems = {};
 
   // Tab options
@@ -360,7 +360,7 @@
                         : ''}
                         {timeframe === item
                         ? 'bg-black dark:bg-white text-white dark:text-black'
-                        : 'bg-white border-gray-300 sm:hover:bg-gray-100 dark:bg-default dark:border-gray-600'}"
+                        : 'bg-white border-gray-300 sm:hover:bg-gray-100 dark:bg-default dark:border-gray-800'}"
                     >
                       {item}
                     </button>
