@@ -13,7 +13,7 @@ export const load = async ({ locals }) => {
       filter: "lifetime = true"
     }))?.length || 0;  
 
-    const count = 100 - output;
+    const count = 70 - output;
     if (count < 0) {
       return 0;
     }
