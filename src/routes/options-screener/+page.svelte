@@ -561,7 +561,9 @@
           checkedItems = new Map(
             ruleOfList
               ?.filter((rule) =>
-                ["optionType", "assetType", "indexMembership"].includes(rule.name),
+                ["optionType", "assetType", "indexMembership"].includes(
+                  rule.name,
+                ),
               )
               ?.map((rule) => [rule.name, new Set(rule.value)]),
           );
@@ -819,6 +821,9 @@
       } else {
         itemsSet?.add(valueKey);
       }
+
+      // Trigger reactivity by creating a new Map
+      checkedItems = new Map(checkedItems);
     } else {
       // Apply sorting only if shouldSort is true
       const sortedValue =
@@ -829,6 +834,9 @@
         : sortedValue;
 
       checkedItems?.set(ruleName, new Set([valueKey]));
+
+      // Trigger reactivity by creating a new Map
+      checkedItems = new Map(checkedItems);
     }
 
     if (["optionType", "assetType", "indexMembership"]?.includes(ruleName)) {
@@ -1888,11 +1896,7 @@
                               <DropdownMenu.Item
                                 class="sm:hover:bg-gray-300 dark:sm:hover:bg-primary"
                               >
-                                <div
-                                  class="flex items-center"
-                                  on:click|capture={(event) =>
-                                    event.preventDefault()}
-                                >
+                                <div class="flex items-center">
                                   <label
                                     on:click={() => {
                                       handleChangeValue(item);
