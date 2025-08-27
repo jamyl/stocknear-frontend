@@ -232,6 +232,8 @@ onmessage = async (event: MessageEvent) => {
       indexDict
     );
 
+
+    
     postMessage({
       message: "success",
       filteredData,

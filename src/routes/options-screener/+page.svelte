@@ -41,6 +41,9 @@
   let ruleOfList = strategyList?.at(0)?.rules ?? [];
   let groupedRules = {};
   let displayRules = [];
+
+  const checkedRules = ["optionType", "assetType", "indexMembership"];
+
   let selectedPopularStrategy = "";
   const popularStrategyList = [
     { key: "dividendGrowth", label: "Dividend Growth" },
@@ -412,9 +415,7 @@
     //await updateStockScreenerData();
     checkedItems = new Map(
       ruleOfList
-        ?.filter((rule) =>
-          ["optionType", "assetType", "indexMembership"]?.includes(rule.name),
-        ) // Only include specific rules
+        ?.filter((rule) => checkedRules?.includes(rule.name)) // Only include specific rules
         ?.map((rule) => [rule.name, new Set(rule.value)]), // Create Map from filtered rules
     );
   }
@@ -557,14 +558,10 @@
         ruleOfList = [...ruleOfList]; // Trigger reactivity
 
         // Update checkedItems for multi-select rules when resetting to defaults
-        if (["optionType", "assetType", "indexMembership"].includes(state)) {
+        if (checkedRules.includes(state)) {
           checkedItems = new Map(
             ruleOfList
-              ?.filter((rule) =>
-                ["optionType", "assetType", "indexMembership"].includes(
-                  rule.name,
-                ),
-              )
+              ?.filter((rule) => checkedRules.includes(rule.name))
               ?.map((rule) => [rule.name, new Set(rule.value)]),
           );
         }
@@ -746,9 +743,7 @@
 
   let checkedItems = new Map(
     ruleOfList
-      ?.filter((rule) =>
-        ["optionType", "assetType", "indexMembership"]?.includes(rule.name),
-      ) // Only include specific rules
+      ?.filter((rule) => checkedRules?.includes(rule.name)) // Only include specific rules
       ?.map((rule) => [rule.name, new Set(rule.value)]), // Create Map from filtered rules
   );
 
@@ -821,9 +816,6 @@
       } else {
         itemsSet?.add(valueKey);
       }
-
-      // Trigger reactivity by creating a new Map
-      checkedItems = new Map(checkedItems);
     } else {
       // Apply sorting only if shouldSort is true
       const sortedValue =
@@ -834,12 +826,9 @@
         : sortedValue;
 
       checkedItems?.set(ruleName, new Set([valueKey]));
-
-      // Trigger reactivity by creating a new Map
-      checkedItems = new Map(checkedItems);
     }
 
-    if (["optionType", "assetType", "indexMembership"]?.includes(ruleName)) {
+    if (checkedRules?.includes(ruleName)) {
       if (!Array.isArray(valueMappings[ruleName])) {
         valueMappings[ruleName] = [];
       }
@@ -863,7 +852,7 @@
         valueMappings[ruleName] = "any";
       }
 
-      //await updateStockScreenerData();
+      await updateStockScreenerData();
     } else if (ruleName in valueMappings) {
       if (ruleCondition[ruleName] === "between" && Array?.isArray(value)) {
         // Apply sorting only if shouldSort is true
@@ -877,7 +866,7 @@
 
     // Add this at the end of the function to ensure the filter is applied
     if (ruleCondition[ruleName] === "between" && value.some((v) => v !== "")) {
-      //await updateStockScreenerData();
+      await updateStockScreenerData();
     }
   }
 
@@ -1696,7 +1685,7 @@
                         alignOffset={0}
                         class="w-64 min-h-auto max-h-72 overflow-y-auto scroller"
                       >
-                        {#if !["optionType", "assetType", "indexMembership"]?.includes(row?.rule)}
+                        {#if !checkedRules?.includes(row?.rule)}
                           <DropdownMenu.Label
                             class="absolute mt-2 h-11 border-gray-300 dark:border-gray-800 border-b -top-1 z-20 fixed sticky bg-white dark:bg-default"
                           >
@@ -1846,7 +1835,7 @@
                           </DropdownMenu.Label>
                         {/if}
                         <DropdownMenu.Group class="min-h-10 mt-2">
-                          {#if !["optionType", "assetType", "indexMembership"]?.includes(row?.rule)}
+                          {#if !checkedRules?.includes(row?.rule)}
                             {#each row?.step as newValue, index}
                               {#if ruleCondition[row?.rule] === "between"}
                                 {#if newValue && row?.step[index + 1]}
@@ -1891,12 +1880,16 @@
                                 </DropdownMenu.Item>
                               {/if}
                             {/each}
-                          {:else if ["optionType", "assetType", "indexMembership"]?.includes(row?.rule)}
+                          {:else if checkedRules?.includes(row?.rule)}
                             {#each row?.step as item}
                               <DropdownMenu.Item
                                 class="sm:hover:bg-gray-300 dark:sm:hover:bg-primary"
                               >
-                                <div class="flex items-center">
+                                <div
+                                  class="flex items-center"
+                                  on:click|capture={(event) =>
+                                    event.preventDefault()}
+                                >
                                   <label
                                     on:click={() => {
                                       handleChangeValue(item);
