@@ -555,6 +555,17 @@
           value: defaultValue,
         };
         ruleOfList = [...ruleOfList]; // Trigger reactivity
+
+        // Update checkedItems for multi-select rules when resetting to defaults
+        if (["optionType", "assetType", "indexMembership"].includes(state)) {
+          checkedItems = new Map(
+            ruleOfList
+              ?.filter((rule) =>
+                ["optionType", "assetType", "indexMembership"].includes(rule.name),
+              )
+              ?.map((rule) => [rule.name, new Set(rule.value)]),
+          );
+        }
       } else {
         // If already at defaults, remove the rule
         ruleOfList.splice(index, 1);
