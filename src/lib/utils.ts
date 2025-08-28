@@ -1154,6 +1154,7 @@ export function convertPeriodString(interval) {
 export function getPartyForPoliticians(name) {
   // Predefined list of senators and their parties
   const senatorPartyMap = {
+    "Lisa McClain": "Republican",
     "Bryon Donalds": "Republican",
     "Blake Moore": "Republican",
     "Bill Hagerty": "Republican",
