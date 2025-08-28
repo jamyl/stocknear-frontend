@@ -6,8 +6,8 @@
 
   export let data;
 
-  let tier = $page.url.searchParams.get("tier") ?? "Unlimited";
-
+  let tier = $page.url.searchParams.get("tier") ?? "";
+  let urlValue = $page.url.searchParams.get("value");
   const emailAddress = "support@stocknear.com";
 
   var duration = 5 * 500;
@@ -15,8 +15,16 @@
   var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
   onMount(async () => {
+    // Extract value from URL or use default based on tier
+    const value = urlValue
+      ? parseFloat(urlValue)
+      : tier === "Plus"
+        ? 10
+        : tier === "Pro"
+          ? 20
+          : null;
+
     // Twitter conversion tracking
-    const value = tier === "Plus" ? 10 : tier === "Pro" ? 20 : null;
     if (typeof window !== "undefined" && window.twq && value) {
       window.twq("event", "tw-onuuu-qdjh5", {
         value: value,
