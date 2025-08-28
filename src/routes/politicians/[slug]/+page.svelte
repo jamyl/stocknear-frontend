@@ -5,7 +5,6 @@
   import SEO from "$lib/components/SEO.svelte";
 
   export let data;
-  let cloudFrontUrl = import.meta.env.VITE_IMAGE_URL;
 
   let rawData = data?.getPolitician?.output;
   let numOfTrades = rawData?.history?.length;
@@ -147,7 +146,7 @@
                     <img
                       style="clip-path: circle(50%);"
                       class="rounded-full w-12 sm:w-16"
-                      src={`${cloudFrontUrl}/assets/senator/${name?.replace(/\s+/g, "_")}.png`}
+                      src={`/img/senator/${name?.replace(/\s+/g, "_")}.png`}
                       loading="lazy"
                     />
                   </div>
