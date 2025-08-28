@@ -15,6 +15,27 @@
   var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
   onMount(async () => {
+    // Twitter conversion tracking
+    const value = tier === "Plus" ? 10 : tier === "Pro" ? 20 : null;
+    if (typeof window !== "undefined" && window.twq && value) {
+      window.twq("event", "tw-onuuu-qdjh5", {
+        value: value,
+        currency: "USD",
+        conversion_id: data?.user?.id || null,
+      });
+    }
+
+    // Meta Pixel conversion tracking
+    if (typeof window !== "undefined" && window.fbq && value) {
+      window.fbq("track", "Purchase", {
+        value: value,
+        currency: "USD",
+        content_ids: [data?.user?.id || "unknown"],
+        content_type: "product",
+        content_name: tier + " Subscription",
+      });
+    }
+
     function randomInRange(min, max) {
       return Math.random() * (max - min) + min;
     }
@@ -57,7 +78,7 @@
           loading="lazy"
         />
         <h1 class="mt-1 text-4xl font-bold sm:text-5xl">
-          Welcome to {tier} Access!
+          You have now {tier} Access!
         </h1>
         <p
           class="mx-auto mt-5 max-w-3xl text-xl leading-relaxed md:mt-7 md:text-2xl mb-10"
